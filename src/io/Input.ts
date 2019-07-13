@@ -1,29 +1,45 @@
-import TransformSpec from '../TransformSpec';
+/** @uuid 2362fa8e-300e-4aa4-b2d5-ab12d3cfa6ac
+*/
+import TransformSpec from "../TransformSpec";
+
 import { ReadCallback, ReadInputCallback } from "../types";
 
-abstract class Input extends TransformSpec {
-    public componentType: string = "input";
-    public supported: string[] = [];
-    private successfulEncoding: string | undefined;
-    private defaultSourcePath?: string;
-    private encoding?: string;
-    private errorHandler?: string;
-    public sourcePath?: string;
-    protected source?: {};
+class Input extends TransformSpec {
+    componentType: string = "input";
+    supported: string[] = [];
+    successfulEncoding: string | undefined;
+    defaultSourcePath: string;
+    encoding: string;
+    errorHandler: string;
+    sourcePath: string;
+    source: {};
+
     public constructor(
         args: {
-            source?: {}; sourcePath?: string; encoding?: string; errorHandler?: string;
+            source?: {},
+            sourcePath?: string,
+            encoding?: string,
+            errorHandler?: string
         }
     ) {
         super();
-        const { source, sourcePath, encoding, errorHandler } = args;
+
+        const {
+            source,
+            sourcePath,
+            encoding,
+            errorHandler
+        } = args;
+
         this.encoding = encoding;
         this.errorHandler = errorHandler;
         this.source = source;
         this.sourcePath = sourcePath;
+
         if (!sourcePath) {
             this.sourcePath = this.defaultSourcePath;
         }
+
         this.successfulEncoding = undefined;
     }
 

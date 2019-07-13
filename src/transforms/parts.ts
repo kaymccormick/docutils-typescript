@@ -1,7 +1,9 @@
-import Transform from '../Transform';
-import * as nodes from '../nodes';
+/** @uuid d345b88f-3254-429d-887c-dfda9769cacd
+*/
+import Transform from "../Transform";
 
-export const __docformat__ = 'reStructuredText';
+import * as nodes from "../nodes";
+export const __docformat__ = "reStructuredText";
 
 /*
  * Automatically assigns numbers to the titles of document sections.
@@ -12,19 +14,24 @@ export const __docformat__ = 'reStructuredText';
  * form of the TOC should be used.
  */
 export class SectNum extends Transform {
-    private start?: number;
-    private maxDepth?: number;
-    private startValue?: number;
-    private prefix?: number;
+    start: number;
+    maxDepth: number;
+    startValue: number;
+    prefix: number;
+
     public apply() {
         const s = this.startNode;
+
         // @ts-ignore
         this.maxDepth = s.details.attributes.depth || null;
+
         // @ts-ignore
         this.startValue = s.start || 1;
+
         this.prefix = this.start;
     }
 }
+
 SectNum.defaultPriority = 710;
 
 /**
@@ -48,23 +55,24 @@ SectNum.defaultPriority = 710;
         <target anonymous="1" ids="id1">
         <target anonymous="1" ids="id2" refuri="http://external">
  */
-
 class AnonymousHyperlinks extends Transform {
     public apply() {
         const anonymousRefs = [];
+
         /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
         const anonymousTargets = [];
-        this.document.traverse({ condition: nodes.reference }).forEach((node) => {
+
+        this.document.traverse({
+            condition: nodes.reference
+        }).forEach(node => {
             if (node.attributes.anonymous) {
                 anonymousRefs.push(node);
             }
         });
     }
 }
-AnonymousHyperlinks.defaultPriority = 440;
 
-
-/*
+AnonymousHyperlinks.defaultPriority = 440;/*
 # $Id: references.py 8197 2017-11-04 10:31:01Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.

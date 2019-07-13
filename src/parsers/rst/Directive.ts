@@ -1,4 +1,7 @@
+/** @uuid 0b31f82e-af01-48ee-bf60-dda5a270d713
+*/
 import { DirectiveError, DirectiveInterface } from "./types";
+
 import { Statemachine, LogLevel } from "../../types";
 import State from "../../states/State";
 import StringList from "../../StringList";
@@ -92,51 +95,65 @@ import Body from "./states/Body";
  *
  */
 class Directive implements DirectiveInterface {
-  static optionSpec: any;
-  static hasContent: boolean;
-  name: string;
-  arguments: any;
-  options: any;
-  content: any;
-  lineno: number;
-  contentOffset: number;
-  blockText: StringList;
-  state: Body;
-  stateMachine: Statemachine;
-  constructor(args: { name: string, args: any, options: any, content: any, lineno: number, contentOffset: number, blockText: StringList, state: Body, stateMachine: any } ) {
-  this.name = args.name;
-  this.arguments = args.args;
-  this.options = args.options;
-  this.content = args.content;
-  this.lineno = args.lineno;
-  this.contentOffset = args.contentOffset;
-  this.blockText = args.blockText;
-  this.state = args.state;
-  this.stateMachine = args.stateMachine;
-  }
+    static optionSpec: any;
+    static hasContent: boolean;
+    name: string;
+    arguments: any;
+    options: any;
+    content: any;
+    lineno: number;
+    contentOffset: number;
+    blockText: StringList;
+    state: Body;
+    stateMachine: Statemachine;
 
-  debug(message: any): DirectiveError {
-    return this.directiveError(LogLevel.DebugLevel, message);
-  }
+    constructor(
+        args: {
+            name: string,
+            args: any,
+            options: any,
+            content: any,
+            lineno: number,
+            contentOffset: number,
+            blockText: StringList,
+            state: Body,
+            stateMachine: any
+        }
+    ) {
+        this.name = args.name;
+        this.arguments = args.args;
+        this.options = args.options;
+        this.content = args.content;
+        this.lineno = args.lineno;
+        this.contentOffset = args.contentOffset;
+        this.blockText = args.blockText;
+        this.state = args.state;
+        this.stateMachine = args.stateMachine;
+    }
 
-  error(message: any): DirectiveError {
-    return this.directiveError(LogLevel.ErrorLevel, message);
-  }
+    debug(message: any): DirectiveError {
+        return this.directiveError(LogLevel.DebugLevel, message);
+    }
 
-  info(message: any): DirectiveError {
-    return this.directiveError(LogLevel.InfoLevel, message);
-  }
+    error(message: any): DirectiveError {
+        return this.directiveError(LogLevel.ErrorLevel, message);
+    }
 
-  severe(message: any): DirectiveError {
-    return this.directiveError(LogLevel.SevereLevel, message);
-  }
+    info(message: any): DirectiveError {
+        return this.directiveError(LogLevel.InfoLevel, message);
+    }
 
-  warning(message: any): DirectiveError {
-    return this.directiveError(LogLevel.WarningLevel, message);
-  }
+    severe(message: any): DirectiveError {
+        return this.directiveError(LogLevel.SevereLevel, message);
+    }
 
-  private directiveError(level: LogLevel, message: any) {
-    return new DirectiveError(level, message);
-  }
+    warning(message: any): DirectiveError {
+        return this.directiveError(LogLevel.WarningLevel, message);
+    }
+
+    private directiveError(level: LogLevel, message: any) {
+        return new DirectiveError(level, message);
+    }
 }
+
 export default Directive;

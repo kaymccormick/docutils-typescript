@@ -1,4 +1,6 @@
-import SpecializedBody from './SpecializedBody';
+/** @uuid 4bc7cc4b-7a4a-4748-85ac-f82669b0bc9e
+*/
+import SpecializedBody from "./SpecializedBody";
 
 /** Second and subsequent lines of a line_block. */
 class LineBlock extends SpecializedBody {
@@ -20,6 +22,8 @@ class LineBlock extends SpecializedBody {
         return [[], nextState, []];
     }
 }
-LineBlock.stateName = 'LineBlock';
+
+LineBlock.stateName = "LineBlock";
+
 //LineBlock.constructor.stateName = 'LineBlock';
 export default LineBlock;

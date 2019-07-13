@@ -1,10 +1,12 @@
-import Body from './Body';
-import { EOFError } from '../../../Exceptions';
+/** @uuid 5ff37329-bac5-4e05-b0db-f39bcc4c441b
+*/
+import Body from "./Body";
+
+import { EOFError } from "../../../Exceptions";
 import RSTStateMachine from "../RSTStateMachine";
-import {RSTStateArgs} from "../types";
+import { RSTStateArgs } from "../types";
 
 class SpecializedBody extends Body {
-
     /* istanbul ignore next */
     // @ts-ignore
     public indent() {
@@ -109,6 +111,8 @@ class SpecializedBody extends Body {
         throw new EOFError();
     }
 }
-SpecializedBody.stateName = 'SpecializedBody';
+
+SpecializedBody.stateName = "SpecializedBody";
+
 //SpecializedBody.constructor.stateName = 'SpecializedBody';
 export default SpecializedBody;

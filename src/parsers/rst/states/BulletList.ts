@@ -1,5 +1,6 @@
-import SpecializedBody from './SpecializedBody';
-
+/** @uuid 148fdf70-d679-4e99-86f9-8ae744f87690
+*/
+import SpecializedBody from "./SpecializedBody";
 
 class BulletList extends SpecializedBody {
     // @ts-ignore
@@ -8,6 +9,7 @@ class BulletList extends SpecializedBody {
             // @ts-ignore
             this.invalid_input();
         }
+
         const [listitem, blankFinish] = this.list_item(match.result.index + match.result[0].length);
         this.parent!.add(listitem);
         this.blankFinish = blankFinish;
@@ -15,6 +17,7 @@ class BulletList extends SpecializedBody {
     }
 }
 
-BulletList.stateName = 'BulletList';
+BulletList.stateName = "BulletList";
+
 //BulletList.constructor.stateName = 'BulletList';
 export default BulletList;

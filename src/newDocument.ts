@@ -1,11 +1,14 @@
-import { document } from './nodes';
-import newReporter from './newReporter';
-import {Settings} from "../gen/Settings";
+/** @uuid 0d06b200-2a56-4490-890b-fbe9bd10dfd0
+*/
+import { document } from "./nodes";
+
+import newReporter from "./newReporter";
+import { Settings } from "../gen/Settings";
 import { Document } from "./types";
-import uuidv1 from 'uuid/v1';
+import uuidv1 from "uuid/v1";
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
-const __docformat__ = 'reStructuredText';
+const __docformat__ = "reStructuredText";
 
 /**
  *  Return a new empty document object.
@@ -27,16 +30,31 @@ const __docformat__ = 'reStructuredText';
  * @returns {module:nodes~document} New document
  * @see module:newDocument~newDocument
  */
-function newDocument(args: { sourcePath: string }, settings: Settings): Document{
-    const {sourcePath} = args;
-    const reporter = newReporter({ sourcePath }, settings);
-    const attrs: { source?: string }= {};
-    if (typeof sourcePath !== 'undefined') {
+function newDocument(
+    args: {
+        sourcePath: string
+    },
+    settings: Settings
+): Document {
+    const {
+        sourcePath
+    } = args;
+
+    const reporter = newReporter({
+        sourcePath
+    }, settings);
+
+    const attrs: {
+        source?: string
+    } = {};
+
+    if (typeof sourcePath !== "undefined") {
         attrs.source = sourcePath;
     }
 
     // eslint-disable-next-line new-cap
-    const myDocument = new document(settings, reporter, '', [], attrs);
+    const myDocument = new document(settings, reporter, "", [], attrs);
+
     myDocument.noteSource(sourcePath, -1);
     const id = uuidv1();
     myDocument.uuid = id;
@@ -44,5 +62,4 @@ function newDocument(args: { sourcePath: string }, settings: Settings): Document
 }
 
 export { newDocument };
-
 export default newDocument;

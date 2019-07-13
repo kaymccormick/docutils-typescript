@@ -1,4 +1,6 @@
-import SpecializedText from './SpecializedText';
+/** @uuid 77ba679b-73fa-4bee-a2da-5df047a1f110
+*/
+import SpecializedText from "./SpecializedText";
 
 class Definition extends SpecializedText {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
@@ -13,9 +15,11 @@ class Definition extends SpecializedText {
         const [itemNode, blankFinish] = this.definition_list_item(context);
         this.parent!.add(itemNode);
         this.blankFinish = blankFinish;
-        return [[], 'DefinitionList', []];
+        return [[], "DefinitionList", []];
     }
 }
-Definition.stateName = 'Definition';
+
+Definition.stateName = "Definition";
+
 //Definition.constructor.stateName = 'Definition';
 export default Definition;

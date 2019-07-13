@@ -1,21 +1,32 @@
-import TransformSpec from '../TransformSpec';
+/** @uuid 2018f61d-bcc2-43f0-8b9a-3a99d12ab61a
+*/
+import TransformSpec from "../TransformSpec";
 
 class Output<T> extends TransformSpec {
-    public componentType: string = 'output';
-    public supported: string[] = [];
-    protected defaultDestinationPath?: string;
-    private destinationPath?: string;
-    private encoding?: string;
-    public destination?: T;
-    private errorHandler: string;
-    public constructor(destination?: T, destinationPath?: string, encoding?: string, errorHandler?: string) {
+    componentType: string = "output";
+    supported: string[] = [];
+    defaultDestinationPath: string;
+    destinationPath: string;
+    encoding: string;
+    destination: T;
+    errorHandler: string;
+
+    public constructor(
+        destination?: T,
+        destinationPath?: string,
+        encoding?: string,
+        errorHandler?: string
+    ) {
         super();
-        if(encoding !== undefined) {
+
+        if (encoding !== undefined) {
             this.encoding = encoding;
         }
-        this.errorHandler = errorHandler || 'strict';
+
+        this.errorHandler = errorHandler || "strict";
         this.destination = destination;
         this.destinationPath = destinationPath;
+
         if (!destinationPath) {
             this.destinationPath = this.defaultDestinationPath;
         }
@@ -23,12 +34,11 @@ class Output<T> extends TransformSpec {
 
     /* istanbul ignore method */
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
-    public write(data: string): void {
-    }
+    public write(data: string): void {}
 
     /* istanbul ignore method */
     public encode(data: string): string {
-        return data; // fixme?
+        return data;// fixme?
     }
 
     /* istanbul ignore method */
@@ -36,7 +46,7 @@ class Output<T> extends TransformSpec {
         return `Output<${this.constructor.name}>`;
     }
 }
+
 //Output.componentType = 'Output';
 //Output.defaultDestinationPath = null;
-
 export default Output;

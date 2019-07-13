@@ -1,18 +1,25 @@
+/** @uuid 1986b10f-d579-420a-a26c-7bc5b5b9782d
+*/
 import { InvalidArgumentsError } from "../Exceptions";
+
 import UnknownTransitionError from "../error/UnknownTransitionError";
 import DuplicateTransitionError from "../error/DuplicateTransitionError";
+
 import {
     CreateStateMachineFunction,
     ReporterInterface,
     StateInterface,
-    Statemachine, StateMachineFactoryFunction,
+    Statemachine,
+    StateMachineFactoryFunction,
     TransitionFunction,
     Transitions,
-    TransitionsArray
+    TransitionsArray,
 } from "../types";
+
 import { StateMachine } from "../StateMachine";
 import { RSTStateArgs, Rststatemachine, StatemachineConstructor } from "../parsers/rst/types";
 import NestedStateMachine from "../parsers/rst/NestedStateMachine";
+
 /**
  * State superclass. Contains a list of transitions, and transition methods.
  *
@@ -52,64 +59,69 @@ import NestedStateMachine from "../parsers/rst/NestedStateMachine";
  * take care of constructing the list of transitions.
  */
 class State implements StateInterface {
-    public uuid?: string;
+    uuid: string;
+
     /**
-      * {Name: pattern} mapping, used by `make_transition()`. Each pattern may
-      * be a string or a compiled `re` pattern. Override in subclasses.
-     */
-    public patterns: {} = {};
+          * {Name: pattern} mapping, used by `make_transition()`. Each pattern may
+          * be a string or a compiled `re` pattern. Override in subclasses.
+         */
+    patterns: {} = {};
+
     /**
-     * A list of transitions to initialize when a `State` is instantiated.
-     * Each entry is either a transition name string, or a (transition name, next
-     * state name) pair. See `make_transitions()`. Override in subclasses.
-     */
-    protected initialTransitions?: (string | string[])[];
+         * A list of transitions to initialize when a `State` is instantiated.
+         * Each entry is either a transition name string, or a (transition name, next
+         * state name) pair. See `make_transitions()`. Override in subclasses.
+         */
+    initialTransitions: (string | string[])[];
 
     //protected nestedSm?: StatemachineConstructor<Statemachine> ;
     //protected nestedSmKwargs?: any;
+    createNestedStateMachine: StateMachineFactoryFunction<Statemachine>;
 
-    public createNestedStateMachine?: StateMachineFactoryFunction<Statemachine>
-    public createKnownIndentStateMachine?: StateMachineFactoryFunction<Statemachine>;
-    public createIndentStateMachine?: StateMachineFactoryFunction<Statemachine>;
+    createKnownIndentStateMachine: StateMachineFactoryFunction<Statemachine>;
+    createIndentStateMachine: StateMachineFactoryFunction<Statemachine>;
+
     //protected knownIndentSm: StatemachineConstructor<Statemachine> | undefined;
-    protected debug?: boolean;
+    debug: boolean;
+
     //protected knownIndentSmKwargs: any;
     //protected indentSmKwargs: any;
+    transitionOrder: string[] = [];
 
-    public transitionOrder: string[] = [];
-    public transitions: Transitions = { };
-    protected reporter?: ReporterInterface;
-    private stateMachine?: StateMachine;
+    transitions: Transitions = {};
+    reporter: ReporterInterface;
+    stateMachine: StateMachine;
 
     public constructor(stateMachine: StateMachine, debug: boolean = false) {
         this.stateMachine = stateMachine;
         this.debug = debug;
         this._init(stateMachine, debug);
-
         this.addInitialTransitions();
+
         /* istanbul ignore if */
         if (!stateMachine) {
-            throw new Error('Need state machine');
+            throw new Error("Need state machine");
         }
 
-        if(this.createNestedStateMachine === undefined) {
+        if (this.createNestedStateMachine === undefined) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.createNestedStateMachine = () => NestedStateMachine.createStateMachine(this.stateMachine!, undefined, this.stateMachine!.stateFactory!.withStateClasses(["QuotedLiteralBlock"]));
+            this.createNestedStateMachine = () => NestedStateMachine.createStateMachine(
+                this.stateMachine!,
+                undefined,
+                this.stateMachine!.stateFactory!.withStateClasses(["QuotedLiteralBlock"])
+            );
         }
-
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
     public _init(stateMachine: StateMachine, debug: boolean): void {
         /* empty */
         this.patterns = {};
-        this.initialTransitions = undefined;
-        //this.nestedSm = undefined;
+
+        this.initialTransitions = undefined;//this.nestedSm = undefined;
     }
 
-    public runtimeInit(): void {
-        /* empty */
-    }
+    public runtimeInit(): void {}
 
     public unlink(): void {
         this.stateMachine = undefined;
@@ -123,15 +135,18 @@ class State implements StateInterface {
     }
 
     public addTransitions(names: string[], transitions: Transitions): void {
-        names.forEach(((name) => {
+        names.forEach(name => {
             if (name in this.transitions) {
                 throw new DuplicateTransitionError(name);
             }
+
             if (!(name in transitions)) {
                 throw new UnknownTransitionError(name);
             }
-        }));
+        });
+
         this.transitionOrder.splice(0, 0, ...names);
+
         Object.keys(transitions).forEach((key: string): void => {
             this.transitions[key] = transitions[key];
         });
@@ -147,16 +162,18 @@ class State implements StateInterface {
         this.transitionOrder.splice(this.transitionOrder.indexOf(name), 1);
     }
 
-    public makeTransition(name: string, nextState?: any): [RegExp, TransitionFunction, string]  {
+    public makeTransition(name: string, nextState?: any): [RegExp, TransitionFunction, string] {
         if (name == null) {
-            throw new InvalidArgumentsError('need transition name');
+            throw new InvalidArgumentsError("need transition name");
         }
+
         if (nextState === undefined) {
             nextState = this.constructor.name;
         }
 
         // @ts-ignore
         let pattern = this.patterns[name];
+
         if (!(pattern instanceof RegExp)) {
             try {
                 pattern = new RegExp(`^${pattern}`);
@@ -164,8 +181,9 @@ class State implements StateInterface {
                 throw error;
             }
         }
+
         // @ts-ignore
-        if (typeof (this[name]) !== 'function') {
+        if (typeof this[name] !== "function") {
             throw new Error(`cant find method ${name} on ${this.constructor.name}`);
         }
 
@@ -175,9 +193,10 @@ class State implements StateInterface {
         return [pattern, method, nextState];
     }
 
-    public makeTransitions(nameList: (string|string[])[]): [string[], Transitions] {
+    public makeTransitions(nameList: (string | string[])[]): [string[], Transitions] {
         const names: string[] = [];
         const transitions: Transitions = {};
+
         /* istanbul ignore if */
         if (!Array.isArray(nameList)) {
             // console.log('warning, not an array');
@@ -188,8 +207,9 @@ class State implements StateInterface {
         nameList.forEach((namestate: any | any[]) => {
             if (namestate == null) {
                 /* istanbul ignore if */
-                throw new InvalidArgumentsError('nameList contains null');
+                throw new InvalidArgumentsError("nameList contains null");
             }
+
             if (!Array.isArray(namestate)) {
                 transitions[namestate.toString()] = this.makeTransition(namestate);
                 names.push(namestate);
@@ -203,7 +223,7 @@ class State implements StateInterface {
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars,@typescript-eslint/no-explicit-any */
-    public noMatch(context: any[], transitions: TransitionsArray|undefined): [{}[], (string | StateInterface | undefined), {}[]] {
+    public noMatch(context: any[], transitions: TransitionsArray | undefined): [{}[], (string | StateInterface | undefined), {}[]] {
         return [context, undefined, []];
     }
 
@@ -221,7 +241,7 @@ class State implements StateInterface {
         return [context, nextState, []];
     }
 
-    public stateName: string = '';
+    stateName: string = "";
 }
 
 export default State;

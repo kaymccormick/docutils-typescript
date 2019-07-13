@@ -1,41 +1,61 @@
-import Reporter from './Reporter';
-import { ApplicationError } from './Exceptions';
-import {DocutilsCoreOptionParser, Settings} from '../gen/Settings';
-import {defaults }from "../gen/defaults";
+/** @uuid 11996e91-9b9e-48ea-955d-f5ad362cbaa1
+*/
+import Reporter from "./Reporter";
+
+import { ApplicationError } from "./Exceptions";
+import { DocutilsCoreOptionParser, Settings } from "../gen/Settings";
+import { defaults } from "../gen/defaults";
 import { ReporterInterface } from "./types";
 
-export default function newReporter(labeled: { sourcePath: string }, settings: Settings): ReporterInterface {
-    const keys = ['reportLevel', 'haltLevel', //'warningStream',
-        'debug',
-        'errorEncoding', 'errorEncodingErrorHandler'];
+export default function newReporter(
+    labeled: {
+        sourcePath: string
+    },
+    settings: Settings
+): ReporterInterface {
+    const keys = ["reportLevel", //'warningStream',
+    "haltLevel", "debug", "errorEncoding", "errorEncodingErrorHandler"];
+
     const core: DocutilsCoreOptionParser = settings.docutilsCoreOptionParser || {};
-    if(typeof core !== 'undefined') {
-        if (typeof core.reportLevel === 'undefined') {
+
+    if (typeof core !== "undefined") {
+        if (typeof core.reportLevel === "undefined") {
             core.reportLevel = defaults.docutilsCoreOptionParser.reportLevel;
         }
-        if(typeof core.haltLevel === 'undefined') {
+
+        if (typeof core.haltLevel === "undefined") {
             core.haltLevel = defaults.docutilsCoreOptionParser.haltLevel;
         }
-        if(typeof core.debug === 'undefined') {
+
+        if (typeof core.debug === "undefined") {
             core.debug = defaults.docutilsCoreOptionParser.debug;
         }
-        if(typeof core.errorEncoding === 'undefined') {
-            core.errorEncoding = defaults.docutilsCoreOptionParser.errorEncoding;
 
+        if (typeof core.errorEncoding === "undefined") {
+            core.errorEncoding = defaults.docutilsCoreOptionParser.errorEncoding;
         }
-        if(typeof core.errorEncodingErrorHandler === 'undefined') {
+
+        if (typeof core.errorEncodingErrorHandler === "undefined") {
             core.errorEncodingErrorHandler = defaults.docutilsCoreOptionParser.errorEncodingErrorHandler;
         }
+    }
 
-    }
-    const missingKeys = keys.filter((key): boolean=> !Object.prototype.hasOwnProperty.call(core, key));
+    const missingKeys = keys.filter((key): boolean => !Object.prototype.hasOwnProperty.call(core, key));
+
     if (missingKeys.length) {
-        throw new ApplicationError(`Missing required keys from settings object to instantiate reporter. Missing keys ${missingKeys.map((key): string => `"${key}"`).join(', ')}.`);
+        throw new ApplicationError(
+            `Missing required keys from settings object to instantiate reporter. Missing keys ${missingKeys.map((key): string => `"${key}"`).join(", ")}.`
+        );
     }
+
     // @ts-ignore
-    return new Reporter(labeled.sourcePath, core.reportLevel,
+    return new Reporter(
+        labeled.sourcePath,
+        core.reportLevel,
         core.haltLevel,
-        core.warningStream, core.debug,
+        core.warningStream,
+        core.debug,
         core.errorEncoding,
-        core.errorEncodingErrorHandler);
+        core.errorEncodingErrorHandler
+    );
 }

@@ -1,48 +1,58 @@
+/** @uuid db846d8d-dab0-49af-b87b-bdb4f4cdf0b5
+*/
 import * as nodes from "../../nodes";
+
 import * as directives from "./directives";
 import { ReporterInterface } from "../../types";
 import { InlinerInterface } from "./types";
-
-const DEFAULT_INTERPRETED_ROLE = 'title-reference';
-
+const DEFAULT_INTERPRETED_ROLE = "title-reference";
 const roleRegistry: any = {};
 const roles: any = {};
 
-
 function setClasses(options: any) {
-  if ('class' in options) {
-    options.classes = options.class;
-    delete options.class;
-  }
+    if ("class" in options) {
+        options.classes = options.class;
+        delete options.class;
+    }
 }
 
 class GenericRole {
-    private name: string;
-
-    private nodeClass: any;
+    name: string;
+    nodeClass: any;
 
     constructor(roleName: string, nodeClass: any) {
-      this.name = roleName;
-      this.nodeClass = nodeClass;
+        this.name = roleName;
+        this.nodeClass = nodeClass;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
-    invoke(myRole: any, rawtext: any, text: any, lineno: number, inliner: InlinerInterface, options: any, content: any) {
-      const myOptions = options || {};
-      setClasses(myOptions);
-      return [[new this.nodeClass(rawtext, unescape(text), [], myOptions)], []];
+    invoke(
+        myRole: any,
+        rawtext: any,
+        text: any,
+        lineno: number,
+        inliner: InlinerInterface,
+        options: any,
+        content: any
+    ) {
+        const myOptions = options || {};
+        setClasses(myOptions);
+        return [[new this.nodeClass(rawtext, unescape(text), [], myOptions)], []];
     }
 }
+
 /**
  Add customization options to role functions, unless explicitly set or
  disabled.
  */
 function setImplicitOptions(roleFn: any) {
-  if (!Object.prototype.hasOwnProperty.call(roleFn, 'options') || roleFn.options == null) {
-    roleFn.options = { class: directives.class_option };
-  } else if (!('class' in roleFn.options)) {
-    roleFn.options.class = directives.class_option;
-  }
+    if (!Object.prototype.hasOwnProperty.call(roleFn, "options") || roleFn.options == null) {
+        roleFn.options = {
+            class: directives.class_option
+        };
+    } else if (!("class" in roleFn.options)) {
+        roleFn.options.class = directives.class_option;
+    }
 }
 
 /**
@@ -54,11 +64,11 @@ function setImplicitOptions(roleFn: any) {
       - `roleFn`: The role function.  See the module docstring.
     */
 function registerLocalRole(name: string, roleFn: any) {
-  setImplicitOptions(roleFn);
-  // @ts-ignore
-  roles[name] = roleFn;
-}
+    setImplicitOptions(roleFn);
 
+    // @ts-ignore
+    roles[name] = roleFn;
+}
 
 /**
  Locate and return a role function from its language-dependent name, along
@@ -66,63 +76,73 @@ function registerLocalRole(name: string, roleFn: any) {
  language, check English.  Return a 2-tuple: role function (``None`` if the
  named role cannot be found) and a list of system messages.
  */
-function roleInterface(roleName: string, languageModule: any, lineno: number, reporter: ReporterInterface) {
-  const normname = roleName.toLowerCase();
-  const messages: any[] = [];
-  const msgText: any[] = [];
+function roleInterface(
+    roleName: string,
+    languageModule: any,
+    lineno: number,
+    reporter: ReporterInterface
+) {
+    const normname = roleName.toLowerCase();
+    const messages: any[] = [];
+    const msgText: any[] = [];
 
-  if (normname in roles) {
-    // @ts-ignore
-    return [roles[normname], messages];
-  }
-
-  let canonicalname;
-  if (roleName) {
-    try {
-      canonicalname = languageModule.roles[normname];
-    } catch (error) {
-      throw error;
-      /*
-
-                    except AttributeError, error:
-                        msgText.append('Problem retrieving role entry from language '
-                                        'module %r: %s.' % (languageModule, error))
-                    except KeyError:
-                        msgText.append('No role entry for "%s" in module "%s".'
-                                        % (roleName, languageModule.__name__))
-            */
+    if (normname in roles) {
+        // @ts-ignore
+        return [roles[normname], messages];
     }
-  } else {
-    canonicalname = DEFAULT_INTERPRETED_ROLE;
-  }
 
-  // # If we didn't find it, try English as a fallback.
-  /*
-    if(! canonicalname) {
+    let canonicalname;
+
+    if (roleName) {
         try {
-            canonicalname = _fallback_languageModule.roles[normname]
-            msgText.append('Using English fallback for role "%s".'
-                            % roleName)
-        except KeyError:
-            msgText.append('Trying "%s" as canonical role name.'
-                            % roleName)
-            # The canonical name should be an English name, but just in case:
-            canonicalname = normname
-    */
-  // Collect any messages that we generated.
-  if (msgText.length) {
-    const message = reporter.info(msgText.join('\n'), [], { line: lineno });
-    messages.push(message);
-  }
+            canonicalname = languageModule.roles[normname];
+        } catch (error) {
+            throw error;/*
 
-  // # Look the role up in the registry, and return it.
-  if (canonicalname in roleRegistry) {
-    // @ts-ignore
-    const roleFn = roleRegistry[canonicalname];
-    registerLocalRole(normname, roleFn);
-    return [roleFn, messages];
-  }
-  return [undefined, messages]; // Error message will be generated by caller.
+                                except AttributeError, error:
+                                    msgText.append('Problem retrieving role entry from language '
+                                                    'module %r: %s.' % (languageModule, error))
+                                except KeyError:
+                                    msgText.append('No role entry for "%s" in module "%s".'
+                                                    % (roleName, languageModule.__name__))
+                        */
+        }
+    } else {
+        canonicalname = DEFAULT_INTERPRETED_ROLE;
+    }
+
+    // # If we didn't find it, try English as a fallback.
+    /*
+        if(! canonicalname) {
+            try {
+                canonicalname = _fallback_languageModule.roles[normname]
+                msgText.append('Using English fallback for role "%s".'
+                                % roleName)
+            except KeyError:
+                msgText.append('Trying "%s" as canonical role name.'
+                                % roleName)
+                # The canonical name should be an English name, but just in case:
+                canonicalname = normname
+        */
+    // Collect any messages that we generated.
+    if (msgText.length) {
+        const message = reporter.info(msgText.join("\n"), [], {
+            line: lineno
+        });
+
+        messages.push(message);
+    }
+
+    // # Look the role up in the registry, and return it.
+    if (canonicalname in roleRegistry) {
+        // @ts-ignore
+        const roleFn = roleRegistry[canonicalname];
+
+        registerLocalRole(normname, roleFn);
+        return [roleFn, messages];
+    }
+
+    return [undefined, messages];// Error message will be generated by caller.
 }
 
 /**
@@ -133,26 +153,23 @@ Register an interpreted text role by its canonical name.
   - `roleFn`: The role function.  See the module docstring.
 */
 function registerCanonicalRole(name: string, roleFn: any) {
-  setImplicitOptions(roleFn);
-  roleRegistry[name] = roleFn;
+    setImplicitOptions(roleFn);
+    roleRegistry[name] = roleFn;
 }
-
 
 /** For roles which simply wrap a given `node_class` around the text. */
 function registerGenericRole(canonicalName: string, nodeClass: any) {
-  const myRole = new GenericRole(canonicalName, nodeClass);
-  registerCanonicalRole(canonicalName, myRole);
+    const myRole = new GenericRole(canonicalName, nodeClass);
+    registerCanonicalRole(canonicalName, myRole);
 }
 
-registerGenericRole('abbreviation', nodes.abbreviation);
-registerGenericRole('acronym', nodes.acronym);
-registerGenericRole('emphasis', nodes.emphasis);
-registerGenericRole('literal', nodes.literal);
-registerGenericRole('strong', nodes.strong);
-registerGenericRole('subscript', nodes.subscript);
-registerGenericRole('superscript', nodes.superscript);
-registerGenericRole('title-reference', nodes.title_reference);
-
+registerGenericRole("abbreviation", nodes.abbreviation);
+registerGenericRole("acronym", nodes.acronym);
+registerGenericRole("emphasis", nodes.emphasis);
+registerGenericRole("literal", nodes.literal);
+registerGenericRole("strong", nodes.strong);
+registerGenericRole("subscript", nodes.subscript);
+registerGenericRole("superscript", nodes.superscript);
+registerGenericRole("title-reference", nodes.title_reference);
 export { setClasses };
-
 export default roleInterface;

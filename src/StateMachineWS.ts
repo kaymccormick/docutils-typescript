@@ -1,4 +1,7 @@
-import {StateMachine} from './StateMachine';
+/** @uuid ee073e25-199d-4568-ab56-e2f50fe345e2
+*/
+import { StateMachine } from "./StateMachine";
+
 import { Document, GetIndentedArgs, WhitespaceStatemachine } from "./types";
 import StringList from "./StringList";
 
@@ -10,78 +13,102 @@ interface GetFirstKnownIndentedArgs {
 }
 
 class StateMachineWS extends StateMachine implements WhitespaceStatemachine {
-    public document?: Document;
-
-    public matchTitles?: boolean;
+    document: Document;
+    matchTitles: boolean;
 
     public getIndented(labeled: GetIndentedArgs): [StringList, number, number, boolean] {
         /* istanbul ignore if */
-        const cArgs = {...labeled};
-        if (typeof labeled.stripIndent === 'undefined') {
+        const cArgs = {
+            ...labeled
+        };
+
+        if (typeof labeled.stripIndent === "undefined") {
             cArgs.stripIndent = true;
         }
+
         let offset = this.absLineOffset() || 0;
 
         const [indented, indent, blankFinish] = this.inputLines.getIndented({
             start: this.lineOffset,
             untilBlank: cArgs.untilBlank,
-            stripIndent: cArgs.stripIndent,
+            stripIndent: cArgs.stripIndent
         });
+
         if (indented) {
             this.nextLine(indented.length - 1);
         }
-        while (indented && indented.length && !(indented[0].trim())) {
+
+        while (indented && indented.length && !indented[0].trim()) {
             indented.trimStart();
             offset += 1;
         }
+
         return [indented, indent, offset, blankFinish];
     }
 
     public getKnownIndented(labeled: GetIndentedArgs): [StringList, number, boolean] {
-        const cArgs: GetIndentedArgs = {...labeled};
-        /* istanbul ignore if */
-        if (typeof cArgs.stripIndent === 'undefined') {
-            cArgs.stripIndent = true;
-        }
-        let offset = this.absLineOffset() || 0;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const [indented, indent, blankFinish] = this.inputLines.getIndented({
-            start: this.lineOffset,
-            untilBlank: cArgs.untilBlank, stripIndent: cArgs.stripIndent, blockIndent:
-            cArgs.indent,
-        });
-        this.nextLine(indented.length - 1);
-        while (indented.length && !(indented[0].trim())) {
-            indented.trimStart();
-            offset += 1;
-        }
-        return [indented, offset, blankFinish];
-    }
+        const cArgs: GetIndentedArgs = {
+            ...labeled
+        };
 
-    public getFirstKnownIndented(args: GetIndentedArgs):  [StringList, number, number, boolean] {
-        const cArgs: GetIndentedArgs = {...args};
         /* istanbul ignore if */
-        if (cArgs.stripIndent === undefined) {
+        if (typeof cArgs.stripIndent === "undefined") {
             cArgs.stripIndent = true;
         }
-        /* istanbul ignore if */
-        if (cArgs.stripTop === undefined) {
-            cArgs.stripTop = true;
-        }
+
         let offset = this.absLineOffset() || 0;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [indented, indent, blankFinish] = this.inputLines.getIndented({
             start: this.lineOffset,
             untilBlank: cArgs.untilBlank,
             stripIndent: cArgs.stripIndent,
-            firstIndent: cArgs.indent,
+            blockIndent: cArgs.indent
         });
+
         this.nextLine(indented.length - 1);
+
+        while (indented.length && !indented[0].trim()) {
+            indented.trimStart();
+            offset += 1;
+        }
+
+        return [indented, offset, blankFinish];
+    }
+
+    public getFirstKnownIndented(args: GetIndentedArgs): [StringList, number, number, boolean] {
+        const cArgs: GetIndentedArgs = {
+            ...args
+        };
+
+        /* istanbul ignore if */
+        if (cArgs.stripIndent === undefined) {
+            cArgs.stripIndent = true;
+        }
+
+        /* istanbul ignore if */
+        if (cArgs.stripTop === undefined) {
+            cArgs.stripTop = true;
+        }
+
+        let offset = this.absLineOffset() || 0;
+
+        const [indented, indent, blankFinish] = this.inputLines.getIndented({
+            start: this.lineOffset,
+            untilBlank: cArgs.untilBlank,
+            stripIndent: cArgs.stripIndent,
+            firstIndent: cArgs.indent
+        });
+
+        this.nextLine(indented.length - 1);
+
         if (cArgs.stripTop) {
-            while (indented.length && !(indented[0].trim())) {
+            while (indented.length && !indented[0].trim()) {
                 indented.trimStart();
                 offset += 1;
             }
         }
+
         return [indented, indent, offset, blankFinish];
     }
 }

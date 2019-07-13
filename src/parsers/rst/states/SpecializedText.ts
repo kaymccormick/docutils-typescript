@@ -1,11 +1,13 @@
-import Text from './Text';
-import { EOFError } from '../../../Exceptions';
+/** @uuid 39f93cec-e7cd-47da-8a74-2410e5a76f21
+*/
+import Text from "./Text";
+
+import { EOFError } from "../../../Exceptions";
 import State from "../../../states/State";
 import RSTStateMachine from "../RSTStateMachine";
-import {RSTStateArgs} from "../types";
+import { RSTStateArgs } from "../types";
 
 class SpecializedText extends Text {
-
     /* istanbul ignore next */
     // @ts-ignore
     blank() {
@@ -41,6 +43,7 @@ class SpecializedText extends Text {
     }
 }
 
-SpecializedText.stateName = 'SpecializedText';
+SpecializedText.stateName = "SpecializedText";
+
 //SpecializedText.constructor.stateName = 'SpecializedText';
 export default SpecializedText;

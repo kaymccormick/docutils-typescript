@@ -1,4 +1,7 @@
+/** @uuid 5964cbb3-7d0a-4ca5-9eab-6596259d5c98
+*/
 import Inliner from "./Inliner";
+
 import {
     ContextKind,
     Document,
@@ -9,19 +12,22 @@ import {
     Statemachine,
     StateMachineConstructorArgs,
     StateMachineFactoryFunction,
-    StateMachineRunArgs
+    StateMachineRunArgs,
 } from "../../types";
+
 import StringList from "../../StringList";
 import { Settings } from "../../../gen/Settings";
 
 interface Patterns {
     [patternName: string]: RegExp;
 }
+
 interface ConstructCallback {
     (match: RegExpMatchArray, ...rest: any[]): [NodeInterface[], boolean];
 }
-type ConstructKind = [ConstructCallback, RegExp]
-type ConstructsKind = ConstructKind[]
+
+type ConstructKind = [ConstructCallback, RegExp];
+type ConstructsKind = ConstructKind[];
 
 export interface Explicit {
     patterns: Patterns;
@@ -31,6 +37,7 @@ export interface Explicit {
 export interface RstStateMachineRunArgs extends StateMachineRunArgs {
     memo?: RstMemo;
 }
+
 export interface CommonParseArgs {
     inputLines?: StringList;
     inputOffset?: number;
@@ -54,7 +61,9 @@ export interface NestedParseArgs extends CommonParseArgs {
     initialState: string;
     blankFinish?: boolean;
     blankFinishState?: string;
-    extraSettings?: { [settingName: string]: string|{} };
+    extraSettings?: {
+        [settingName: string]: string | {}
+    };
 }
 
 export interface RstMemo {
@@ -67,12 +76,10 @@ export interface RstMemo {
     inliner: InlinerInterface;
 }
 
-
 export class DirectiveError extends Error {
     public constructor(readonly level: LogLevel, readonly message: any) {
         super(message);
     }
-
 }
 
 export interface DirectiveInterface {
@@ -82,18 +89,25 @@ export interface DirectiveInterface {
     error(message: any): DirectiveError;
     severe(message: any): DirectiveError;
 }
+
 export interface DirectivesInterface {
     [directiveName: string]: any;
-};
+}
 
 export interface RSTLanguage {
     directives: DirectivesInterface;
 }
+
 export interface InlinerInterface {
     initCustomizations(settings: Settings): void;
-
-    parse(text: string, args: { lineno: number; memo: any; parent: ElementInterface }): any[][];
-
+    parse(
+        text: string,
+        args: {
+            lineno: number,
+            memo: any,
+            parent: ElementInterface
+        }
+    ): any[][];
     adjustUri(uri: string): string;
 }
 
@@ -107,23 +121,28 @@ export interface StatemachineConstructor<T> {
 
 export interface Rststatemachine extends Statemachine {
     run(
-        inputLines: StringList|string|string[],
+        inputLines: StringList | string | string[],
         inputOffset?: number,
         runContext?: ContextKind,
         inputSource?: {},
         initialState?: string,
         document?: Document,
         matchTitles?: boolean,
-        inliner?: InlinerInterface, ...rest: any[]): (string|{})[];
+        inliner?: InlinerInterface,
+        ...rest: any[]
+    ): (string | {})[];
 }
 
 export interface Nestedstatemachine extends Statemachine {
-    run(inputLines: StringList | string | string[],
+    run(
+        inputLines: StringList | string | string[],
         inputOffset: number,
         runContext?: ContextKind,
         inputSource?: {},
         initialState?: string,
         node?: NodeInterface,
         matchTitles?: boolean,
-        memo?: RstMemo, ...rest: any[]): (string | {})[];
+        memo?: RstMemo,
+        ...rest: any[]
+    ): (string | {})[];
 }

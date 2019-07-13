@@ -1,7 +1,9 @@
-import Transform from '../Transform';
-import * as nodes from '../nodes';
+/** @uuid 6859e441-6688-4930-bdb1-12cb2a473964
+*/
+import Transform from "../Transform";
 
-export const __docformat__ = 'reStructuredText';
+import * as nodes from "../nodes";
+export const __docformat__ = "reStructuredText";
 
 /**
 Propagate empty internal targets to the next element.
@@ -24,14 +26,11 @@ Propagate empty internal targets to the next element.
             This is a test.
 */
 export class PropagateTargets extends Transform {
-
     public apply() {
         /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
-        this.document.traverse({ condition: nodes.target }).forEach((target) => {
-/*        if(target.parent instanceof nodes.TextElement ||
-        (target*/
-            // console.log(`target is ${target}`);
-        });
+        this.document.traverse({
+            condition: nodes.target
+        }).forEach(target => {});
     }
 }
 
@@ -58,22 +57,22 @@ PropagateTargets.defaultPriority = 260;
         <target anonymous="1" ids="id1">
         <target anonymous="1" ids="id2" refuri="http://external">
  */
-
 class AnonymousHyperlinks extends Transform {
     public apply() {
         const anonymousRefs = [];
         const anonymousTargets = [];
-        this.document.traverse({ condition: nodes.reference }).forEach((node) => {
+
+        this.document.traverse({
+            condition: nodes.reference
+        }).forEach(node => {
             if (node.attributes.anonymous) {
                 anonymousRefs.push(node);
             }
         });
     }
 }
-AnonymousHyperlinks.defaultPriority = 440;
 
-
-/*
+AnonymousHyperlinks.defaultPriority = 440;/*
 # $Id: references.py 8197 2017-11-04 10:31:01Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.

@@ -1,5 +1,16 @@
+/** @uuid 5ce6da8e-1107-4294-b124-14f70e7f191e
+*/
 import { document } from "./nodes";
-import { ComponentInterface, Components, Document, NodeInterface, TransformerInterface, TransformType } from "./types";
+
+import {
+    ComponentInterface,
+    Components,
+    Document,
+    NodeInterface,
+    TransformerInterface,
+    TransformType,
+} from "./types";
+
 import { ApplicationError } from "./Exceptions";
 
 function leftPad(num: number, len: number, pad: string): string {
@@ -15,20 +26,21 @@ interface ReferenceResolver {
  * Transformer class responsible for transforming document output
  */
 class Transformer implements TransformerInterface {
-    public transforms: {}[];
-    public unknownReferenceResolvers: ReferenceResolver[];
-    public document: Document;
-    // this.applied.push([priority, TransformClass, pending, kwargs]);
+    transforms: {}[];
+    unknownReferenceResolvers: ReferenceResolver[];
+    document: Document;
 
-    public applied: [number, {}, NodeInterface, {}][];
-    public sorted: number;
-    public components: Components;
-    public serialno: number;
+    // this.applied.push([priority, TransformClass, pending, kwargs]);
+    applied: [number, {}, NodeInterface, {}][];
+
+    sorted: number;
+    components: Components;
+    serialno: number;
 
     /**
-     * Create transformer class
-     * @param {nodes.myDoc} myDoc - document to transform
-     */
+         * Create transformer class
+         * @param {nodes.myDoc} myDoc - document to transform
+         */
     public constructor(myDoc: document) {
         this.transforms = [];
         this.unknownReferenceResolvers = [];
@@ -40,9 +52,9 @@ class Transformer implements TransformerInterface {
     }
 
     /**
-     * populateFromComponents
-     *
-     */
+         * populateFromComponents
+         *
+         */
     public populateFromComponents(...components: ComponentInterface[]): void {
         /* eslint-disable-next-line no-restricted-syntax */
         for (const component of components) {
@@ -50,54 +62,57 @@ class Transformer implements TransformerInterface {
                 /* eslint-disable-next-line no-continue */
                 continue;
             }
+
             //          console.log(`processing ${component.toString()} ${component.componentType}`);
             const transforms = component.getTransforms() || [];
+
             transforms.forEach((t): void => {
-                if (typeof t === 'undefined') {
+                if (typeof t === "undefined") {
                     throw new Error(`got invalid transform from ${component}`);
                 }
             });
 
-            if (transforms.filter((x): boolean => typeof x === 'undefined').length !== 0) {
+            if (transforms.filter((x): boolean => typeof x === "undefined").length !== 0) {
                 throw new Error(`got invalid transform from ${component}`);
             }
 
             this.addTransforms(transforms);
             this.components[component.componentType] = component;
         }
+
         this.sorted = 0;
         const urr: ReferenceResolver[] = [];
+
         /* eslint-disable-next-line no-restricted-syntax */
         for (const i of components) {
-            if (typeof i !== 'undefined') {
+            if (typeof i !== "undefined") {
                 //              console.log(`collecting unknownReferenceResolver from component ${i}`);
                 if (i.unknownReferenceResolvers) {
                     // @ts-ignore
                     urr.push(...i.unknownReferenceResolvers);
                 }
-            } else {
-                //              console.log('component is undefined. fixme');
-            }
+            } else
+                {}
         }
+
         /* eslint-disable-next-line no-restricted-syntax */
         for (const f of urr) {
-            if (typeof f === 'undefined') {
-                throw new ApplicationError('Unexpected undefined value in ist of unknown reference resolvers');
+            if (typeof f === "undefined") {
+                throw new ApplicationError("Unexpected undefined value in ist of unknown reference resolvers");
             }
         }
+
         const decoratedList = urr.map((f): [number, ReferenceResolver] => [f.priority, f]);
         decoratedList.sort();
         this.unknownReferenceResolvers.push(...decoratedList.map((f): ReferenceResolver => f[1]));
     }
 
     /**
-     * apply the transforms
-     */
+         * apply the transforms
+         */
     public applyTransforms(): void {
-        this.document.reporter.attachObserver(
-            this.document.noteTransformMessage
-                .bind(this.document),
-        );
+        this.document.reporter.attachObserver(this.document.noteTransformMessage.bind(this.document));
+
         while (this.transforms.length) {
             if (!this.sorted) {
                 this.transforms.sort((el1, el2): number => {
@@ -105,68 +120,76 @@ class Transformer implements TransformerInterface {
                     if (el1[0] < el2[0]) {
                         return -1;
                     }
+
                     // @ts-ignore
                     if (el1[0] > el2[0]) {
                         return 1;
                     }
+
                     return 0;
                 });
+
                 this.transforms.reverse();
                 this.sorted = 1;
             }
+
             const t = this.transforms.pop();
+
             //          console.log(t);
             // @ts-ignore
             const [priority, TransformClass, pending, kwargs] = t;
+
             try {
-                const transform = new TransformClass(this.document, {startnode: pending});
+                const transform = new TransformClass(this.document, {
+                    startnode: pending
+                });
+
                 transform.apply(kwargs);
             } catch (error) {
                 throw error;
             }
+
             this.applied.push([priority, TransformClass, pending, kwargs]);
         }
     }
 
     /**
-     * Store multiple transforms, with default priorities.
-     * @param {Array} transformList - Array of transform classes (not instances).
-     */
+         * Store multiple transforms, with default priorities.
+         * @param {Array} transformList - Array of transform classes (not instances).
+         */
     public addTransforms(transformList: TransformType[]): void {
         transformList.forEach((transformClass): void => {
             if (!transformClass) {
-                throw new Error('invalid argument');
+                throw new Error("invalid argument");
             }
-            const priorityString = this.getPriorityString(
-                transformClass, transformClass.defaultPriority);
+
+            const priorityString = this.getPriorityString(transformClass, transformClass.defaultPriority);
+
             //          console.log(`priority string is ${priorityString}`);
             //          console.log(`I have ${transformClass}`);
-            this.transforms.push(
-                [priorityString, transformClass, null, {}],
-            );
+            this.transforms.push([priorityString, transformClass, null, {}]);
+
             this.sorted = 0;
         });
     }
 
     /**
-     *
-     * Return a string, `priority` combined with `self.serialno`.
-     *
-     * This ensures FIFO order on transforms with identical priority.
-     */
+         *
+         * Return a string, `priority` combined with `self.serialno`.
+         *
+         * This ensures FIFO order on transforms with identical priority.
+         */
     public getPriorityString(class_: {}, priority: number): string {
-        if (typeof class_ === 'undefined') {
-            throw new Error('undefined');
+        if (typeof class_ === "undefined") {
+            throw new Error("undefined");
         }
 
         this.serialno += 1;
-        return `${leftPad(priority, 3, '0')}-${leftPad(this.serialno, 3, '0')}`;
+        return `${leftPad(priority, 3, "0")}-${leftPad(this.serialno, 3, "0")}`;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public addPending(pending: NodeInterface, priority: number): void {
-        // fixme implement
-    }
+    public addPending(pending: NodeInterface, priority: number): void {}
 }
 
 export default Transformer;

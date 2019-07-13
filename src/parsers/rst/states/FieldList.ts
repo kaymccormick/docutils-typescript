@@ -1,4 +1,6 @@
-import SpecializedBody from './SpecializedBody';
+/** @uuid 23a16779-9dc4-4c87-ac08-227ce9edc081
+*/
+import SpecializedBody from "./SpecializedBody";
 
 /** Second and subsequent field_list fields. */
 class FieldList extends SpecializedBody {
@@ -12,6 +14,8 @@ class FieldList extends SpecializedBody {
         return [[], nextState, []];
     }
 }
-FieldList.stateName = 'FieldList';
+
+FieldList.stateName = "FieldList";
+
 //FieldList.constructor.stateName = 'FieldList';
 export default FieldList;

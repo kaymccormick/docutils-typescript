@@ -1,17 +1,22 @@
+/** @uuid a894d025-cca4-4314-862a-66cc2f5c7a00
+*/
 import Component from "./Component";
+
 import { DebugFunction, Document, ParserArgs } from "./types";
 
-abstract class Parser extends Component {
+class Parser extends Component {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public debugFn: DebugFunction = (msg: string): void => {};
-    protected debug: boolean;
+    debugFn: DebugFunction = (msg: string): void => {};
+
+    debug: boolean;
 
     public constructor(args: ParserArgs = {}) {
         super();
-        this.componentType = 'parser';
-        this.configSection = 'parsers';
+        this.componentType = "parser";
+        this.configSection = "parsers";
         this.debug = args.debug || false;
-        if(args.debugFn !== undefined) {
+
+        if (args.debugFn !== undefined) {
             this.debugFn = args.debugFn;
         }
     }
@@ -19,11 +24,11 @@ abstract class Parser extends Component {
     /* istanbul ignore function */
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
     abstract parse(inputstring: string, document: Document): void;
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
-    public setupParse(inputstring: string, document: Document): void {
-    } ;
-    abstract finishParse(): void;
 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
+    public setupParse(inputstring: string, document: Document): void {}
+
+    abstract finishParse(): void;
 }
 
 export default Parser;

@@ -1,8 +1,13 @@
-import SpecializedBody from './SpecializedBody';
-import MarkupError from '../MarkupError';
+/** @uuid 1d995b71-f696-464e-bcee-21a2f71c336b
+*/
+import SpecializedBody from "./SpecializedBody";
+
+import MarkupError from "../MarkupError";
+
 /** Second and subsequent explicit markup construct. */
 class Explicit extends SpecializedBody {
-    private explicit: any;
+    explicit: any;
+
     /** Footnotes, hyperlink targets, directives, comments. */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
     // @ts-ignore
@@ -17,25 +22,34 @@ class Explicit extends SpecializedBody {
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
     public explicit_construct(match: any) {
         const errors = [];
+
         /* eslint-disable-next-line no-restricted-syntax */
         for (const [method, pattern] of this.explicit.constructs) {
             const expmatch = pattern.exec(match.result.input);
+
             if (expmatch) {
                 try {
                     const r = method(expmatch);
-//                  console.log(r);
+
+                    //                  console.log(r);
                     return r;
                 } catch (error) {
                     if (error instanceof MarkupError) {
                         const lineno = this.rstStateMachine.absLineNumber();
                         const message = error.message;
-                        errors.push(this.reporter!.warning(message, [], { line: lineno }));
+
+                        errors.push(this.reporter!.warning(message, [], {
+                            line: lineno
+                        }));
+
                         break;
                     }
+
                     throw error;
                 }
             }
         }
+
         const [nodelist, blankFinish] = this.comment(match);
         return [[...nodelist, ...errors], blankFinish];
     }
@@ -55,6 +69,8 @@ class Explicit extends SpecializedBody {
         this.invalid_input();
     };
 }
-Explicit.stateName = 'Explicit';
+
+Explicit.stateName = "Explicit";
+
 //Explicit.constructor.stateName = 'Explicit';
 export default Explicit;

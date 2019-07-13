@@ -1,16 +1,29 @@
-import Input from './io/Input';
-import Output from './io/Output';
+/** @uuid 2b0c8f26-be6e-45a6-951b-96c70f71f55b
+*/
+import Input from "./io/Input";
+
+import Output from "./io/Output";
 import { ReadInputCallback } from "./types";
 
 /** Direct string input. */
 export class StringInput extends Input {
+    public constructor(
+        source: string,
+        sourcePath?: string,
+        encoding?: string,
+        errorHandler?: string
+    ) {
+        super({
+            source,
+            sourcePath,
+            encoding,
+            errorHandler
+        });
 
-    public constructor(source: string, sourcePath?: string, encoding?: string, errorHandler?: string) {
-        super({source, sourcePath, encoding, errorHandler});
-        this.sourcePath = '<string>';
+        this.sourcePath = "<string>";
     }
 
-    public read(cb: ReadInputCallback<string|string[]|{}>): void {
+    public read(cb: ReadInputCallback<string | string[] | {}>): void {
         cb(undefined, this.source);
     }
 }
@@ -23,8 +36,7 @@ export class StringOutput extends Output<string> {
         errorHandler?: string
     ) {
         super(destination, destinationPath, encoding, errorHandler);
-        this.defaultDestinationPath = '<string>';
-
+        this.defaultDestinationPath = "<string>";
     }
 
     public write(data: string): string {
@@ -32,8 +44,8 @@ export class StringOutput extends Output<string> {
         if (Array.isArray(data)) {
             data = JSON.stringify(data);
         }
+
         this.destination = data;
         return this.destination;
     }
 }
-
