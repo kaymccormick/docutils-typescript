@@ -5,6 +5,9 @@
 */
 import { ApplicationError } from "./Exceptions";
 
+/*
+ * @uuid 0c1ab5b9-8189-48b8-b5bd-ede9315e38d9
+*/
 class ViewList extends Array {
     items: [string | undefined, number | undefined][];
     parentOffset: number;
@@ -125,11 +128,11 @@ class ViewList extends Array {
     public trimEnd(n = 1): void {
         /* Remove items from the end of the list, without touching the parent. */
         /*        if n > len(self.data):
-                    raise IndexError("Size of trim too large; can't trim %s items "
-                                     "from a list of size %s." % (n, len(self.data)))
-                elif n < 0:
-                    raise IndexError('Trim size must be >= 0.')
-        */
+                                    raise IndexError("Size of trim too large; can't trim %s items "
+                                                     "from a list of size %s." % (n, len(self.data)))
+                                elif n < 0:
+                                    raise IndexError('Trim size must be >= 0.')
+                        */
         for (let i = 0; i < n; i += 1) {
             this.pop();
             this.items.pop();

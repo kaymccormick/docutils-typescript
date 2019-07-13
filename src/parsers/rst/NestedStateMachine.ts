@@ -7,6 +7,9 @@ import { Nestedstatemachine, RSTLanguage, RstMemo } from "./types";
 import StringList from "../../StringList";
 import { InvalidStateError } from "../../Exceptions";
 
+/*
+ * @uuid f9a7cf1a-2da7-42f7-8a78-1ac97d72386a
+*/
 class NestedStateMachine extends StateMachineWS implements Nestedstatemachine {
     memo: RstMemo;
     rstLanguage: RSTLanguage | undefined;

@@ -1,5 +1,8 @@
 /** @uuid 58d8de68-8936-4dcb-9576-fa8851144c14
 */
+/*
+ * @uuid daf0f97d-846c-4ab0-a8d8-304f840a5a61
+*/
 class DuplicateStateError extends Error {
     state: string;
     message: string;
@@ -16,4 +19,7 @@ class DuplicateStateError extends Error {
     }
 }
 
+/*
+ * @uuid 58d8de68-8936-4dcb-9576-fa8851144c14
+*/
 export default DuplicateStateError;

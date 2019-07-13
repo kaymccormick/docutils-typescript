@@ -6,6 +6,9 @@ import { EOFError } from "../../../Exceptions";
 import RSTStateMachine from "../RSTStateMachine";
 import { RSTStateArgs } from "../types";
 
+/*
+ * @uuid 2f73fc21-252e-4f18-b37c-9be0e5f5494f
+*/
 class SpecializedBody extends Body {
     /* istanbul ignore next */
     // @ts-ignore

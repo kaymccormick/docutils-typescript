@@ -10,28 +10,30 @@ const __version__ = "";
 
 /**
  * Base class for all writers.
- */
+ 
+ * @uuid 7c403eae-30e5-4349-be6f-1b3918c58ff6
+*/
 export default class Writer extends Component {
     parts: WriterParts;
     document: Document;
     language: {};
 
     /**
-         * Final translated form of `document` (Unicode string for text, binary
-         * string for other forms); set by `translate`.
-         */
+                 * Final translated form of `document` (Unicode string for text, binary
+                 * string for other forms); set by `translate`.
+                 */
     output: string | {};
 
     /**
-         * `docutils.io` Output object; where to write the document.
-         * Set by `write`.
-         */
+                 * `docutils.io` Output object; where to write the document.
+                 * Set by `write`.
+                 */
     destination: Output<string>;
 
     /*
-         * @constructor
-         *
-         */
+                 * @constructor
+                 *
+                 */
     public constructor() {
         super();
         this.parts = {};

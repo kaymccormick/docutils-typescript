@@ -2,7 +2,9 @@
 */
 import SpecializedBody from "./SpecializedBody";
 
-/** Second and subsequent enumerated_list list_items. */
+/** Second and subsequent enumerated_list list_items. 
+ * @uuid b37a8395-86a2-43d6-bf67-309ba53a8f0e
+*/
 class EnumeratedList extends SpecializedBody {
     lastordinal: number = 0;
     auto: number;
@@ -14,8 +16,8 @@ class EnumeratedList extends SpecializedBody {
         /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
         const [format, sequence, text, ordinal] = this.parse_enumerator(match, this.parent!.attributes.enumtype);
 
-        if (format !== this.format || sequence !== "#" && (// fixme
-        sequence !== this.parent!.attributes.enumtype || this.auto || ordinal !== this.lastordinal + 1) || !this.is_enumerated_list_item(ordinal, sequence, format)) {
+        if (// fixme
+        format !== this.format || sequence !== "#" && (sequence !== this.parent!.attributes.enumtype || this.auto || ordinal !== this.lastordinal + 1) || !this.is_enumerated_list_item(ordinal, sequence, format)) {
             // # different enumeration: new list
             // @ts-ignore
             this.invalid_input();

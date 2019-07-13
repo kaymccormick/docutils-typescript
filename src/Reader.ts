@@ -26,6 +26,8 @@ interface HandleDocumentCallback {
     (error: Error | undefined | {}, document: Document | undefined): void;
 }
 
+/** @uuid 6e328f57-396a-45fa-b73d-83a9d65223fb
+*/
 export default class Reader extends Component {
     componentType: string = "reader";
     document: Document;
@@ -97,11 +99,11 @@ export default class Reader extends Component {
     }
 
     /**
-          * Magic read method::
-          *
-          *   test123
-          *
-          */
+                  * Magic read method::
+                  *
+                  *   test123
+                  *
+                  */
     public read(
         source: Input,
         parser: Parser,
@@ -146,7 +148,7 @@ export default class Reader extends Component {
     }
 
     /* Delegates to this.parser, providing arguments
-           based on instance variables */
+                   based on instance variables */
     public parse(): void {
         const input = Array.isArray(this.input) ? this.input.join("") : this.input;
 

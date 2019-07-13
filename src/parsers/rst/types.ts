@@ -76,6 +76,8 @@ export interface RstMemo {
     inliner: InlinerInterface;
 }
 
+/** @uuid 19dbe49c-09ad-4751-a378-57adc4e0fdf5
+*/
 export class DirectiveError extends Error {
     public constructor(readonly level: LogLevel, readonly message: any) {
         super(message);

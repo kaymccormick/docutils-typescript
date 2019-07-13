@@ -5,6 +5,9 @@ import FieldList from "./FieldList";
 import * as nodes from "../../../nodes";
 import { NodeInterface } from "../../../types";
 
+/*
+ * @uuid 8a7db806-c36e-471c-aab8-28719118eef7
+*/
 class ExtensionOptions extends FieldList {
     /* Parse field_list fields for extension options. */
     /* No nested parsing is done (including inline markup parsing). */

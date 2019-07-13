@@ -128,17 +128,17 @@ function directive(directiveName: string, document: Document, languageModule?: R
 /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
 function class_option(argument: any) {
     /*
-        if argument is None:
-            raise ValueError('argument required but none supplied')
-        names = argument.split()
-        class_names = []
-        for name in names:
-            class_name = nodes.make_id(name)
-            if not class_name:
-                raise ValueError('cannot make "%s" into a class name' % name)
-            class_names.append(class_name)
-        return class_names
-        */
+                if argument is None:
+                    raise ValueError('argument required but none supplied')
+                names = argument.split()
+                class_names = []
+                for name in names:
+                    class_name = nodes.make_id(name)
+                    if not class_name:
+                        raise ValueError('cannot make "%s" into a class name' % name)
+                    class_names.append(class_name)
+                return class_names
+                */
     return [];
 }
 

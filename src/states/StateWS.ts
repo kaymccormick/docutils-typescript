@@ -30,43 +30,45 @@ import {
  * respectively) is known to the transition method, along with the attributes
  * `known_indent_sm` and `known_indent_sm_kwargs`.  Neither transition method
  * is triggered automatically.
- **/
+ *
+ * @uuid 252c7ebc-8168-4836-9175-d9775bc527d3
+*/
 class StateWS extends State {
     /**
-         * The `StateMachine` class handling indented text blocks.
-         *
-         * If left as ``None``, `indent_sm` defaults to the value of
-         * `State.nested_sm`.  Override it in subclasses to avoid the default.
-         */
+                 * The `StateMachine` class handling indented text blocks.
+                 *
+                 * If left as ``None``, `indent_sm` defaults to the value of
+                 * `State.nested_sm`.  Override it in subclasses to avoid the default.
+                 */
     //public indentSm: StatemachineConstructor<Statemachine> | undefined;
     /**
-         *  Keyword arguments dictionary, passed to the `indent_sm` constructor.
-         *
-         * If left as ``None``, `indent_sm_kwargs` defaults to the value of
-         * `State.nested_sm_kwargs`. Override it in subclasses to avoid the default.
-         **/
+                 *  Keyword arguments dictionary, passed to the `indent_sm` constructor.
+                 *
+                 * If left as ``None``, `indent_sm_kwargs` defaults to the value of
+                 * `State.nested_sm_kwargs`. Override it in subclasses to avoid the default.
+                 **/
     //public indentSmKwArgs: {} | undefined;
     /**
-         *    The `StateMachine` class handling known-indented text blocks.
-         *
-         * If left as ``None``, `known_indent_sm` defaults to the value of
-         * `indent_sm`.  Override it in subclasses to avoid the default.
-         */
+                 *    The `StateMachine` class handling known-indented text blocks.
+                 *
+                 * If left as ``None``, `known_indent_sm` defaults to the value of
+                 * `indent_sm`.  Override it in subclasses to avoid the default.
+                 */
     //public knownIndentSm: StatemachineConstructor<Statemachine> | undefined;
     /**
-         * Keyword arguments dictionary, passed to the `known_indent_sm` constructor.
-         *
-         * If left as ``None``, `known_indent_sm_kwargs` defaults to the value of
-         * `indent_sm_kwargs`. Override it in subclasses to avoid the default.
-         */
+                 * Keyword arguments dictionary, passed to the `known_indent_sm` constructor.
+                 *
+                 * If left as ``None``, `known_indent_sm_kwargs` defaults to the value of
+                 * `indent_sm_kwargs`. Override it in subclasses to avoid the default.
+                 */
     //public knownIndentSmKwargs: StateMachineConstructorArgs | undefined;
     /** Patterns for default whitespace transitions.  May be overridden in subclasses. */
     wsPatterns: any;
 
     /**
-         * Default initial whitespace transitions, added before those listed in
-         * `State.initial_transitions`.  May be overridden in subclasses.
-         */
+                 * Default initial whitespace transitions, added before those listed in
+                 * `State.initial_transitions`.  May be overridden in subclasses.
+                 */
     wsInitialTransitions: string[] | undefined;
 
     //protected nestedSm: StatemachineConstructor<Statemachine> | undefined;
@@ -79,25 +81,25 @@ class StateWS extends State {
         super(stateMachine, debug);
 
         this.wsStateMachine = stateMachine;/* istanbul ignore else *//*
-                if (!this.indentSm) {
-                    this.indentSm = this.nestedSm;
-                }*//* istanbul ignore else *//*if (!this.indentSmKwargs) {
-                    this.indentSmKwargs = this.nestedSmKwargs;
-                }*//* istanbul ignore else *//*if (!this.knownIndentSm) {
-                    this.knownIndentSm = this.indentSm;
-                }*//* istanbul ignore else *//*if (!this.knownIndentSmKwargs) {
-                    this.knownIndentSmKwargs = this.indentSmKwargs;
-                }*/
+                                if (!this.indentSm) {
+                                    this.indentSm = this.nestedSm;
+                                }*//* istanbul ignore else *//*if (!this.indentSmKwargs) {
+                                    this.indentSmKwargs = this.nestedSmKwargs;
+                                }*//* istanbul ignore else *//*if (!this.knownIndentSm) {
+                                    this.knownIndentSm = this.indentSm;
+                                }*//* istanbul ignore else *//*if (!this.knownIndentSmKwargs) {
+                                    this.knownIndentSmKwargs = this.indentSmKwargs;
+                                }*/
     }
 
     public _init(stateMachine: any, args: any) {
         super._init(stateMachine, args);
 
         /*this.indentSm = undefined;
-                this.indentSmKwargs = null;
-                this.knownIndentSm = undefined;
-                this.knownIndentSmKwargs = undefined;
-                */
+                                this.indentSmKwargs = null;
+                                this.knownIndentSm = undefined;
+                                this.knownIndentSmKwargs = undefined;
+                                */
         this.wsPatterns = {
             blank: " *$",
             indent: " +"
@@ -154,14 +156,14 @@ class StateWS extends State {
     }
 
     /**
-         * Handle an indented text block (first line's indent known).
-         *
-         * Extend or override in subclasses.
-         *
-         * Recursively run the registered state machine for known-indent indented
-         * blocks (`self.known_indent_sm`). The indent is the length of the
-         * match, ``match.end()``.
-         */
+                 * Handle an indented text block (first line's indent known).
+                 *
+                 * Extend or override in subclasses.
+                 *
+                 * Recursively run the registered state machine for known-indent indented
+                 * blocks (`self.known_indent_sm`). The indent is the length of the
+                 * match, ``match.end()``.
+                 */
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
     public firstKnownIndent(match: any, context: any[], nextState: any) {
         /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */

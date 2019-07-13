@@ -5,6 +5,9 @@ import * as RSTStates from "./RSTStates";
 import { Statefactory, StateInterface, Statemachine, StateType } from "../../types";
 import uuidv1 from "uuid/v1";
 
+/*
+ * @uuid 3f466817-f78a-4a12-afd0-855a1f7b9d73
+*/
 class StateFactory implements Statefactory {
     stateClasses: StateType[] = [];
     args: any | undefined;

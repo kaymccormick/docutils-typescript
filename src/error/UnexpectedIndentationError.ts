@@ -2,6 +2,8 @@
 */
 import StringList from "../StringList";
 
+/** @uuid 21b42b90-a549-42d5-a13e-b40053e9c853
+*/
 export default class UnexpectedIndentationError extends Error {
     block: StringList;
     source: string | undefined;

@@ -12,6 +12,9 @@ interface GetFirstKnownIndentedArgs {
     stripTop?: boolean;
 }
 
+/*
+ * @uuid ce74aceb-9b7a-423a-aa50-07fcae6a3b15
+*/
 class StateMachineWS extends StateMachine implements WhitespaceStatemachine {
     document: Document;
     matchTitles: boolean;

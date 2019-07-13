@@ -9,6 +9,9 @@ import { Document, ParserArgs } from "../types";
 import { InlinerInterface } from "./rst/types";
 import { InvalidStateError } from "../Exceptions";
 
+/*
+ * @uuid 69b4a3d2-65cb-4423-84bb-6bc447bf3431
+*/
 class Parser extends BaseParser {
     inliner: InlinerInterface;
     initialState: string;

@@ -4,6 +4,8 @@ import { getLanguage } from "./languages";
 
 import { CoreLanguage, Document, NodeInterface, TransformInterface } from "./types";
 
+/** @uuid 47c0e53e-173a-441e-b894-8ae9ee3867dd
+*/
 export default class Transform implements TransformInterface {
     document: Document;
     startNode: NodeInterface;

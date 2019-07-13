@@ -13,8 +13,8 @@ export default function newReporter(
     },
     settings: Settings
 ): ReporterInterface {
-    const keys = ["reportLevel", //'warningStream',
-    "haltLevel", "debug", "errorEncoding", "errorEncodingErrorHandler"];
+    const keys = [//'warningStream',
+    "reportLevel", "haltLevel", "debug", "errorEncoding", "errorEncodingErrorHandler"];
 
     const core: DocutilsCoreOptionParser = settings.docutilsCoreOptionParser || {};
 

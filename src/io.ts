@@ -5,7 +5,9 @@ import Input from "./io/Input";
 import Output from "./io/Output";
 import { ReadInputCallback } from "./types";
 
-/** Direct string input. */
+/** Direct string input. 
+ * @uuid ae2c2dd1-3766-4ae6-a68c-a3a4a0b71cb3
+*/
 export class StringInput extends Input {
     public constructor(
         source: string,
@@ -28,6 +30,8 @@ export class StringInput extends Input {
     }
 }
 
+/** @uuid 11de15d8-c529-4ddd-830c-6254641c53dd
+*/
 export class StringOutput extends Output<string> {
     public constructor(
         destination?: string,

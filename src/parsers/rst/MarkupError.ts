@@ -2,4 +2,6 @@
 */
 import { DataError } from "../../Exceptions";
 
+/** @uuid c2c68d06-3ca2-4d27-b219-ee638eb5b05b
+*/
 export default class MarkupError extends DataError {}

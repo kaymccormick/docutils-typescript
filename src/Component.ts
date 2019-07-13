@@ -8,7 +8,9 @@ const __docformat__ = "reStructuredText";
 /**
  * Base class for docutils components.
  * @extends TransformSpec
- */
+ 
+ * @uuid a3d83bd3-67ad-4af3-8167-34d049f1c67c
+*/
 class Component extends TransformSpec {
     supported: string[] = [];
     componentType: string = "random";

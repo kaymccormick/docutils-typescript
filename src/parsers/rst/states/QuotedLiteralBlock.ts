@@ -13,7 +13,9 @@ import { RSTStateArgs } from "../types";
  *  Nested parse handler for quoted (unindented) literal blocks.
  *
  * Special-purpose.  Not for inclusion in `state_classes`.
- */
+ 
+ * @uuid 9ee79f8c-da86-4185-8533-29a863cabf55
+*/
 class QuotedLiteralBlock extends RSTState {
     initial_lineno: number;
 

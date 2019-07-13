@@ -4,6 +4,9 @@ import TransformSpec from "../TransformSpec";
 
 import { ReadCallback, ReadInputCallback } from "../types";
 
+/*
+ * @uuid 84bae676-c673-41e6-ab8a-b5b026a3ea16
+*/
 class Input extends TransformSpec {
     componentType: string = "input";
     supported: string[] = [];

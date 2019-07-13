@@ -24,7 +24,9 @@ interface ReferenceResolver {
 
 /**
  * Transformer class responsible for transforming document output
- */
+ 
+ * @uuid 98e4d169-d94a-4d23-8a4b-e8dba03963b4
+*/
 class Transformer implements TransformerInterface {
     transforms: {}[];
     unknownReferenceResolvers: ReferenceResolver[];
@@ -38,9 +40,9 @@ class Transformer implements TransformerInterface {
     serialno: number;
 
     /**
-         * Create transformer class
-         * @param {nodes.myDoc} myDoc - document to transform
-         */
+                 * Create transformer class
+                 * @param {nodes.myDoc} myDoc - document to transform
+                 */
     public constructor(myDoc: document) {
         this.transforms = [];
         this.unknownReferenceResolvers = [];
@@ -52,9 +54,9 @@ class Transformer implements TransformerInterface {
     }
 
     /**
-         * populateFromComponents
-         *
-         */
+                 * populateFromComponents
+                 *
+                 */
     public populateFromComponents(...components: ComponentInterface[]): void {
         /* eslint-disable-next-line no-restricted-syntax */
         for (const component of components) {
@@ -108,8 +110,8 @@ class Transformer implements TransformerInterface {
     }
 
     /**
-         * apply the transforms
-         */
+                 * apply the transforms
+                 */
     public applyTransforms(): void {
         this.document.reporter.attachObserver(this.document.noteTransformMessage.bind(this.document));
 
@@ -154,9 +156,9 @@ class Transformer implements TransformerInterface {
     }
 
     /**
-         * Store multiple transforms, with default priorities.
-         * @param {Array} transformList - Array of transform classes (not instances).
-         */
+                 * Store multiple transforms, with default priorities.
+                 * @param {Array} transformList - Array of transform classes (not instances).
+                 */
     public addTransforms(transformList: TransformType[]): void {
         transformList.forEach((transformClass): void => {
             if (!transformClass) {
@@ -174,11 +176,11 @@ class Transformer implements TransformerInterface {
     }
 
     /**
-         *
-         * Return a string, `priority` combined with `self.serialno`.
-         *
-         * This ensures FIFO order on transforms with identical priority.
-         */
+                 *
+                 * Return a string, `priority` combined with `self.serialno`.
+                 *
+                 * This ensures FIFO order on transforms with identical priority.
+                 */
     public getPriorityString(class_: {}, priority: number): string {
         if (typeof class_ === "undefined") {
             throw new Error("undefined");

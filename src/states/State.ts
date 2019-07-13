@@ -57,21 +57,23 @@ import NestedStateMachine from "../parsers/rst/NestedStateMachine";
  * `patterns` and `initial_transitions` class attributes, and provide
  * corresponding transition methods. The default object initialization will
  * take care of constructing the list of transitions.
- */
+ 
+ * @uuid e27beaec-93fa-4688-84c1-b87c7d2f021f
+*/
 class State implements StateInterface {
     uuid: string;
 
     /**
-          * {Name: pattern} mapping, used by `make_transition()`. Each pattern may
-          * be a string or a compiled `re` pattern. Override in subclasses.
-         */
+                  * {Name: pattern} mapping, used by `make_transition()`. Each pattern may
+                  * be a string or a compiled `re` pattern. Override in subclasses.
+                 */
     patterns: {} = {};
 
     /**
-         * A list of transitions to initialize when a `State` is instantiated.
-         * Each entry is either a transition name string, or a (transition name, next
-         * state name) pair. See `make_transitions()`. Override in subclasses.
-         */
+                 * A list of transitions to initialize when a `State` is instantiated.
+                 * Each entry is either a transition name string, or a (transition name, next
+                 * state name) pair. See `make_transitions()`. Override in subclasses.
+                 */
     initialTransitions: (string | string[])[];
 
     //protected nestedSm?: StatemachineConstructor<Statemachine> ;

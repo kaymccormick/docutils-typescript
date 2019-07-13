@@ -13,14 +13,16 @@ const __docformat__ = "reStructuredText";
  * Runtime transform specification base class.
  *
  * TransformSpec subclass objects used by `docutils.transforms.Transformer`.
- */
+ 
+ * @uuid 811d6750-b7b9-4bd4-8779-fd54d6166545
+*/
 class TransformSpec extends SettingsSpec {
     unknownReferenceResolvers: {}[] = [];
 
     /**
-         * Get the transforms associated with the instance.
-         * @returns {Array} array of Transform classes (not instances)
-         */
+                 * Get the transforms associated with the instance.
+                 * @returns {Array} array of Transform classes (not instances)
+                 */
     // eslint-disable-next-line class-methods-use-this
     public getTransforms(): TransformType[] {
         return [];

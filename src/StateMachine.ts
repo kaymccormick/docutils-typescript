@@ -34,14 +34,27 @@ import TransitionCorrection from "./TransitionCorrection";
 import UnexpectedIndentationError from "./error/UnexpectedIndentationError";
 import { name } from "ejs";
 import RSTStateMachine from "./parsers/rst/RSTStateMachine";
+
+/** @uuid 9e93d265-645e-48c0-8a05-6554eb3c016a
+*/
 export class StateMachineError extends Error {}
+
+/** @uuid eaf950af-d3a7-4e45-8e9a-3ff0d333213e
+*/
 export class UnknownStateError extends StateMachineError {}
+
+/** @uuid 31daa203-b20b-42c6-917c-a669b7f687ac
+*/
 export class DuplicateStateError extends StateMachineError {}
 
 //export class UnknownTransitionError extends StateMachineError { }
+ * @uuid 4631436a-5be4-4c6c-aa78-271e5f2c37a8
+
 //export class DuplicateTransitionError extends StateMachineError { }
 export class TransitionPatternNotFound extends StateMachineError {}
 
+/** @uuid f257ee12-e49b-486e-9be9-72e5fb5f853b
+*/
 export class TransitionMethodNotFound extends StateMachineError {}
 
 //export class UnexpectedIndentationError extends StateMachineError { }
@@ -79,14 +92,14 @@ class StateMachine implements Statemachine {
     debug: boolean;
 
     /*
-         * Initialize a `StateMachine` object; add state objects.
-         *
-         * Parameters:
-         *
-         *  - `stateClasses`: a list of `State` (sub)classes.
-         *  - `initialState`: a string, the class name of the initial state.
-         *  - `debug`: a boolean; produce verbose output if true (nonzero).
-         **/
+             * Initialize a `StateMachine` object; add state objects.
+             *
+             * Parameters:
+             *
+             *  - `stateClasses`: a list of `State` (sub)classes.
+             *  - `initialState`: a string, the class name of the initial state.
+             *  - `debug`: a boolean; produce verbose output if true (nonzero).
+             **/
     stateFactory: Statefactory;
 
     lineOffset: number = -1;
@@ -108,7 +121,7 @@ class StateMachine implements Statemachine {
         };
 
         /* Initialize instance junk that we can't do except through
-                   this method. */
+                           this method. */
         this._init();
 
         if (!cArgs.debug) {
@@ -179,26 +192,26 @@ class StateMachine implements Statemachine {
     }
 
     /**
-         * Run the state machine on `input_lines`. Return results (a list).
-         *
-         * Reset `self.line_offset` and `self.current_state`. Run the
-         * beginning-of-file transition. Input one line at a time and check for a
-         * matching transition. If a match is found, call the transition method
-         * and possibly change the state. Store the context returned by the
-         * transition method to be passed on to the next transition matched.
-         * Accumulate the results returned by the transition methods in a list.
-         * Run the end-of-file transition. Finally, return the accumulated
-         * results.
-         *
-         * Parameters:
-         *
-         * - `input_lines`: a list of strings without newlines, or `StringList`.
-         * - `input_offset`: the line offset of `input_lines` from the beginning
-         *   of the file.
-         * - `context`: application-specific storage.
-         * - `input_source`: name or path of source of `input_lines`.
-         * - `initial_state`: name of initial state.
-         */
+             * Run the state machine on `input_lines`. Return results (a list).
+             *
+             * Reset `self.line_offset` and `self.current_state`. Run the
+             * beginning-of-file transition. Input one line at a time and check for a
+             * matching transition. If a match is found, call the transition method
+             * and possibly change the state. Store the context returned by the
+             * transition method to be passed on to the next transition matched.
+             * Accumulate the results returned by the transition methods in a list.
+             * Run the end-of-file transition. Finally, return the accumulated
+             * results.
+             *
+             * Parameters:
+             *
+             * - `input_lines`: a list of strings without newlines, or `StringList`.
+             * - `input_offset`: the line offset of `input_lines` from the beginning
+             *   of the file.
+             * - `context`: application-specific storage.
+             * - `input_source`: name or path of source of `input_lines`.
+             * - `initial_state`: name of initial state.
+             */
     public run(
         inputLines: StringList | string | string[],
         inputOffset: number,
@@ -367,11 +380,11 @@ class StateMachine implements Statemachine {
     }
 
     /**
-         * Return current state object; set it first if
-         * `next_state` given.  Parameter `next_state`: a string,
-         * the name of the next state.  Exception:
-         * `UnknownStateError` raised if `next_state` unknown.
-         */
+             * Return current state object; set it first if
+             * `next_state` given.  Parameter `next_state`: a string,
+             * the name of the next state.  Exception:
+             * `UnknownStateError` raised if `next_state` unknown.
+             */
     public getState(nextState?: string): StateInterface {
         if (nextState) {
             if (this.debug && nextState !== this.currentState) {
@@ -512,24 +525,24 @@ class StateMachine implements Statemachine {
     }
 
     /*
-         * Examine one line of input for a transition match & execute its method.
-         *
-         * Parameters:
-         *
-         * - `context`: application-dependent storage.
-         * - `state`: a `State` object, the current state.
-         * - `transitions`: an optional ordered list of transition names to try,
-         *   instead of ``state.transition_order``.
-         *
-         * Return the values returned by the transition method:
-         *
-         * - context: possibly modified from the parameter `context`;
-         * - next state name (`State` subclass name);
-         * - the result output of the transition, a list.
-         *
-         * When there is no match, ``state.no_match()`` is called and its return
-         * value is returned.
-         */
+             * Examine one line of input for a transition match & execute its method.
+             *
+             * Parameters:
+             *
+             * - `context`: application-dependent storage.
+             * - `state`: a `State` object, the current state.
+             * - `transitions`: an optional ordered list of transition names to try,
+             *   instead of ``state.transition_order``.
+             *
+             * Return the values returned by the transition method:
+             *
+             * - context: possibly modified from the parameter `context`;
+             * - next state name (`State` subclass name);
+             * - the result output of the transition, a list.
+             *
+             * When there is no match, ``state.no_match()`` is called and its return
+             * value is returned.
+             */
     public checkLine(context: {}[], state: StateInterface, transitions?: TransitionsArray): [{}[], (string | StateInterface | undefined), {}[]] {
         /* istanbul ignore if */
         if (!Array.isArray(context)) {

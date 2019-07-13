@@ -2,6 +2,9 @@
 */
 import TransformSpec from "../TransformSpec";
 
+/*
+ * @uuid c2feb3a9-517a-473b-826d-de9854a332fe
+*/
 class Output<T> extends TransformSpec {
     componentType: string = "output";
     supported: string[] = [];

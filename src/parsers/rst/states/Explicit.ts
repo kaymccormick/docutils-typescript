@@ -4,7 +4,9 @@ import SpecializedBody from "./SpecializedBody";
 
 import MarkupError from "../MarkupError";
 
-/** Second and subsequent explicit markup construct. */
+/** Second and subsequent explicit markup construct. 
+ * @uuid e45198fb-b7cb-40da-bfd0-b698886c88d7
+*/
 class Explicit extends SpecializedBody {
     explicit: any;
 

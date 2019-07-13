@@ -25,21 +25,21 @@ function getTransforms(): TransformType[] {
     ];
 
     return r;/*
-            return readers.StandaloneReader.get_transforms(self) + [
-                references.Substitutions,
-                references.PropagateTargets,
-                frontmatter.DocTitle,
-                frontmatter.SectionSubTitle,
-                frontmatter.DocInfo,
-                references.AnonymousHyperlinks,
-                references.IndirectHyperlinks,
-                references.Footnotes,
-                references.ExternalTargets,
-                references.InternalTargets,
-                references.DanglingReferences,
-                misc.Transitions,
-                ]
-    */
+                    return readers.StandaloneReader.get_transforms(self) + [
+                        references.Substitutions,
+                        references.PropagateTargets,
+                        frontmatter.DocTitle,
+                        frontmatter.SectionSubTitle,
+                        frontmatter.DocInfo,
+                        references.AnonymousHyperlinks,
+                        references.IndirectHyperlinks,
+                        references.Footnotes,
+                        references.ExternalTargets,
+                        references.InternalTargets,
+                        references.DanglingReferences,
+                        misc.Transitions,
+                        ]
+            */
 }
 
 export { supported, transforms, getTransforms };

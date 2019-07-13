@@ -16,6 +16,8 @@ import * as frontmatter from "../transforms/frontmatter";
 */
 export const __docformat__ = "reStructuredText";
 
+/** @uuid 2c4c834a-afe6-4cd9-b391-8ced4bcf7f63
+*/
 export default class StandaloneReader extends BaseReader {
     public constructor(args: any) {
         super(args);
@@ -43,21 +45,21 @@ export default class StandaloneReader extends BaseReader {
 
         return r;
     }/*
-            return readers.StandaloneReader.get_transforms(self) + [
-                references.Substitutions,
-                references.PropagateTargets,
-                frontmatter.DocTitle,
-                frontmatter.SectionSubTitle,
-                frontmatter.DocInfo,
-                references.AnonymousHyperlinks,
-                references.IndirectHyperlinks,
-                references.Footnotes,
-                references.ExternalTargets,
-                references.InternalTargets,
-                references.DanglingReferences,
-                misc.Transitions,
-                ]
-    */
+                    return readers.StandaloneReader.get_transforms(self) + [
+                        references.Substitutions,
+                        references.PropagateTargets,
+                        frontmatter.DocTitle,
+                        frontmatter.SectionSubTitle,
+                        frontmatter.DocInfo,
+                        references.AnonymousHyperlinks,
+                        references.IndirectHyperlinks,
+                        references.Footnotes,
+                        references.ExternalTargets,
+                        references.InternalTargets,
+                        references.DanglingReferences,
+                        misc.Transitions,
+                        ]
+            */
 }
 
 export { StandaloneReader };

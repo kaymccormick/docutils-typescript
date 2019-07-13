@@ -13,7 +13,9 @@ const __docformat__ = "reStructuredText";
 
 /**
  * Translator class for Pojo writer
- */
+ 
+ * @uuid 8aa67a35-4008-4669-9e89-9ff180d269ef
+*/
 class POJOTranslator extends GenericNodeVisitor {
     level: number;
 
@@ -35,9 +37,9 @@ class POJOTranslator extends GenericNodeVisitor {
     root: {};
 
     /**
-          * Create a POJOTranslator
-          * @param {nodes.document} document - the document to translate
-          */
+                  * Create a POJOTranslator
+                  * @param {nodes.document} document - the document to translate
+                  */
     public constructor(document: Document) {
         super(document);
         this.ancestors = [];
@@ -91,22 +93,24 @@ class POJOTranslator extends GenericNodeVisitor {
 
 /**
  * Writer class for POJOWriter
- */
+ 
+ * @uuid 15c8e888-c5e7-48f9-8a67-70d4f965dded
+*/
 class POJOWriter extends BaseWriter {
     visitor: POJOTranslator;
     translatorClass: typeof POJOTranslator = POJOTranslator;
 
     /**
-          * Create POJOWriter
-          * @param {Object} args - Arguments, none right now
-          */
+                  * Create POJOWriter
+                  * @param {Object} args - Arguments, none right now
+                  */
     public constructor() {
         super();
     }
 
     /**
-         * Translate the document to plain old javascript object
-         */
+                 * Translate the document to plain old javascript object
+                 */
     public translate(): void {
         const TranslatorClass = this.translatorClass;
 

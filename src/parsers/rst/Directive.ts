@@ -93,7 +93,9 @@ import Body from "./states/Body";
  *             nodes.literal_block(block_text, block_text), line=lineno)
  *         return [error]
  *
- */
+ 
+ * @uuid fd02e94e-f5b0-421e-a1a8-1a741a8252d5
+*/
 class Directive implements DirectiveInterface {
     static optionSpec: any;
     static hasContent: boolean;

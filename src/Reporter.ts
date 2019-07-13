@@ -35,6 +35,9 @@ interface ReporterObserverCallback {
     (msg: Systemmessage): void;
 }
 
+/*
+ * @uuid 2cd35355-5898-42c5-a0cd-67dd89a48661
+*/
 class Reporter implements ReporterInterface {
     source: string;
     observers: ReporterObserverCallback[];

@@ -7,11 +7,13 @@ const __docformat__ = "reStructuredText";
 
 /**
  * Writer class for POJOWriter
- */
+ 
+ * @uuid ac6fce10-ab92-4c34-abaa-cff81acae222
+*/
 class NoOpWriter extends BaseWriter {
     /**
-         * Translate the document to plain old javascript object
-         */
+                 * Translate the document to plain old javascript object
+                 */
     public translate(): void {
         this.output = this.document;
     }

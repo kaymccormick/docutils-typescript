@@ -41,7 +41,9 @@ interface InputConstructor {
 
 /**
  * Publisher class.
- */
+ 
+ * @uuid eef9acb4-b803-4796-8234-b46a3e00f094
+*/
 class Publisher {
     public get document(): Document | undefined {
         return this._document;
@@ -66,19 +68,19 @@ class Publisher {
     debug: boolean = false;
 
     /**
-         * Create a publisher instance.
-         * @param {Object} args - arguments
-         * @param {Reader} args.reader - instance of StandaloneReader
-         * @param {Parser} args.parser - instance of Parser
-         * @param {Writer} args.writer - instance of Writer
-         * @param {Source} args.source - instance of Source
-         * @param {function} args.sourceClass - class for source, mutually exclusive with souce paramter
-         * @param {Destination} args.destination - where the output should be written
-         * @param {function} args.destinationClass - Class for destination, mutually
-         *                                           exclusive with destination paramter.
-         * @param {object} args.settings - Settings for docutils engine.
-         * @param {function} args.debugFn - Debug function.
-         */
+                 * Create a publisher instance.
+                 * @param {Object} args - arguments
+                 * @param {Reader} args.reader - instance of StandaloneReader
+                 * @param {Parser} args.parser - instance of Parser
+                 * @param {Writer} args.writer - instance of Writer
+                 * @param {Source} args.source - instance of Source
+                 * @param {function} args.sourceClass - class for source, mutually exclusive with souce paramter
+                 * @param {Destination} args.destination - where the output should be written
+                 * @param {function} args.destinationClass - Class for destination, mutually
+                 *                                           exclusive with destination paramter.
+                 * @param {object} args.settings - Settings for docutils engine.
+                 * @param {function} args.debugFn - Debug function.
+                 */
     public constructor(args: PublisherArgs) {
         const {
             reader,
@@ -126,7 +128,7 @@ class Publisher {
         const writerClass = writers.getWriterClass(writerName);
 
         /* not setting document here, the write method takes it, which
-                 * is confusing */
+                                 * is confusing */
         // @ts-ignore
         this.writer = new writerClass();
     }
@@ -150,35 +152,35 @@ class Publisher {
     }
 
     /*
-        public setupOptionParser(
-            args: {
-                usage: string; description: string; settingsSpec: SettingsSpec;
-                configSection: string; defaults: {};
-            }
-        ): OptionParser {
-            const { usage, description, settingsSpec, configSection, defaults } = args;
-            let settingsSpec2 = settingsSpec;
-            if (configSection) {
-                if (!settingsSpec2) {
-                    settingsSpec2 = new SettingsSpec();
+                public setupOptionParser(
+                    args: {
+                        usage: string; description: string; settingsSpec: SettingsSpec;
+                        configSection: string; defaults: {};
+                    }
+                ): OptionParser {
+                    const { usage, description, settingsSpec, configSection, defaults } = args;
+                    let settingsSpec2 = settingsSpec;
+                    if (configSection) {
+                        if (!settingsSpec2) {
+                            settingsSpec2 = new SettingsSpec();
+                        }
+                        settingsSpec2.configSection = configSection;
+                        const parts = configSection.split(' ');//fixme check split
+                        if (parts.length > 1 && parts[parts.length - 1] === 'application') {
+                            settingsSpec2.configSectionDependencies = ['applications'];
+                        }
+                    }
+                    const optionParser = new OptionParser({
+                        components: [this.parser, this.reader, this.writer, settingsSpec2],
+                        defaults,
+                        readConfigFiles: true,
+                        usage,
+                        description,
+                    });
+                    //      console.log(JSON.stringify(optionParser.settingsSpec));
+                    return optionParser;
                 }
-                settingsSpec2.configSection = configSection;
-                const parts = configSection.split(' ');//fixme check split
-                if (parts.length > 1 && parts[parts.length - 1] === 'application') {
-                    settingsSpec2.configSectionDependencies = ['applications'];
-                }
-            }
-            const optionParser = new OptionParser({
-                components: [this.parser, this.reader, this.writer, settingsSpec2],
-                defaults,
-                readConfigFiles: true,
-                usage,
-                description,
-            });
-            //      console.log(JSON.stringify(optionParser.settingsSpec));
-            return optionParser;
-        }
-    */
+            */
     public processCommandLine(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         args: {
@@ -219,22 +221,22 @@ class Publisher {
         } else {
             this.settings._source = sourcePath;
         }/*//KM1
-                try {
-                    const SourceClass = this.sourceClass;
-                    let inputEncoding: string | undefined = this.settings.docutilsCoreOptionParser.inputEncoding;
+                                try {
+                                    const SourceClass = this.sourceClass;
+                                    let inputEncoding: string | undefined = this.settings.docutilsCoreOptionParser.inputEncoding;
 
-                    if(SourceClass !== undefined) {
-                        this.source = new SourceClass({
-                            source,
-                            sourcePath,
-                            encoding:
-                            inputEncoding,
-                        });
-                    }
-                } catch (error) {
-                    throw new ApplicationError(`Unable to instantiate Source class ${this.sourceClass.constructor.name}: ${error.message}`, { error });
-                }
-                */
+                                    if(SourceClass !== undefined) {
+                                        this.source = new SourceClass({
+                                            source,
+                                            sourcePath,
+                                            encoding:
+                                            inputEncoding,
+                                        });
+                                    }
+                                } catch (error) {
+                                    throw new ApplicationError(`Unable to instantiate Source class ${this.sourceClass.constructor.name}: ${error.message}`, { error });
+                                }
+                                */
     }
 
     public setDestination(

@@ -2,7 +2,9 @@
 */
 import SpecializedBody from "./SpecializedBody";
 
-/** Second and subsequent lines of a line_block. */
+/** Second and subsequent lines of a line_block. 
+ * @uuid d044db3e-f01e-4d12-8103-cadbb7cdacab
+*/
 class LineBlock extends SpecializedBody {
     // @ts-ignore
     public blank() {

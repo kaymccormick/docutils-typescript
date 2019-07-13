@@ -4,6 +4,9 @@ import Component from "./Component";
 
 import { DebugFunction, Document, ParserArgs } from "./types";
 
+/*
+ * @uuid ff90034f-a6c0-44e7-ad43-9961608d510c
+*/
 class Parser extends Component {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     debugFn: DebugFunction = (msg: string): void => {};

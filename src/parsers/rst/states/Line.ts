@@ -9,6 +9,9 @@ import StateCorrection from "../../../StateCorrection";
 import RSTStateMachine from "../RSTStateMachine";
 import { RSTStateArgs } from "../types";
 
+/*
+ * @uuid 5fbfb3ab-1643-424c-aab7-897d5b19c470
+*/
 class Line extends SpecializedText {
     eofcheck: boolean = true;
 

@@ -19,7 +19,7 @@ function parse(inputstring: string, document: Document): Document {
 
         // fixme
         initialState/*        debugFn: this.debugFn,
-                debug: document.reporter.debugFlag, */
+                                debug: document.reporter.debugFlag, */
     });
 
     let tabWidth;

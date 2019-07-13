@@ -16,6 +16,9 @@ function setClasses(options: any) {
     }
 }
 
+/*
+ * @uuid a365ca13-9637-4203-9309-9a53f9567994
+*/
 class GenericRole {
     name: string;
     nodeClass: any;
@@ -99,13 +102,13 @@ function roleInterface(
         } catch (error) {
             throw error;/*
 
-                                except AttributeError, error:
-                                    msgText.append('Problem retrieving role entry from language '
-                                                    'module %r: %s.' % (languageModule, error))
-                                except KeyError:
-                                    msgText.append('No role entry for "%s" in module "%s".'
-                                                    % (roleName, languageModule.__name__))
-                        */
+                                                        except AttributeError, error:
+                                                            msgText.append('Problem retrieving role entry from language '
+                                                                            'module %r: %s.' % (languageModule, error))
+                                                        except KeyError:
+                                                            msgText.append('No role entry for "%s" in module "%s".'
+                                                                            % (roleName, languageModule.__name__))
+                                                */
         }
     } else {
         canonicalname = DEFAULT_INTERPRETED_ROLE;
@@ -113,17 +116,17 @@ function roleInterface(
 
     // # If we didn't find it, try English as a fallback.
     /*
-        if(! canonicalname) {
-            try {
-                canonicalname = _fallback_languageModule.roles[normname]
-                msgText.append('Using English fallback for role "%s".'
-                                % roleName)
-            except KeyError:
-                msgText.append('Trying "%s" as canonical role name.'
-                                % roleName)
-                # The canonical name should be an English name, but just in case:
-                canonicalname = normname
-        */
+                if(! canonicalname) {
+                    try {
+                        canonicalname = _fallback_languageModule.roles[normname]
+                        msgText.append('Using English fallback for role "%s".'
+                                        % roleName)
+                    except KeyError:
+                        msgText.append('Trying "%s" as canonical role name.'
+                                        % roleName)
+                        # The canonical name should be an English name, but just in case:
+                        canonicalname = normname
+                */
     // Collect any messages that we generated.
     if (msgText.length) {
         const message = reporter.info(msgText.join("\n"), [], {
