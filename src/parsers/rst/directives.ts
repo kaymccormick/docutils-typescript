@@ -1,4 +1,7 @@
-/* equivalent of docutils.parsers.rst.directives */
+/**
+ *  equivalent of docutils.parsers.rst.directives 
+ * @uuid 7b625967-277d-4a31-b5b3-61fa242e91c0
+ */
 
 import * as _fallbackLanguageModule from "./languages/en";
 //import * as images from "./directives/images";
@@ -101,10 +104,10 @@ function directive(directiveName: string, document: Document, languageModule?: R
 }
 
 /**
- Convert the argument into a list of ID-compatible strings and return it.
- (Directive option conversion function.)
-
- Raise ``ValueError`` if no argument is found.
+ *  Convert the argument into a list of ID-compatible strings and return it.
+ *  (Directive option conversion function.)
+ * 
+ *  Raise ``ValueError`` if no argument is found.
  */
 /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
 function class_option(argument: any) {

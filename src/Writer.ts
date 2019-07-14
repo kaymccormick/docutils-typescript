@@ -1,3 +1,6 @@
+/**
+ * @uuid edf0afc7-818f-47e9-aa14-7a41d7006d8c
+ */
 import Component from "./Component";
 import { getLanguage } from "./languages";
 import { Destination, Document, WriterParts } from "./types";
@@ -8,7 +11,9 @@ const __version__ = '';
 
 /**
  * Base class for all writers.
- */
+ 
+ * @uuid 7c403eae-30e5-4349-be6f-1b3918c58ff6
+*/
 export default abstract class Writer extends Component {
     public parts: WriterParts;
     public document?: Document;

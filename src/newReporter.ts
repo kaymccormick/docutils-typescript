@@ -1,3 +1,6 @@
+/**
+ * @uuid 11996e91-9b9e-48ea-955d-f5ad362cbaa1
+ */
 import Reporter from './Reporter';
 import { ApplicationError } from './Exceptions';
 import {DocutilsCoreOptionParser, Settings} from '../gen/Settings';
@@ -30,12 +33,18 @@ export default function newReporter(labeled: { sourcePath: string }, settings: S
     }
     const missingKeys = keys.filter((key): boolean=> !Object.prototype.hasOwnProperty.call(core, key));
     if (missingKeys.length) {
-        throw new ApplicationError(`Missing required keys from settings object to instantiate reporter. Missing keys ${missingKeys.map((key): string => `"${key}"`).join(', ')}.`);
+        throw new ApplicationError(
+            `Missing required keys from settings object to instantiate reporter. Missing keys ${missingKeys.map((key): string => `"${key}"`).join(', ')}.`
+        );
     }
     // @ts-ignore
-    return new Reporter(labeled.sourcePath, core.reportLevel,
+    return new Reporter(
+        labeled.sourcePath,
+        core.reportLevel,
         core.haltLevel,
-        core.warningStream, core.debug,
+        core.warningStream,
+        core.debug,
         core.errorEncoding,
-        core.errorEncodingErrorHandler);
+        core.errorEncodingErrorHandler
+    );
 }

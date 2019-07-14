@@ -1,4 +1,7 @@
-/*** Mapping of node class name to label text. */
+/**
+ * * Mapping of node class name to label text. 
+ * @uuid f4d60396-5131-4793-a885-00af486c829b
+ */
 export const labels: any = {
     // fixed: language-dependent
     'author': 'Author',

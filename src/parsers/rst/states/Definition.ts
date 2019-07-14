@@ -1,5 +1,11 @@
+/**
+ * @uuid 77ba679b-73fa-4bee-a2da-5df047a1f110
+ */
 import SpecializedText from './SpecializedText';
 
+/**
+ * @uuid 55e1c9ed-81b6-4f82-89f7-6238f9fdbdec
+ */
 class Definition extends SpecializedText {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
     // @ts-ignore

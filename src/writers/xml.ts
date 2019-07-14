@@ -1,3 +1,6 @@
+/**
+ * @uuid a350c48a-3afa-4aae-a09c-e121cf1d1226
+ */
 import BaseWriter from '../Writer';
 import * as docutils from '../index';
 import * as nodes from '../nodes';
@@ -20,6 +23,9 @@ export function escapeXml(unsafe: string): string {
         }
     });
 }
+/**
+ * @uuid 18135e70-0d49-4a25-a6a9-59f867a5301d
+ */
 class XMLTranslator extends nodes.GenericNodeVisitor {
     public output: string[];
     private indent: string;
@@ -130,6 +136,9 @@ class XMLTranslator extends nodes.GenericNodeVisitor {
 }
 
 
+/*
+ * @uuid e35f3e7f-cd61-4594-a647-833b6d4b17af
+*/
 export default class XMLWriter extends BaseWriter {
     private visitor?: XMLTranslator;
     private translatorClass: typeof XMLTranslator = XMLTranslator;

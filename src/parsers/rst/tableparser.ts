@@ -1,17 +1,19 @@
 /**
  * This module defines table parser classes,which parse plaintext-graphic tables
  * and produce a well-formed data structure suitable for building a CALS table.
- *
+ * 
  * :Classes:
- *     - `GridTableParser`: Parse fully-formed tables represented with a grid.
- *     - `SimpleTableParser`: Parse simple tables, delimited by top & bottom
- *       borders.
- *
+ * - `GridTableParser`: Parse fully-formed tables represented with a grid.
+ * - `SimpleTableParser`: Parse simple tables, delimited by top & bottom
+ * borders.
+ * 
  * :Exception class: `TableMarkupError`
- *
+ * 
  * :Function:
- *     `update_dict_of_lists()`: Merge two dictionaries containing list values.
- **/
+ * `update_dict_of_lists()`: Merge two dictionaries containing list values.
+ * 
+ * @uuid 4129468d-8b62-4601-9841-b4ce732ca644
+ */
 
 import { DataError } from '../../Exceptions';
 import { stripCombiningChars } from '../../utils';
@@ -19,10 +21,12 @@ import StringList from "../../StringList";
 
 /**
  * Raise if there is any problem with table markup.
- *
+ * 
  * The keyword argument `offset` denotes the offset of the problem
  * from the table's start line.
- **/
+ * 
+ * @uuid ebd4ef79-b671-44d0-986b-b585209dc6dc
+ */
 class TableMarkupError extends DataError {
     offset?: number;
     constructor(message: string, offset?: number) {
@@ -32,7 +36,9 @@ class TableMarkupError extends DataError {
 }
 
 /**
- Abstract superclass for the common parts of the syntax-specific parsers.
+ *  Abstract superclass for the common parts of the syntax-specific parsers.
+ *  
+ * @uuid 94f8dcbf-edf4-4fbc-b719-e0f117508b93
  */
 abstract class TableParser {
     protected doubleWidthPadChar: string = '\x00';
@@ -114,56 +120,58 @@ function update_dict_of_lists(master: any, newdata: any) {
 }
 
     /**
-    Parse a grid table using `parse()`.
-
-    Here's an example of a grid table::
-
-        +------------------------+------------+----------+----------+
-        | Header row, column 1   | Header 2   | Header 3 | Header 4 |
-        +========================+============+==========+==========+
-        | body row 1, column 1   | column 2   | column 3 | column 4 |
-        +------------------------+------------+----------+----------+
-        | body row 2             | Cells may span columns.          |
-        +------------------------+------------+---------------------+
-        | body row 3             | Cells may  | - Table cells       |
-        +------------------------+ span rows. | - contain           |
-        | body row 4             |            | - body elements.    |
-        +------------------------+------------+---------------------+
-
-    Intersections use '+', row separators use '-' (except for one optional
-    head/body row separator, which uses '='), and column separators use '|'.
-
-    Passing the above table to the `parse()` method will result in the
-    following data structure::
-
-        ([24, 12, 10, 10],
-         [[(0, 0, 1, ['Header row, column 1']),
-           (0, 0, 1, ['Header 2']),
-           (0, 0, 1, ['Header 3']),
-           (0, 0, 1, ['Header 4'])]],
-         [[(0, 0, 3, ['body row 1, column 1']),
-           (0, 0, 3, ['column 2']),
-           (0, 0, 3, ['column 3']),
-           (0, 0, 3, ['column 4'])],
-          [(0, 0, 5, ['body row 2']),
-           (0, 2, 5, ['Cells may span columns.']),
-           None,
-           None],
-          [(0, 0, 7, ['body row 3']),
-           (1, 0, 7, ['Cells may', 'span rows.', '']),
-           (1, 1, 7, ['- Table cells', '- contain', '- body elements.']),
-           None],
-          [(0, 0, 9, ['body row 4']), None, None, None]])
-
-    The first item is a list containing column widths (colspecs). The second
-    item is a list of head rows, and the third is a list of body rows. Each
-    row contains a list of cells. Each cell is either None (for a cell unused
-    because of another cell's span), or a tuple. A cell tuple contains four
-    items: the number of extra rows used by the cell in a vertical span
-    (morerows); the number of extra columns used by the cell in a horizontal
-    span (morecols); the line offset of the first line of the cell contents;
-    and the cell contents, a list of lines of text.
-    */
+     *     Parse a grid table using `parse()`.
+     * 
+     *     Here's an example of a grid table::
+     * 
+     *         +------------------------+------------+----------+----------+
+     *         | Header row, column 1   | Header 2   | Header 3 | Header 4 |
+     *         +========================+============+==========+==========+
+     *         | body row 1, column 1   | column 2   | column 3 | column 4 |
+     *         +------------------------+------------+----------+----------+
+     *         | body row 2             | Cells may span columns.          |
+     *         +------------------------+------------+---------------------+
+     *         | body row 3             | Cells may  | - Table cells       |
+     *         +------------------------+ span rows. | - contain           |
+     *         | body row 4             |            | - body elements.    |
+     *         +------------------------+------------+---------------------+
+     * 
+     *     Intersections use '+', row separators use '-' (except for one optional
+     *     head/body row separator, which uses '='), and column separators use '|'.
+     * 
+     *     Passing the above table to the `parse()` method will result in the
+     *     following data structure::
+     * 
+     *         ([24, 12, 10, 10],
+     *          [[(0, 0, 1, ['Header row, column 1']),
+     *            (0, 0, 1, ['Header 2']),
+     *            (0, 0, 1, ['Header 3']),
+     *            (0, 0, 1, ['Header 4'])]],
+     *          [[(0, 0, 3, ['body row 1, column 1']),
+     *            (0, 0, 3, ['column 2']),
+     *            (0, 0, 3, ['column 3']),
+     *            (0, 0, 3, ['column 4'])],
+     *           [(0, 0, 5, ['body row 2']),
+     *            (0, 2, 5, ['Cells may span columns.']),
+     *            None,
+     *            None],
+     *           [(0, 0, 7, ['body row 3']),
+     *            (1, 0, 7, ['Cells may', 'span rows.', '']),
+     *            (1, 1, 7, ['- Table cells', '- contain', '- body elements.']),
+     *            None],
+     *           [(0, 0, 9, ['body row 4']), None, None, None]])
+     * 
+     *     The first item is a list containing column widths (colspecs). The second
+     *     item is a list of head rows, and the third is a list of body rows. Each
+     *     row contains a list of cells. Each cell is either None (for a cell unused
+     *     because of another cell's span), or a tuple. A cell tuple contains four
+     *     items: the number of extra rows used by the cell in a vertical span
+     *     (morerows); the number of extra columns used by the cell in a horizontal
+     *     span (morecols); the line offset of the first line of the cell contents;
+     *     and the cell contents, a list of lines of text.
+     *     
+     * @uuid e349b261-f9e4-4d59-ae2b-8c76b580ccbc
+     */
 
 class GridTableParser extends TableParser {
         private cells: number[][] = [];
@@ -450,49 +458,51 @@ if (typeof right === 'undefined') {
 // GridTableParser.headBodySeparatorPat = /\\+=[=+]+=\\+ *$/;
 
 /**
-Parse a simple table using `parse()`.
-
-Here's an example of a simple table::
-
-    =====  =====
-    col 1  col 2
-    =====  =====
-    1      Second column of row 1.
-    2      Second column of row 2.
-           Second line of paragraph.
-    3      - Second column of row 3.
-
-           - Second item in bullet
-             list (row 3, column 2).
-    4 is a span
-    ------------
-    5
-    =====  =====
-
-Top and bottom borders use '=', column span underlines use '-', column
-separation is indicated with spaces.
-
-Passing the above table to the `parse()` method will result in the
-following data structure, whose interpretation is the same as for
-`GridTableParser`::
-
-    ([5, 25],
-     [[(0, 0, 1, ['col 1']),
-       (0, 0, 1, ['col 2'])]],
-     [[(0, 0, 3, ['1']),
-       (0, 0, 3, ['Second column of row 1.'])],
-      [(0, 0, 4, ['2']),
-       (0, 0, 4, ['Second column of row 2.',
-                  'Second line of paragraph.'])],
-      [(0, 0, 6, ['3']),
-       (0, 0, 6, ['- Second column of row 3.',
-                  '',
-                  '- Second item in bullet',
-                  '  list (row 3, column 2).'])],
-      [(0, 1, 10, ['4 is a span'])],
-      [(0, 0, 12, ['5']),
-       (0, 0, 12, [''])]])
-*/
+ * Parse a simple table using `parse()`.
+ * 
+ * Here's an example of a simple table::
+ * 
+ *     =====  =====
+ *     col 1  col 2
+ *     =====  =====
+ *     1      Second column of row 1.
+ *     2      Second column of row 2.
+ *            Second line of paragraph.
+ *     3      - Second column of row 3.
+ * 
+ *            - Second item in bullet
+ *              list (row 3, column 2).
+ *     4 is a span
+ *     ------------
+ *     5
+ *     =====  =====
+ * 
+ * Top and bottom borders use '=', column span underlines use '-', column
+ * separation is indicated with spaces.
+ * 
+ * Passing the above table to the `parse()` method will result in the
+ * following data structure, whose interpretation is the same as for
+ * `GridTableParser`::
+ * 
+ *     ([5, 25],
+ *      [[(0, 0, 1, ['col 1']),
+ *        (0, 0, 1, ['col 2'])]],
+ *      [[(0, 0, 3, ['1']),
+ *        (0, 0, 3, ['Second column of row 1.'])],
+ *       [(0, 0, 4, ['2']),
+ *        (0, 0, 4, ['Second column of row 2.',
+ *                   'Second line of paragraph.'])],
+ *       [(0, 0, 6, ['3']),
+ *        (0, 0, 6, ['- Second column of row 3.',
+ *                   '',
+ *                   '- Second item in bullet',
+ *                   '  list (row 3, column 2).'])],
+ *       [(0, 1, 10, ['4 is a span'])],
+ *       [(0, 0, 12, ['5']),
+ *        (0, 0, 12, [''])]])
+ * 
+ * @uuid fb14daa3-ce78-4cd9-8951-da29068722ca
+ */
 class SimpleTableParser extends TableParser {
     private table: any[] = [];
     private spanPat: RegExp = /-[ -]*$/;

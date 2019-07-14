@@ -1,3 +1,6 @@
+/**
+ * @uuid 6bd2185e-e8b3-4c4d-9906-9bfd6e35a042
+ */
 import State from './State';
 import StateMachineWS from "../StateMachineWS";
 import { RSTStateArgs, StatemachineConstructor } from "../parsers/rst/types";
@@ -12,7 +15,7 @@ import {
 
 /**
  * State superclass specialized for whitespace (blank lines & indents).
- *
+ * 
  * Use this class with `StateMachineWS`.  The transitions 'blank' (for blank
  * lines) and 'indent' (for indented text blocks) are added automatically,
  * before any other transitions.  The transition method `blank()` handles
@@ -20,13 +23,15 @@ import {
  * blocks trigger a new state machine to be created by `indent()` and run.
  * The class of the state machine to be created is in `indent_sm`, and the
  * constructor keyword arguments are in the dictionary `indent_sm_kwargs`.
- *
+ * 
  * The methods `known_indent()` and `firstknown_indent()` are provided for
  * indented blocks where the indent (all lines' and first line's only,
  * respectively) is known to the transition method, along with the attributes
  * `known_indent_sm` and `known_indent_sm_kwargs`.  Neither transition method
  * is triggered automatically.
- **/
+ * 
+ * @uuid 252c7ebc-8168-4836-9175-d9775bc527d3
+ */
 class StateWS extends State {
     /**
      * The `StateMachine` class handling indented text blocks.

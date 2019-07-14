@@ -1,9 +1,15 @@
-/* Our original class delegates to its array,
-   whereas I'm not sure an Array can be implemented without extending it
-*/
+/**
+ *  Our original class delegates to its array,
+ *    whereas I'm not sure an Array can be implemented without extending it
+ * 
+ * @uuid f76ca6ce-08d7-463f-9418-ff4778013070
+ */
 
 import { ApplicationError } from './Exceptions';
 
+/**
+ * @uuid 0c1ab5b9-8189-48b8-b5bd-ede9315e38d9
+ */
 class ViewList extends Array {
     public items: [string | undefined, number | undefined][];
 

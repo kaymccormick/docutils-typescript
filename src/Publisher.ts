@@ -1,3 +1,6 @@
+/**
+ * @uuid e6442770-8e71-4095-a203-dffcf155f4a5
+ */
 import { ApplicationError, InvalidStateError } from "./Exceptions";
 import * as readers from './Readers';
 import * as writers from './Writers';
@@ -36,6 +39,8 @@ interface InputConstructor {
 
 /**
  * Publisher class.
+ *  
+ * @uuid eef9acb4-b803-4796-8234-b46a3e00f094
  */
 
 class Publisher {

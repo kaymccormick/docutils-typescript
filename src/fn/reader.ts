@@ -1,3 +1,6 @@
+/**
+ * @uuid 45d92b3d-f683-4819-943a-7843263f58db
+ */
 import parse from '../parse';
 import {Settings} from "../../gen/Settings";
 import { Document } from '../types'

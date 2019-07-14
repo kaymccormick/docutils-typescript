@@ -1,6 +1,12 @@
+/**
+ * @uuid 148fdf70-d679-4e99-86f9-8ae744f87690
+ */
 import SpecializedBody from './SpecializedBody';
 
 
+/**
+ * @uuid 063aa690-1fdc-4795-a630-2297608f49a6
+ */
 class BulletList extends SpecializedBody {
     // @ts-ignore
     public bullet(match, context, nextState) {

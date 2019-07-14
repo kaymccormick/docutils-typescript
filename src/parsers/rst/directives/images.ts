@@ -1,3 +1,6 @@
+/**
+ * @uuid 276b4c27-38eb-4a86-b1ad-55b68a69737c
+ */
 import * as nodes from '../../../nodes';
 import Directive from '../Directive';
 import {NodeInterface} from "../../../types";
@@ -15,6 +18,9 @@ const __docformat__ = 'reStructuredText';
 
 const directives = {};
 
+/**
+ * @uuid 059b3b21-09ad-4b88-a29e-9b5077c0a3d4
+ */
 class Image extends Directive {
     private finalArgumentWhitespace?: boolean;
     private alignHValues: string[] = ['left', 'center', 'right'];
@@ -110,6 +116,9 @@ Image.optionSpec = {
     // @ts-ignore
     class: directives.class_option,
 };
+/**
+ * @uuid a5091ee7-0d46-4e7a-8ae9-4defa46406d3
+ */
 class Figure extends Image {
 }
 

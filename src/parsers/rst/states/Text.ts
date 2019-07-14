@@ -1,3 +1,6 @@
+/**
+ * @uuid f2b03a34-3eff-4e77-a726-5abc3c76830e
+ */
 import RSTState from './RSTState';
 import {columnWidth, isIterable} from '../../../utils';
 import unescape from '../../../utils/unescape';
@@ -12,6 +15,9 @@ import RSTStateMachine from "../RSTStateMachine";
 import {RSTStateArgs} from "../types";
 import NestedStateMachine from "../NestedStateMachine";
 
+/**
+ * @uuid 6c25a107-b1a0-44f9-a2cf-23b317d83967
+ */
 class Text extends RSTState {
     public _init(stateMachine: RSTStateMachine, debug: boolean = false) {
         super._init(stateMachine, debug);

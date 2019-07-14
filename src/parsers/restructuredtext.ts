@@ -1,3 +1,6 @@
+/**
+ * @uuid 94897fb9-c6b8-448d-8d4c-b6d0a56f47b8
+ */
 import BaseParser from '../Parser';
 import * as statemachine from '../StateMachine';
 import RSTStateMachine from './rst/RSTStateMachine';
@@ -6,6 +9,9 @@ import {Document, ParserArgs} from "../types";
 import { InlinerInterface } from "./rst/types";
 import { InvalidStateError } from "../Exceptions";
 
+/**
+ * @uuid 69b4a3d2-65cb-4423-84bb-6bc447bf3431
+ */
 class Parser extends BaseParser {
     private inliner?: InlinerInterface;
     private initialState: string;

@@ -1,3 +1,6 @@
+/**
+ * @uuid db846d8d-dab0-49af-b87b-bdb4f4cdf0b5
+ */
 import * as nodes from "../../nodes";
 import * as directives from "./directives";
 import { ReporterInterface } from "../../types";
@@ -16,6 +19,9 @@ function setClasses(options: any) {
   }
 }
 
+/**
+ * @uuid a365ca13-9637-4203-9309-9a53f9567994
+ */
 class GenericRole {
     private name: string;
 
@@ -34,8 +40,8 @@ class GenericRole {
     }
 }
 /**
- Add customization options to role functions, unless explicitly set or
- disabled.
+ *  Add customization options to role functions, unless explicitly set or
+ *  disabled.
  */
 function setImplicitOptions(roleFn: any) {
   if (!Object.prototype.hasOwnProperty.call(roleFn, 'options') || roleFn.options == null) {
@@ -46,13 +52,13 @@ function setImplicitOptions(roleFn: any) {
 }
 
 /**
-
-    Register an interpreted text role by its local or language-dependent name.
-
-    :Parameters:
-      - `name`: The local or language-dependent name of the interpreted role.
-      - `roleFn`: The role function.  See the module docstring.
-    */
+ * 
+ *     Register an interpreted text role by its local or language-dependent name.
+ * 
+ *     :Parameters:
+ *       - `name`: The local or language-dependent name of the interpreted role.
+ *       - `roleFn`: The role function.  See the module docstring.
+ */
 function registerLocalRole(name: string, roleFn: any) {
   setImplicitOptions(roleFn);
   // @ts-ignore
@@ -61,10 +67,10 @@ function registerLocalRole(name: string, roleFn: any) {
 
 
 /**
- Locate and return a role function from its language-dependent name, along
- with a list of system messages.  If the role is not found in the current
- language, check English.  Return a 2-tuple: role function (``None`` if the
- named role cannot be found) and a list of system messages.
+ *  Locate and return a role function from its language-dependent name, along
+ *  with a list of system messages.  If the role is not found in the current
+ *  language, check English.  Return a 2-tuple: role function (``None`` if the
+ *  named role cannot be found) and a list of system messages.
  */
 function roleInterface(roleName: string, languageModule: any, lineno: number, reporter: ReporterInterface) {
   const normname = roleName.toLowerCase();
@@ -126,12 +132,12 @@ function roleInterface(roleName: string, languageModule: any, lineno: number, re
 }
 
 /**
-Register an interpreted text role by its canonical name.
-
-:Parameters:
-  - `name`: The canonical name of the interpreted role.
-  - `roleFn`: The role function.  See the module docstring.
-*/
+ * Register an interpreted text role by its canonical name.
+ * 
+ * :Parameters:
+ *   - `name`: The canonical name of the interpreted role.
+ *   - `roleFn`: The role function.  See the module docstring.
+ */
 function registerCanonicalRole(name: string, roleFn: any) {
   setImplicitOptions(roleFn);
   roleRegistry[name] = roleFn;

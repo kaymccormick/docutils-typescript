@@ -1,3 +1,6 @@
+/**
+ * @uuid 1986b10f-d579-420a-a26c-7bc5b5b9782d
+ */
 import { InvalidArgumentsError } from "../Exceptions";
 import UnknownTransitionError from "../error/UnknownTransitionError";
 import DuplicateTransitionError from "../error/DuplicateTransitionError";
@@ -15,29 +18,29 @@ import { RSTStateArgs, Rststatemachine, StatemachineConstructor } from "../parse
 import NestedStateMachine from "../parsers/rst/NestedStateMachine";
 /**
  * State superclass. Contains a list of transitions, and transition methods.
- *
+ * 
  * Transition methods all have the same signature. They take 3 parameters:
- *
+ * 
  * - An `re` match object. ``match.string`` contains the matched input line,
- *   ``match.start()`` gives the start index of the match, and
- *   ``match.end()`` gives the end index.
+ * ``match.start()`` gives the start index of the match, and
+ * ``match.end()`` gives the end index.
  * - A context object, whose meaning is application-defined (initial value
- *   ``None``). It can be used to store any information required by the state
- *   machine, and the retured context is passed on to the next transition
- *   method unchanged.
+ * ``None``). It can be used to store any information required by the state
+ * machine, and the retured context is passed on to the next transition
+ * method unchanged.
  * - The name of the next state, a string, taken from the transitions list;
- *   normally it is returned unchanged, but it may be altered by the
- *   transition method if necessary.
- *
+ * normally it is returned unchanged, but it may be altered by the
+ * transition method if necessary.
+ * 
  * Transition methods all return a 3-tuple:
- *
+ * 
  * - A context object, as (potentially) modified by the transition method.
  * - The next state name (a return value of ``None`` means no state change).
  * - The processing result, a list, which is accumulated by the state
- *   machine.
- *
+ * machine.
+ * 
  * Transition methods may raise an `EOFError` to cut processing short.
- *
+ * 
  * There are two implicit transitions, and corresponding transition methods
  * are defined: `bof()` handles the beginning-of-file, and `eof()` handles
  * the end-of-file. These methods have non-standard signatures and return
@@ -45,11 +48,13 @@ import NestedStateMachine from "../parsers/rst/NestedStateMachine";
  * to return a header string, or do any other processing needed. `eof()`
  * should handle any remaining context and wrap things up; it returns the
  * final processing result.
- *
+ * 
  * Typical applications need only subclass `State` (or a subclass), set the
  * `patterns` and `initial_transitions` class attributes, and provide
  * corresponding transition methods. The default object initialization will
  * take care of constructing the list of transitions.
+ *  
+ * @uuid e27beaec-93fa-4688-84c1-b87c7d2f021f
  */
 class State implements StateInterface {
     public uuid?: string;

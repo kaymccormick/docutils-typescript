@@ -1,3 +1,6 @@
+/**
+ * @uuid c2ca5ec3-72ce-4e51-b531-d271b22860ad
+ */
 import BaseReader from '../Reader';
 //import * as frontend from '../FrontEnd';
 import * as references from '../transforms/references';
@@ -13,6 +16,9 @@ import * as frontmatter from '../transforms/frontmatter';
 */
 
 export const __docformat__ = 'reStructuredText';
+/*
+ * @uuid 2c4c834a-afe6-4cd9-b391-8ced4bcf7f63
+*/
 export default class StandaloneReader extends BaseReader {
     public constructor(args: any) {
         super(args);

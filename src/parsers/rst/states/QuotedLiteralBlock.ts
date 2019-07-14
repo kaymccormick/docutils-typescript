@@ -1,3 +1,6 @@
+/**
+ * @uuid 61afb6a8-27d4-4b25-ae34-398919cac6d7
+ */
 import RSTState from './RSTState';
 import * as RegExps from '../RegExps';
 import { escapeRegExp } from '../../../utils';
@@ -7,9 +10,11 @@ import RSTStateMachine from "../RSTStateMachine";
 import {RSTStateArgs} from "../types";
 
 /**
- *  Nested parse handler for quoted (unindented) literal blocks.
- *
+ * Nested parse handler for quoted (unindented) literal blocks.
+ * 
  * Special-purpose.  Not for inclusion in `state_classes`.
+ *  
+ * @uuid 9ee79f8c-da86-4185-8533-29a863cabf55
  */
 class QuotedLiteralBlock extends RSTState {
     private initial_lineno?: number;

@@ -1,27 +1,32 @@
+/**
+ * @uuid 6859e441-6688-4930-bdb1-12cb2a473964
+ */
 import Transform from '../Transform';
 import * as nodes from '../nodes';
 
 export const __docformat__ = 'reStructuredText';
 
 /**
-Propagate empty internal targets to the next element.
-
-    Given the following nodes::
-
-        <target ids="internal1" names="internal1">
-        <target anonymous="1" ids="id1">
-        <target ids="internal2" names="internal2">
-        <paragraph>
-            This is a test.
-
-    PropagateTargets propagates the ids and names of the internal
-    targets preceding the paragraph to the paragraph itself::
-
-        <target refid="internal1">
-        <target anonymous="1" refid="id1">
-        <target refid="internal2">
-        <paragraph ids="internal2 id1 internal1" names="internal2 internal1">
-            This is a test.
+ * Propagate empty internal targets to the next element.
+ * 
+ *     Given the following nodes::
+ * 
+ *         <target ids="internal1" names="internal1">
+ *         <target anonymous="1" ids="id1">
+ *         <target ids="internal2" names="internal2">
+ *         <paragraph>
+ *             This is a test.
+ * 
+ *     PropagateTargets propagates the ids and names of the internal
+ *     targets preceding the paragraph to the paragraph itself::
+ * 
+ *         <target refid="internal1">
+ *         <target anonymous="1" refid="id1">
+ *         <target refid="internal2">
+ *         <paragraph ids="internal2 id1 internal1" names="internal2 internal1">
+ *             This is a test.
+ 
+ * @uuid 8f0d5ebc-622a-4594-bddb-08e335939dd5
 */
 export class PropagateTargets extends Transform {
 
@@ -38,25 +43,27 @@ export class PropagateTargets extends Transform {
 PropagateTargets.defaultPriority = 260;
 
 /**
-    Link anonymous references to targets.  Given::
-
-        <paragraph>
-            <reference anonymous="1">
-                internal
-            <reference anonymous="1">
-                external
-        <target anonymous="1" ids="id1">
-        <target anonymous="1" ids="id2" refuri="http://external">
-
-    Corresponding references are linked via "refid" or resolved via "refuri"::
-
-        <paragraph>
-            <reference anonymous="1" refid="id1">
-                text
-            <reference anonymous="1" refuri="http://external">
-                external
-        <target anonymous="1" ids="id1">
-        <target anonymous="1" ids="id2" refuri="http://external">
+ *     Link anonymous references to targets.  Given::
+ * 
+ *         <paragraph>
+ *             <reference anonymous="1">
+ *                 internal
+ *             <reference anonymous="1">
+ *                 external
+ *         <target anonymous="1" ids="id1">
+ *         <target anonymous="1" ids="id2" refuri="http://external">
+ * 
+ *     Corresponding references are linked via "refid" or resolved via "refuri"::
+ * 
+ *         <paragraph>
+ *             <reference anonymous="1" refid="id1">
+ *                 text
+ *             <reference anonymous="1" refuri="http://external">
+ *                 external
+ *         <target anonymous="1" ids="id1">
+ *         <target anonymous="1" ids="id2" refuri="http://external">
+ *  
+ * @uuid 8310f144-8765-4948-834d-8b39f9e167f0
  */
 
 class AnonymousHyperlinks extends Transform {

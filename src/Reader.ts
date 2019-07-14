@@ -1,3 +1,6 @@
+/**
+ * @uuid a8a36cfb-b320-483b-bb60-a25713d94074
+ */
 import Component from "./Component";
 import * as universal from "./transforms/universal";
 import parsers from "./parsers";
@@ -23,6 +26,9 @@ interface HandleDocumentCallback {
     (error: Error | undefined | {}, document: Document|undefined): void;
 }
 
+/*
+ * @uuid 6e328f57-396a-45fa-b73d-83a9d65223fb
+*/
 export default class Reader extends Component {
     public componentType: string = 'reader';
     public  document?: Document;

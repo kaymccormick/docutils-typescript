@@ -1,3 +1,6 @@
+/**
+ * @uuid 9e83289d-39c8-4513-a78e-2abd179051eb
+ */
 import * as nodes from '../nodes';
 import * as utils from '../utils';
 import Transform from '../Transform';
@@ -5,7 +8,10 @@ import Transform from '../Transform';
 import TransformError from '../error/TransformError';
 import { NodeInterface } from "../types";
 
-/* eslint-disable-next-line import/prefer-default-export */
+/**
+ *  eslint-disable-next-line import/prefer-default-export 
+ * @uuid 4d2baf2d-76b9-4b1b-93fb-c1fb3f324396
+ */
 class Decorations extends Transform {
     public apply(): void {
         const headerNodes = this.generateHeader();
@@ -70,6 +76,8 @@ Decorations.defaultPriority = 820;
 /**
  * Place any system messages generated after parsing into a dedicated section
  * of the document.
+ *  
+ * @uuid a19934f7-99d8-4b45-a64d-fe2a4d54cc0b
  */
 class Messages extends Transform {
     public apply(): void {
@@ -93,7 +101,10 @@ class Messages extends Transform {
 }
 Messages.defaultPriority = 860;
 
-/** Remove system messages below verbosity threshold. */
+/**
+ * Remove system messages below verbosity threshold. 
+ * @uuid 8500181a-b43c-40f8-9c0e-4e93623a4dbd
+ */
 class FilterMessages extends Transform {
     public apply() {
         this.document.traverse({ condition: nodes.system_message}).forEach((node, i) => {
@@ -109,6 +120,8 @@ FilterMessages.defaultPriority = 870;
  * Append all post-parse system messages to the end of the document.
  * Used for testing purposes.
  * @todo
+ *  
+ * @uuid 40595b24-4180-404f-ab55-5f573327338a
  */
 class TestMessages extends Transform {
     public apply(): void {

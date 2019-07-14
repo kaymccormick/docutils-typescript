@@ -1,6 +1,12 @@
+/**
+ * @uuid 1d995b71-f696-464e-bcee-21a2f71c336b
+ */
 import SpecializedBody from './SpecializedBody';
 import MarkupError from '../MarkupError';
-/** Second and subsequent explicit markup construct. */
+/**
+ * Second and subsequent explicit markup construct. 
+ * @uuid e45198fb-b7cb-40da-bfd0-b698886c88d7
+ */
 class Explicit extends SpecializedBody {
     private explicit: any;
     /** Footnotes, hyperlink targets, directives, comments. */

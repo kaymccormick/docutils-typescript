@@ -1,3 +1,6 @@
+/**
+ * @uuid cba9d6e9-29c1-4938-9882-73a8b787fccb
+ */
 const combining = Array(0x1E94B);
 combining[0x0300] = 230;
 combining[0x0301] = 230;

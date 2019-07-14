@@ -1,3 +1,6 @@
+/**
+ * @uuid d345b88f-3254-429d-887c-dfda9769cacd
+ */
 import Transform from '../Transform';
 import * as nodes from '../nodes';
 
@@ -10,7 +13,9 @@ export const __docformat__ = 'reStructuredText';
  * are added.  For those sections that are auto-numbered, the "autonum"
  * attribute is set, informing the contents table generator that a different
  * form of the TOC should be used.
- */
+ 
+ * @uuid e669ba64-40ae-498a-aecf-01737bd71593
+*/
 export class SectNum extends Transform {
     private start?: number;
     private maxDepth?: number;
@@ -28,25 +33,27 @@ export class SectNum extends Transform {
 SectNum.defaultPriority = 710;
 
 /**
-    Link anonymous references to targets.  Given::
-
-        <paragraph>
-            <reference anonymous="1">
-                internal
-            <reference anonymous="1">
-                external
-        <target anonymous="1" ids="id1">
-        <target anonymous="1" ids="id2" refuri="http://external">
-
-    Corresponding references are linked via "refid" or resolved via "refuri"::
-
-        <paragraph>
-            <reference anonymous="1" refid="id1">
-                text
-            <reference anonymous="1" refuri="http://external">
-                external
-        <target anonymous="1" ids="id1">
-        <target anonymous="1" ids="id2" refuri="http://external">
+ *     Link anonymous references to targets.  Given::
+ * 
+ *         <paragraph>
+ *             <reference anonymous="1">
+ *                 internal
+ *             <reference anonymous="1">
+ *                 external
+ *         <target anonymous="1" ids="id1">
+ *         <target anonymous="1" ids="id2" refuri="http://external">
+ * 
+ *     Corresponding references are linked via "refid" or resolved via "refuri"::
+ * 
+ *         <paragraph>
+ *             <reference anonymous="1" refid="id1">
+ *                 text
+ *             <reference anonymous="1" refuri="http://external">
+ *                 external
+ *         <target anonymous="1" ids="id1">
+ *         <target anonymous="1" ids="id2" refuri="http://external">
+ *  
+ * @uuid 5b9ba25a-9014-49de-8b9d-d6b153e4b38e
  */
 
 class AnonymousHyperlinks extends Transform {

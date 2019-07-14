@@ -1,3 +1,6 @@
+/**
+ * @uuid 3bdcc172-2ffb-4390-9829-6c639631e95d
+ */
 export const openers = '"\\\'(<\\\\[{\\u0f3a\\u0f3c\\u169b\\u2045\\u207d\\u208d\\u2329\\u2768'
            + '\\u276a\\u276c\\u276e\\u2770\\u2772\\u2774\\u27c5\\u27e6\\u27e8\\u27ea'
            + '\\u27ec\\u27ee\\u2983\\u2985\\u2987\\u2989\\u298b\\u298d\\u298f\\u2991'
@@ -32,14 +35,14 @@ export const quotePairs = {// open char: matching closing characters // usage ex
 };
 
 /**
-    Test whether `c1` and `c2` are a matching open/close character pair.
-
-    Matching open/close pairs are at the same position in
-    `punctuation_chars.openers` and `punctuation_chars.closers`.
-    The pairing of open/close quotes is ambiguous due to  different
-    typographic conventions in different languages,
-    so we test for additional matches stored in `quote_pairs`.
-    */
+ *     Test whether `c1` and `c2` are a matching open/close character pair.
+ * 
+ *     Matching open/close pairs are at the same position in
+ *     `punctuation_chars.openers` and `punctuation_chars.closers`.
+ *     The pairing of open/close quotes is ambiguous due to  different
+ *     typographic conventions in different languages,
+ *     so we test for additional matches stored in `quote_pairs`.
+ */
 function matchChars(c1: string, c2: string) {
     if (!openers.includes(c1)) {
         return false;

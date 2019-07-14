@@ -1,7 +1,9 @@
 /**
  * Runtime transform specification base class.
- *
+ * 
  * TransformSpec subclass objects used by `docutils.transforms.Transformer`.
+ *  
+ * @uuid 1004cef8-53f5-4d3c-b806-1b3aafe4395a
  */
 // eslint-disable-next-line @typescript-eslint/camelcase
 import { citation, decoration, Element, footnote, reference, substitution_definition } from "./nodes";
@@ -63,7 +65,7 @@ export interface NodeInterface extends SourceLocation {
 
     /**
      * Return an indented pseudo-XML representation, for test purposes.
-     *
+     * 
      * Override in subclasses.
      */
     pformat(indent: string, level: number): string;
@@ -80,16 +82,16 @@ export interface NodeInterface extends SourceLocation {
      * node.  (The `walkabout()` method is similar, except it also
      * calls the `dispatch_departure()` method before exiting each
      * node.)
-     *
+     * 
      * This tree traversal supports limited in-place tree
      * modifications.  Replacing one node with one or more nodes is
-     *
+     * 
      * OK, as is removing an element.  However, if the node removed
      * or replaced occurs after the current node, the old node will
      * still be traversed, and any new nodes will not.
      * Within ``visit`` methods (and ``depart`` methods for
      * `walkabout()`), `TreePruningException` subclasses may be raised
-     *
+     * 
      * (`SkipChildren`, `SkipSiblings`, `SkipNode`, `SkipDeparture`).
      * Parameter `visitor`: A `NodeVisitor` object, containing a
      * ``visit`` implementation for each `Node` subclass encountered.
@@ -121,23 +123,23 @@ export interface NodeInterface extends SourceLocation {
     addBackref(prbid: {}): void;
 
     /**
-     Updates all attributes from node or dictionary `dict_`.
-
-     Appends the basic attributes ('ids', 'names', 'classes',
-     'dupnames', but not 'source') and then, for all other attributes in
-     dict_, updates the same attribute in self.  When attributes with the
-     same identifier appear in both self and dict_ whose values aren't each
-     lists and replace is True, the values in self are replaced with the
-     values in dict_; if the values from self and dict_ for the given
-     identifier are both of list type, then the two lists are concatenated
-     and the result stored in self; otherwise, the values in self are
-     preserved.  When and_source is True, the 'source' attribute is
-     included in the copy.
-
-     NOTE: When replace is False, and self contains a 'source' attribute,
-     'source' is not replaced even when dict_ has a 'source'
-     attribute, though it may still be merged into a list depending
-     on the value of update_fun.
+     *      Updates all attributes from node or dictionary `dict_`.
+     * 
+     *      Appends the basic attributes ('ids', 'names', 'classes',
+     *      'dupnames', but not 'source') and then, for all other attributes in
+     *      dict_, updates the same attribute in self.  When attributes with the
+     *      same identifier appear in both self and dict_ whose values aren't each
+     *      lists and replace is True, the values in self are replaced with the
+     *      values in dict_; if the values from self and dict_ for the given
+     *      identifier are both of list type, then the two lists are concatenated
+     *      and the result stored in self; otherwise, the values in self are
+     *      preserved.  When and_source is True, the 'source' attribute is
+     *      included in the copy.
+     * 
+     *      NOTE: When replace is False, and self contains a 'source' attribute,
+     *      'source' is not replaced even when dict_ has a 'source'
+     *      attribute, though it may still be merged into a list depending
+     *      on the value of update_fun.
      */
     updateAllAttsConcatenating(dict_: {}, replace:  boolean,
         andSource: boolean): void;
@@ -224,21 +226,21 @@ export interface TransformSpecInterface {
      * `docutils.tranforms.references` are unable to find a correct target.  The
      * list should contain functions which will try to resolve unknown
      * references, with the following signature::
-     *
+     * 
      * def reference_resolver(node):
-     *     '''Returns boolean: true if resolved, false if not.'''
-     *
+     * '''Returns boolean: true if resolved, false if not.'''
+     * 
      * If the function is able to resolve the reference, it should also remove
      * the 'refname' attribute and mark the node as resolved::
-     *
+     * 
      * del node['refname']
      * node.resolved = 1
-     *
+     * 
      * Each function must have a "priority" attribute which will affect the order
      * the unknown_reference_resolvers are run::
-     *
-     *     reference_resolver.priority = 100
-     *
+     * 
+     * reference_resolver.priority = 100
+     * 
      * Override in subclasses.
      */
     unknownReferenceResolvers: {}[];
@@ -323,10 +325,10 @@ export interface Statemachine {
         initialState?: string|StateInterface, ...rest: any[]):
     (string|{})[];
     /**
-     *         Return current state object; set it first if
-     *         `next_state` given.  Parameter `next_state`: a string,
-     *         the name of the next state.  Exception:
-     *         `UnknownStateError` raised if `next_state` unknown.
+     * Return current state object; set it first if
+     * `next_state` given.  Parameter `next_state`: a string,
+     * the name of the next state.  Exception:
+     * `UnknownStateError` raised if `next_state` unknown.
      */
     getState(nextState?: string): StateInterface;
     absLineNumber(): number;
@@ -455,9 +457,9 @@ export interface TransformerInterface {
     addTransforms(transformList: TransformType[]): void;
 
     /**
-     *
+     * 
      * Return a string, `priority` combined with `self.serialno`.
-     *
+     * 
      * This ensures FIFO order on transforms with identical priority.
      */
     getPriorityString(class_: {}, priority: number): string;
