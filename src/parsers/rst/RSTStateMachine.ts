@@ -1,5 +1,6 @@
-/** @uuid 4acad305-861d-4915-af4f-5e974e47a5fc
-*/
+/**
+ * @uuid 4acad305-861d-4915-af4f-5e974e47a5fc
+ */
 import StateMachineWS from "../../StateMachineWS";
 
 import Inliner from "./Inliner";
@@ -26,11 +27,11 @@ import StringList from "../../StringList";
 
 /**
  * reStructuredText's master StateMachine.
- *
+ * 
  * The entry point to reStructuredText parsing is the `run()` method.
- 
+ *  
  * @uuid 30874e3e-fa83-4fee-b8b8-493a15c74008
-*/
+ */
 class RSTStateMachine extends StateMachineWS implements Rststatemachine {
     rstLanguage: RSTLanguage;
     matchTitles: boolean;

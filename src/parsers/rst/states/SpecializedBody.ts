@@ -1,14 +1,14 @@
-/** @uuid 5ff37329-bac5-4e05-b0db-f39bcc4c441b
-*/
-import Body from "./Body";
-
-import { EOFError } from "../../../Exceptions";
+/**
+ * @uuid 5ff37329-bac5-4e05-b0db-f39bcc4c441b
+ */
+import Body from './Body';
+import { EOFError } from '../../../Exceptions';
 import RSTStateMachine from "../RSTStateMachine";
 import { RSTStateArgs } from "../types";
 
-/*
+/**
  * @uuid 2f73fc21-252e-4f18-b37c-9be0e5f5494f
-*/
+ */
 class SpecializedBody extends Body {
     /* istanbul ignore next */
     // @ts-ignore

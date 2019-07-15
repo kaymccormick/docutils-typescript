@@ -1,5 +1,6 @@
-/** @uuid f048c1a6-ca2d-497a-90c1-45927f992970
-*/
+/**
+ * @uuid f048c1a6-ca2d-497a-90c1-45927f992970
+ */
 import { isIterable } from "./utils";
 
 import {
@@ -35,40 +36,43 @@ import UnexpectedIndentationError from "./error/UnexpectedIndentationError";
 import { name } from "ejs";
 import RSTStateMachine from "./parsers/rst/RSTStateMachine";
 
-/** @uuid 9e93d265-645e-48c0-8a05-6554eb3c016a
+/*
+ * @uuid 9e93d265-645e-48c0-8a05-6554eb3c016a
 */
-export class StateMachineError extends Error {}
-
-/** @uuid eaf950af-d3a7-4e45-8e9a-3ff0d333213e
+export class StateMachineError extends Error { }
+/*
+ * @uuid eaf950af-d3a7-4e45-8e9a-3ff0d333213e
 */
-export class UnknownStateError extends StateMachineError {}
-
-/** @uuid 31daa203-b20b-42c6-917c-a669b7f687ac
+export class UnknownStateError extends StateMachineError { }
+/*
+ * @uuid 31daa203-b20b-42c6-917c-a669b7f687ac
 */
-export class DuplicateStateError extends StateMachineError {}
-
+export class DuplicateStateError extends StateMachineError { }
 //export class UnknownTransitionError extends StateMachineError { }
  * @uuid 4631436a-5be4-4c6c-aa78-271e5f2c37a8
 
 //export class DuplicateTransitionError extends StateMachineError { }
-export class TransitionPatternNotFound extends StateMachineError {}
+ * @uuid 4631436a-5be4-4c6c-aa78-271e5f2c37a8
 
-/** @uuid f257ee12-e49b-486e-9be9-72e5fb5f853b
+export class TransitionPatternNotFound extends StateMachineError { }
+/*
+ * @uuid f257ee12-e49b-486e-9be9-72e5fb5f853b
 */
-export class TransitionMethodNotFound extends StateMachineError {}
-
+export class TransitionMethodNotFound extends StateMachineError { }
 //export class UnexpectedIndentationError extends StateMachineError { }
 //export class TransitionCorrection extends Error { }
 /**
  * A finite state machine for text filters using regular expressions.
- *
+ * 
  * The input is provided in the form of a list of one-line strings (no
  * newlines). States are subclasses of the `State` class. Transitions consist
  * of regular expression patterns and transition methods, and are defined in
  * each state.
- *
+ * 
  * The state machine is started with the `run()` method, which returns the
  * results of processing in a list.
+ *  
+ * @uuid 4a373b16-6571-4d2c-bc86-1ca2e86b8cc5
  */
 class StateMachine implements Statemachine {
     public hasState(stateName: string): boolean {

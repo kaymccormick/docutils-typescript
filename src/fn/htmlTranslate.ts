@@ -1,8 +1,8 @@
-/** @uuid aecafe81-a466-487f-b7ce-f3928e78d892
-*/
-import Writer from "../writers/HtmlBase";
-
-import { Document } from "../types";
+/**
+ * @uuid aecafe81-a466-487f-b7ce-f3928e78d892
+ */
+import Writer from '../writers/HtmlBase';
+import {Document} from "../types";
 
 function htmlTranslate(document: Document): string {
     const writer = new Writer();

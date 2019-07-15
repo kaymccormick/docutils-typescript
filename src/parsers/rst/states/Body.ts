@@ -1,3 +1,6 @@
+/**
+ * @uuid 251d0281-5aa7-48d0-985c-4b8893ab7d2c
+ */
 import RSTState from "./RSTState";
 import * as RegExps from "../RegExps";
 import * as nodes from "../../../nodes";
@@ -35,6 +38,9 @@ function _LowerromanToInt() {
 function _UpperromanToInt() {
 }
 
+/**
+ * @uuid bbe01485-667b-4872-aaea-82abc99608bf
+ */
 class Body extends RSTState {
     private gridTableTopPat?: RegExp;
     private enum: any;

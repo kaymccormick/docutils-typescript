@@ -1,5 +1,6 @@
-/** @uuid edf0afc7-818f-47e9-aa14-7a41d7006d8c
-*/
+/**
+ * @uuid edf0afc7-818f-47e9-aa14-7a41d7006d8c
+ */
 import Component from "./Component";
 
 import { getLanguage } from "./languages";
@@ -13,11 +14,10 @@ const __version__ = "";
  
  * @uuid 7c403eae-30e5-4349-be6f-1b3918c58ff6
 */
-export default class Writer extends Component {
-    parts: WriterParts;
-    document: Document;
-    language: {};
-
+export default abstract class Writer extends Component {
+    public parts: WriterParts;
+    public document?: Document;
+    private language?: {};
     /**
                  * Final translated form of `document` (Unicode string for text, binary
                  * string for other forms); set by `translate`.

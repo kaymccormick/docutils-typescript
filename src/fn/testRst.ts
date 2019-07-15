@@ -1,13 +1,21 @@
-/** @uuid ca1ef12c-69ff-4154-beae-cd76375cfb11
-*/
-const testSource = [["Title", "Title\n=====\nParagraph.", {
-    check: () => true
-}], [
-    "program lang",
-    `Want to learn about \`my favorite programming language\`_?
+/**
+ * @uuid ca1ef12c-69ff-4154-beae-cd76375cfb11
+ */
+const testSource = [
+    ['Title', 'Title\n=====\nParagraph.', { check: () => true }],
+    ['program lang', `Want to learn about \`my favorite programming language\`_?
 
-.. _my favorite programming language: http://www.python.org`
-], ["interpreted text with no role", "`test`"], ["interpreted text role prefix", ":role:`test`"], ["interpreted text role suffix", "`test`:role:"], ["interpreted text role emphasis prefix", ":emphasis:`test`"], ["interpreted text role emphasis suffix", "`test`:emphasis:"], ["interpreted text with no end string suffix", "`test"], ["interpreted text with both roles", ":role:`test`:role:"], ["Random indent", "  \n   \n \n     \n\n  \n"], ["Anonymous reference", "__ http://www.python.org\n"], ["Links", `.. _A ReStructuredText Primer: ../../user/rst/quickstart.html
+.. _my favorite programming language: http://www.python.org`],
+    ['interpreted text with no role', '`test`'],
+    ['interpreted text role prefix', ':role:`test`'],
+    ['interpreted text role suffix', '`test`:role:'],
+    ['interpreted text role emphasis prefix', ':emphasis:`test`'],
+    ['interpreted text role emphasis suffix', '`test`:emphasis:'],
+    ['interpreted text with no end string suffix', '`test'],
+    ['interpreted text with both roles', ':role:`test`:role:'],
+    ['Random indent', '  \n   \n \n     \n\n  \n'],
+    ['Anonymous reference', '__ http://www.python.org\n'],
+    ['Links', `.. _A ReStructuredText Primer: ../../user/rst/quickstart.html
 .. _Quick reStructuredText: ../../user/rst/quickref.html
 `], ["Anonymous via two dots", ".. __: http://www.python.org\n"], ["Inline internal targets", `* bullet list
 

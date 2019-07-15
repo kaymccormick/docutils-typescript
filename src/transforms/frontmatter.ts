@@ -1,7 +1,7 @@
-/** @uuid c7ef33ab-e303-4eaf-9bff-820dd939287f
-*/
-import * as nodes from "../nodes";
-
+/**
+ * @uuid c7ef33ab-e303-4eaf-9bff-820dd939287f
+ */
+import * as nodes from '../nodes';
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
 import * as utils from "../utils";
 
@@ -15,10 +15,10 @@ import { Document, ElementInterface, NodeInterface } from "../types";
 /**
  * TitlePromoter transform.
  * Base class for other transforms which promote section names to title and subtitle
- 
+ *  
  * @uuid 1b2abfa3-f5fd-4c48-a012-f0210676b44a
-*/
-class TitlePromoter extends Transform {
+ */
+abstract class TitlePromoter extends Transform {
     public promoteTitle(node: NodeInterface) {
         if (!(node instanceof nodes.Element)) {
             throw new TypeError("node must be of Element-derived type.");
@@ -89,7 +89,8 @@ class TitlePromoter extends Transform {
     }
 }
 
-/** @uuid 49eddc2f-9153-44d7-8147-c203f6a668ba
+/*
+ * @uuid 49eddc2f-9153-44d7-8147-c203f6a668ba
 */
 export class DocTitle extends TitlePromoter {
     public setMetadata() {
@@ -117,7 +118,8 @@ export class DocTitle extends TitlePromoter {
 
 DocTitle.defaultPriority = 320;
 
-/** @uuid 04ccf4e7-22f1-4fb6-b598-f4ce44b627ef
+/*
+ * @uuid 04ccf4e7-22f1-4fb6-b598-f4ce44b627ef
 */
 export class SectionSubTitle extends TitlePromoter {
     public apply() {
@@ -139,7 +141,8 @@ export class SectionSubTitle extends TitlePromoter {
 
 SectionSubTitle.defaultPriority = 350;
 
-/** @uuid 1868add3-b560-4c3a-bb2b-9143d2025173
+/*
+ * @uuid 1868add3-b560-4c3a-bb2b-9143d2025173
 */
 export class DocInfo extends Transform {
     biblioNodes: any;

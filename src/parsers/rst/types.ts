@@ -1,5 +1,6 @@
-/** @uuid 5964cbb3-7d0a-4ca5-9eab-6596259d5c98
-*/
+/**
+ * @uuid 5964cbb3-7d0a-4ca5-9eab-6596259d5c98
+ */
 import Inliner from "./Inliner";
 
 import {
@@ -76,7 +77,9 @@ export interface RstMemo {
     inliner: InlinerInterface;
 }
 
-/** @uuid 19dbe49c-09ad-4751-a378-57adc4e0fdf5
+
+/*
+ * @uuid 19dbe49c-09ad-4751-a378-57adc4e0fdf5
 */
 export class DirectiveError extends Error {
     public constructor(readonly level: LogLevel, readonly message: any) {

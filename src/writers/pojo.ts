@@ -1,10 +1,10 @@
-/** @uuid 19f1d199-0426-4331-8ff6-1be2cfe59461
-*/
-import BaseWriter from "../Writer";
-
-import { GenericNodeVisitor, Text } from "../nodes";
-import { Document, ElementInterface, NodeInterface } from "../types";
-import { Settings } from "../../gen/Settings";
+/**
+ * @uuid 19f1d199-0426-4331-8ff6-1be2cfe59461
+ */
+import BaseWriter from '../Writer';
+import {GenericNodeVisitor, Text} from '../nodes';
+import {Document, ElementInterface, NodeInterface} from "../types";
+import {Settings} from "../../gen/Settings";
 import { InvalidStateError } from "../Exceptions";
 const __version__ = "";
 
@@ -13,9 +13,9 @@ const __docformat__ = "reStructuredText";
 
 /**
  * Translator class for Pojo writer
- 
+ *  
  * @uuid 8aa67a35-4008-4669-9e89-9ff180d269ef
-*/
+ */
 class POJOTranslator extends GenericNodeVisitor {
     level: number;
 
@@ -93,9 +93,9 @@ class POJOTranslator extends GenericNodeVisitor {
 
 /**
  * Writer class for POJOWriter
- 
+ *  
  * @uuid 15c8e888-c5e7-48f9-8a67-70d4f965dded
-*/
+ */
 class POJOWriter extends BaseWriter {
     visitor: POJOTranslator;
     translatorClass: typeof POJOTranslator = POJOTranslator;

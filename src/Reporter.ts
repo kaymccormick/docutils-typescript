@@ -1,5 +1,6 @@
-/** @uuid 31b22eff-39ff-4ea9-9b5d-2c8b644c2584
-*/
+/**
+ * @uuid 31b22eff-39ff-4ea9-9b5d-2c8b644c2584
+ */
 import * as nodes from "./nodes";
 
 import { isIterable } from "./utils";
@@ -14,8 +15,8 @@ import {
 } from "./types";
 
 /**
-    Return the "source" and "line" attributes from the `node` given or from
-    its closest ancestor.
+ *     Return the "source" and "line" attributes from the `node` given or from
+ *     its closest ancestor.
  */
 function getSourceLine(node: NodeInterface): [string | undefined, number | undefined] {
     let myNode: NodeInterface | undefined = node;
@@ -35,9 +36,9 @@ interface ReporterObserverCallback {
     (msg: Systemmessage): void;
 }
 
-/*
+/**
  * @uuid 2cd35355-5898-42c5-a0cd-67dd89a48661
-*/
+ */
 class Reporter implements ReporterInterface {
     source: string;
     observers: ReporterObserverCallback[];

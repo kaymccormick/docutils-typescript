@@ -1,3 +1,6 @@
+/**
+ * @uuid 47ebd5aa-f442-4264-ac8a-bca30cd35cb6
+ */
 import { combining } from "./utils/combining";
 import { Settings } from "../gen/Settings";
 import { Document, NodeInterface } from "./types";
@@ -106,8 +109,8 @@ function escape2null(text: string): string {
 
 
 /**
- Split `text` on escaped whitespace (null+space or null+newline).
- Return a list of strings.
+ *  Split `text` on escaped whitespace (null+space or null+newline).
+ *  Return a list of strings.
  */
 function splitEscapedWhitespace(text: string): string[] {
     const strings = text.split("\x00 ");
@@ -120,11 +123,12 @@ function splitEscapedWhitespace(text: string): string[] {
 }
 
 /**
- Indices of Unicode string `text` when skipping combining characters.
-
- >>> from docutils.utils import column_indices
- >>> column_indices(u'A t ab le ')
- [0, 1, 2, 4, 5, 7, 8] */
+ *  Indices of Unicode string `text` when skipping combining characters.
+ * 
+ *  >>> from docutils.utils import column_indices
+ *  >>> column_indices(u'A t ab le ')
+ *  [0, 1, 2, 4, 5, 7, 8] 
+ */
 function columnIndicies(text: string): number[] {
     const stringIndicies = new Array(text.length);
     for (let i = 0; i < text.length; i += 1) {
@@ -198,15 +202,15 @@ export function relativePath(source: string, target: string): string {
 }
 
 /**
- Return a list of normalized combinations for a `BCP 47` language tag.
-
- Example:
-
- >>> from docutils.utils import normalize_language_tag
- >>> normalize_language_tag('de_AT-1901')
- ['de-at-1901', 'de-at', 'de-1901', 'de']
- >>> normalize_language_tag('de-CH-x_altquot')
- ['de-ch-x-altquot', 'de-ch', 'de-x-altquot', 'de']
+ *  Return a list of normalized combinations for a `BCP 47` language tag.
+ * 
+ *  Example:
+ * 
+ *  >>> from docutils.utils import normalize_language_tag
+ *  >>> normalize_language_tag('de_AT-1901')
+ *  ['de-at-1901', 'de-at', 'de-1901', 'de']
+ *  >>> normalize_language_tag('de-CH-x_altquot')
+ *  ['de-ch-x-altquot', 'de-ch', 'de-x-altquot', 'de']
  */
 function normalizedLanguageTag(tag: string): string[] {
     // normalize:
@@ -236,6 +240,9 @@ function assembleOptionDict(optionList: {}, optionsSpec: {}): {} | never {
     return {};
 }
 
+/**
+ * @uuid 5ee7a48b-f8bc-4c17-87b8-41e60dac9d81
+ */
 class BadOptionError implements Error {
     public constructor(message: string) {
         this.message = message;
@@ -246,6 +253,9 @@ class BadOptionError implements Error {
     public name: string;
 }
 
+/**
+ * @uuid 99528d97-eb9f-4661-b232-72974a974d6c
+ */
 class BadOptionDataError implements Error {
     public constructor(message: string) {
         this.message = message;
@@ -289,24 +299,23 @@ class BadOptionDataError implements Error {
 
 */
 /**
-      Return a list of option (name, value) pairs from field names & bodies.
-
-      :Parameter:
-          `field_list`: A flat field list, where each field name is a single
-          word and each field body consists of a single paragraph only.
-
-      :Exceptions:
-          - `BadOptionError` for invalid fields.
-          - `BadOptionDataError` for invalid option data (missing name,
-            missing data, bad quotes, etc.).
-*/
+ *       Return a list of option (name, value) pairs from field names & bodies.
+ * 
+ *       :Parameter:
+ *           `field_list`: A flat field list, where each field name is a single
+ *           word and each field body consists of a single paragraph only.
+ * 
+ *       :Exceptions:
+ *           - `BadOptionError` for invalid fields.
+ *           - `BadOptionDataError` for invalid option data (missing name,
+ *             missing data, bad quotes, etc.).
+ */
 function extractOptions(fieldList: NodeInterface): [string, string | undefined][] {
     const  optionList: [string, string | undefined][] = [];
     for(let i = 0; i < fieldList.children.length; i += 1) {
         const field = fieldList.children[i];
         if(pySplit(field.children[0].astext()).length !== 1) {
-            throw new BadOptionError(
-                'extension option field name may not contain multiple words');
+            throw new BadOptionError('extension option field name may not contain multiple words');
         }
         const name = field.children[0].astext().toLowerCase();
         const body = field.children[1];
@@ -315,9 +324,8 @@ function extractOptions(fieldList: NodeInterface): [string, string | undefined][
             data = undefined;
         } else if(body.children.length > 1 || !(body.children[0] instanceof nodes.paragraph)
            || body.children[0].children.length !== -1 || !(body.children[0].children[0] instanceof nodes.Text)) {
-            throw new BadOptionDataError(
-                `extension option field body may contain\n` +
-                    `a single paragraph only (option "${name}")`);
+            throw new BadOptionDataError(`extension option field body may contain\n` +
+                `a single paragraph only (option "${name}")`);
         } else {
             data = body.children[0].children[0].astext();
         }
@@ -328,25 +336,25 @@ function extractOptions(fieldList: NodeInterface): [string, string | undefined][
 
 
 /**
- Return a dictionary mapping extension option names to converted values.
-
- :Parameters:
- - `field_list`: A flat field list without field arguments, where each
- field body consists of a single paragraph only.
- - `options_spec`: Dictionary mapping known option names to a
- conversion function such as `int` or `float`.
-
- :Exceptions:
- - `KeyError` for unknown option names.
- - `ValueError` for invalid option values (raised by the conversion
- function).
- - `TypeError` for invalid option value types (raised by conversion
- function).
- - `DuplicateOptionError` for duplicate options.
- - `BadOptionError` for invalid fields.
- - `BadOptionDataError` for invalid option data (missing name,
- missing data, bad quotes, etc.).
- **/
+ *  Return a dictionary mapping extension option names to converted values.
+ * 
+ *  :Parameters:
+ *  - `field_list`: A flat field list without field arguments, where each
+ *  field body consists of a single paragraph only.
+ *  - `options_spec`: Dictionary mapping known option names to a
+ *  conversion function such as `int` or `float`.
+ * 
+ *  :Exceptions:
+ *  - `KeyError` for unknown option names.
+ *  - `ValueError` for invalid option values (raised by the conversion
+ *  function).
+ *  - `TypeError` for invalid option value types (raised by conversion
+ *  function).
+ *  - `DuplicateOptionError` for duplicate options.
+ *  - `BadOptionError` for invalid fields.
+ *  - `BadOptionDataError` for invalid option data (missing name,
+ *  missing data, bad quotes, etc.).
+ */
 export function extractExtensionOptions(fieldList: NodeInterface, optionsSpec: {}): {} | undefined {
 
     const optionList = extractOptions(fieldList);

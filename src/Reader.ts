@@ -1,5 +1,6 @@
-/** @uuid a8a36cfb-b320-483b-bb60-a25713d94074
-*/
+/**
+ * @uuid a8a36cfb-b320-483b-bb60-a25713d94074
+ */
 import Component from "./Component";
 
 import * as universal from "./transforms/universal";
@@ -26,7 +27,8 @@ interface HandleDocumentCallback {
     (error: Error | undefined | {}, document: Document | undefined): void;
 }
 
-/** @uuid 6e328f57-396a-45fa-b73d-83a9d65223fb
+/*
+ * @uuid 6e328f57-396a-45fa-b73d-83a9d65223fb
 */
 export default class Reader extends Component {
     componentType: string = "reader";

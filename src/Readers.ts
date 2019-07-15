@@ -1,12 +1,13 @@
-/** @uuid 03e00a77-e46c-4f79-b5cc-c3aad048ce28
-*/
-import Component from "./Component";
-
-import Reader from "./Reader";
-import * as standalone from "./readers/standalone";
+/**
+ * @uuid 03e00a77-e46c-4f79-b5cc-c3aad048ce28
+ */
+import Component from './Component';
+import Reader from './Reader';
+import * as standalone from './readers/standalone';
 import { TransformType } from "./types";
 
-/** @uuid 43c83259-3df9-4500-b0ed-2d00a5dfefd5
+/*
+ * @uuid 43c83259-3df9-4500-b0ed-2d00a5dfefd5
 */
 export class ReReader extends Reader {
     public getTransforms(): TransformType[] {

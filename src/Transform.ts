@@ -1,5 +1,6 @@
-/** @uuid c59afb66-541d-4c51-9bdc-bed05504cf03
-*/
+/**
+ * @uuid c59afb66-541d-4c51-9bdc-bed05504cf03
+ */
 import { getLanguage } from "./languages";
 
 import { CoreLanguage, Document, NodeInterface, TransformInterface } from "./types";
@@ -12,6 +13,14 @@ export default class Transform implements TransformInterface {
     language: CoreLanguage;
     static defaultPriority: number;
 
+/*
+ * @uuid 47c0e53e-173a-441e-b894-8ae9ee3867dd
+*/
+export default abstract class Transform implements TransformInterface {
+    public document: Document;
+    public startNode?: NodeInterface;
+    public language?: CoreLanguage;
+    public static defaultPriority: number;
     public constructor(document: Document, startNode?: NodeInterface) {
         this.document = document;
         this.startNode = startNode;

@@ -1,8 +1,8 @@
-/** @uuid 2b0c8f26-be6e-45a6-951b-96c70f71f55b
-*/
-import Input from "./io/Input";
-
-import Output from "./io/Output";
+/**
+ * @uuid 2b0c8f26-be6e-45a6-951b-96c70f71f55b
+ */
+import Input from './io/Input';
+import Output from './io/Output';
 import { ReadInputCallback } from "./types";
 
 /** Direct string input. 
@@ -30,7 +30,8 @@ export class StringInput extends Input {
     }
 }
 
-/** @uuid 11de15d8-c529-4ddd-830c-6254641c53dd
+/*
+ * @uuid 11de15d8-c529-4ddd-830c-6254641c53dd
 */
 export class StringOutput extends Output<string> {
     public constructor(

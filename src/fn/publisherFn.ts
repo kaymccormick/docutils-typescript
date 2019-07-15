@@ -1,8 +1,8 @@
-/** @uuid 2a48218c-3395-4581-aa40-179391568496
-*/
-import read from "./reader";
-
-import { Settings } from "../../gen/Settings";
+/**
+ * @uuid 2a48218c-3395-4581-aa40-179391568496
+ */
+import read from './reader';
+import {Settings} from "../../gen/Settings";
 import { Document } from "../types";
 
 // import parse from '../parser';

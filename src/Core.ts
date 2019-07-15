@@ -1,6 +1,8 @@
-/** @uuid 19cf609b-5836-46f4-b3dd-ab774a679a0d
-*/
-import Publisher from "./Publisher";
+/**
+ * @uuid 19cf609b-5836-46f4-b3dd-ab774a679a0d
+ */
+import Publisher from './Publisher';
+import * as defaults from './defaults';
 
 import * as defaults from "./defaults";
 export { Publisher };

@@ -1,10 +1,10 @@
-/** @uuid 11996e91-9b9e-48ea-955d-f5ad362cbaa1
-*/
-import Reporter from "./Reporter";
-
-import { ApplicationError } from "./Exceptions";
-import { DocutilsCoreOptionParser, Settings } from "../gen/Settings";
-import { defaults } from "../gen/defaults";
+/**
+ * @uuid 11996e91-9b9e-48ea-955d-f5ad362cbaa1
+ */
+import Reporter from './Reporter';
+import { ApplicationError } from './Exceptions';
+import {DocutilsCoreOptionParser, Settings} from '../gen/Settings';
+import {defaults }from "../gen/defaults";
 import { ReporterInterface } from "./types";
 
 export default function newReporter(
@@ -44,7 +44,7 @@ export default function newReporter(
 
     if (missingKeys.length) {
         throw new ApplicationError(
-            `Missing required keys from settings object to instantiate reporter. Missing keys ${missingKeys.map((key): string => `"${key}"`).join(", ")}.`
+            `Missing required keys from settings object to instantiate reporter. Missing keys ${missingKeys.map((key): string => `"${key}"`).join(', ')}.`
         );
     }
 

@@ -1,3 +1,6 @@
+/**
+ * @uuid 67dc2a57-7ca5-4837-b201-8223dd5c7440
+ */
 import * as ejs from 'ejs';
 import BaseWriter from '../Writer';
 import * as nodes from '../nodes';
@@ -37,6 +40,8 @@ const template = ejs.compile(defaultTemplate, {});
 
 /**
  * HTMLTranslator class
+ *  
+ * @uuid 01f5d00d-c3c8-453c-a06a-e17dfa4524ca
  */
 class HTMLTranslator extends nodes.NodeVisitor {
     private body: string[];
@@ -1966,6 +1971,8 @@ class HTMLTranslator extends nodes.NodeVisitor {
 
 /**
  * Class for writing HTML
+ *  
+ * @uuid 9e3f415b-52ee-4cfd-8515-fee776dc0bf4
  */
 class HTMLBaseWriter extends BaseWriter {
     private visitorAttributes: any[] = [];
@@ -2049,12 +2056,14 @@ class HTMLBaseWriter extends BaseWriter {
 }
 
 /**
- *  Raise `nodes.NodeFound` if non-simple list item is encountered.
- *
- *      Here "simple" means a list item containing nothing other than a single
- *  paragraph, a simple list, or a paragraph followed by a simple list.
- *
- *      This version also checks for simple field lists and docinfo.
+ * Raise `nodes.NodeFound` if non-simple list item is encountered.
+ * 
+ * Here "simple" means a list item containing nothing other than a single
+ * paragraph, a simple list, or a paragraph followed by a simple list.
+ * 
+ * This version also checks for simple field lists and docinfo.
+ *  
+ * @uuid 78cb5029-8afd-4b74-9557-b3426f9a2333
  */
 class SimpleListChecker extends nodes.GenericNodeVisitor {
     public default_visit(node: NodeInterface) {

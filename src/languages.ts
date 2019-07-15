@@ -1,5 +1,6 @@
-/** @uuid 10bfaf36-9321-43dd-8836-1628123c51f8
-*/
+/**
+ * @uuid 10bfaf36-9321-43dd-8836-1628123c51f8
+ */
 import * as en from "./languages/en";
 
 import { CoreLanguage, ReporterInterface } from "./types";

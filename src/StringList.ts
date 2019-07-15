@@ -1,8 +1,14 @@
+/**
+ * @uuid fb5a7c63-7277-44e7-a62b-7ed3826977be
+ */
 import ViewList from './ViewList';
 import {columnIndicies} from './utils';
 import UnexpectedIndentationError from './error/UnexpectedIndentationError';
 import {GetIndentedArgs} from "./types";
 
+/**
+ * @uuid 4aa5310a-5594-4527-b7ed-4fb77451e80a
+ */
 class StringList extends ViewList {
     // @ts-ignore
     public splice(index: number, num: number, ...elems): StringList {

@@ -1,8 +1,10 @@
-/** @uuid dd4db0a0-92aa-4379-8fcc-7f058e8ee545
-*/
+/**
+ * @uuid dd4db0a0-92aa-4379-8fcc-7f058e8ee545
+ */
 import StringList from "../StringList";
 
-/** @uuid 21b42b90-a549-42d5-a13e-b40053e9c853
+/*
+ * @uuid 21b42b90-a549-42d5-a13e-b40053e9c853
 */
 export default class UnexpectedIndentationError extends Error {
     block: StringList;

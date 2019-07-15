@@ -1,6 +1,7 @@
-/** @uuid ddaa2547-a60a-44e7-8b92-dc5c065377f1
-*/
-const lengthUnits = ["em", "ex", "px", "in", "cm", "mm", "pt", "pc"];
+/**
+ * @uuid ddaa2547-a60a-44e7-8b92-dc5c065377f1
+ */
+const lengthUnits = ['em', 'ex', 'px', 'in', 'cm', 'mm', 'pt', 'pc'];
 
 function getMeasure(argument: string, units: string[]) {
     const match = new RegExp(`^([0-9.]+) *(${units.join("|")})$`).exec(argument);

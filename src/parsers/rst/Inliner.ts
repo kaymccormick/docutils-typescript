@@ -1,3 +1,6 @@
+/**
+ * @uuid 2309871e-c4df-4f93-8cf9-12321cf29d08
+ */
 import * as nodes from "../../nodes";
 import { escape2null, getTrimFootnoteRefSpace, isIterable, splitEscapedWhitespace } from "../../utils";
 import { matchChars } from "../../utils/punctuationChars";
@@ -92,9 +95,11 @@ function buildRegexp(definition: any[], compile = true) {
     return [regexp, groupNames];
 }
 
-/*
- *    Parse inline markup; call the `parse()` method.
- *
+/**
+ * Parse inline markup; call the `parse()` method.
+ * 
+ *  
+ * @uuid d2d8f684-9469-453a-81b3-6441b4d91984
  */
 class Inliner implements InlinerInterface {
     private language: any;

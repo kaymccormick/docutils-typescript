@@ -1,10 +1,12 @@
-/** @uuid ecd7d5ca-4350-40e0-ab6b-81df20f45d51
-*/
-import SpecializedBody from "./SpecializedBody";
+/**
+ * @uuid ecd7d5ca-4350-40e0-ab6b-81df20f45d51
+ */
+import SpecializedBody from './SpecializedBody';
 
-/** Second and subsequent enumerated_list list_items. 
+/**
+ * Second and subsequent enumerated_list list_items. 
  * @uuid b37a8395-86a2-43d6-bf67-309ba53a8f0e
-*/
+ */
 class EnumeratedList extends SpecializedBody {
     lastordinal: number = 0;
     auto: number;
