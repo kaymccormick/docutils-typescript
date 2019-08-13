@@ -5,6 +5,7 @@ import Parser from './Parser';
 import Reader from './Reader';
 import { Settings } from '../gen/Settings';
 import { defaultPublisherOptions, defaultUsage, defaultDescription } from './constants';
+import { NoOpLogger } from './NoOpLogger';
 export { Publisher };
 
 /* We need a non command-line parsing based function */
@@ -39,7 +40,7 @@ export interface PublishCmdLineArgs {
     argv?: string[];
     usage?: string;
     description?: string;
-    logger: LoggerType;
+    logger?: LoggerType;
 }
 
 /**
@@ -66,6 +67,9 @@ export function publishCmdLine(args: PublishCmdLineArgs, cb: any): void {
         enableExitStatus: true,
     };
     args = { ..._defaults, ...args };
+    if(args.logger === undefined) {
+    args.logger = new NoOpLogger();
+    }
     args.logger.silly('publishCmdLine');
     const {
         reader, readerName, parser, parserName, writer, writerName,

@@ -13,7 +13,6 @@ export function createLogger(options?: LoggerOptions): Logger {
     if(myOpt.transports === undefined) {
         myOpt.transports = [
             new transports.Console({level: defaultConsoleLogLevel}),
-            new transports.File({filename: `${path.basename(process.argv[1])}-${process.pid}.log`, level: 'silly'}),
         ];
     }
     const l = winston.createLogger(myOpt);

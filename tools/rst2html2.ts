@@ -1,5 +1,6 @@
 #!/usr/bin/env ts-node
-import { publishCmdLine, defaultDescription } from '../src/Core';
+import { defaultDescription } from '../src/constants';
+import { publishCmdLine } from '../src/Core';
 
 const description = `Generates (X)HTML documents from standalone reStructuredText sources.  ${defaultDescription}`;
 

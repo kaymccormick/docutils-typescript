@@ -19,7 +19,7 @@ afterEach(() => {
     }
 });
 
-test('inliner 1', () => {
+test.only('inliner 1', () => {
     const document = createNewDocument();
     const inliner = new Inliner(document, document.logger);
     inliner.initCustomizations({...getDefaultSettings()});

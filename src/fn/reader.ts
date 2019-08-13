@@ -6,7 +6,7 @@ import { Document } from '../types'
 const __docformat__ = 'reStructuredText';
 
 function read(input: string, settings: Settings): Document | undefined {
-    return parse(input, settings);
+    return parse(input, { settings });
 }
 
 export default read;

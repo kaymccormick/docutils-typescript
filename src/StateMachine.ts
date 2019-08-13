@@ -69,7 +69,7 @@ class StateMachine implements Statemachine {
     public inputLines: StringList = new StringList([]);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public debugFn: DebugFunction = (line): void => {};
+    public debugFn: DebugFunction = ((line: string): void => { this.logger.debug(line); }).bind(this);
 
     public debug: boolean;
 
@@ -217,7 +217,8 @@ class StateMachine implements Statemachine {
         this.lineOffset = -1;
         this.currentState = initialState || this.initialState;
         if (this.debug && this.debugFn !== undefined) {
-            this.debugFn(`\nStateMachine.run: input_lines (line_offset=${this.lineOffset}):\n| ${this.inputLines.join('\n| ')}`);
+            const line1 = `\nStateMachine.run: input_lines (line_offset=${this.lineOffset}):\n| ${this.inputLines.join('\n| ')}`;
+            this.debugFn(line1);
         }
         let transitions: TransitionsArray | undefined
         const results: (string|{})[] = [];

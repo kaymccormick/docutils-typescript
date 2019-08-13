@@ -12,7 +12,7 @@ import process from 'process';
 
 let logger: LoggerType|undefined;
 
-export function createLogger(options?: LoggerOptions): Logger {
+export function createLogger(options?: LoggerOptions): LoggerType {
     if(logger !== undefined) {
         return logger;
     }

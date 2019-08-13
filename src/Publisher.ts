@@ -70,7 +70,7 @@ export class Publisher {
     private sourceClass?: InputConstructor;
     public settings?: Settings;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    private debugFn: DebugFunction = (msg: string): void => {};
+    private debugFn: DebugFunction;
     private reader?: Reader;
     private _document: Document | undefined;
     private parser?: Parser;
@@ -114,6 +114,9 @@ export class Publisher {
 
         if(debugFn !== undefined) {
             this.debugFn = debugFn;
+        } else {
+            this.debugFn = this.logger.debug.bind(this.logger);
+
         }
         this._document = undefined;
         this.reader = reader;

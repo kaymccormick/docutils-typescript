@@ -3,18 +3,24 @@ import restParse from './fn/restructuredText';
 import {Settings} from "../gen/Settings";
 import {getDefaultSettings} from "./settingsHelper";
 import { Document, LoggerType } from "./types";
-import baseSettings from '../src/baseSettings';
+import { NoOpLogger } from './NoOpLogger';
 
+export interface ParseOptions {
+  logger?: LoggerType;
+  settings?: Settings;
+}
+  
 /**
  * Parse a REST document. This function uses getDefaualtSettings if settings parameter
  * is undefined.
  */
 function parse(
     docSource: string,
-    logger: LoggerType,
-    settings?: Settings,
+    options: ParseOptions,
 ): Document {
-    const lSettings: Settings = settings || { ...baseSettings };
+   const opt = { ...(options || {}) };
+    const logger = opt.logger || new NoOpLogger();
+    const lSettings: Settings = opt.settings || { ...getDefaultSettings() };
     const document = newDocument({ logger, sourcePath: '' }, lSettings);
     return restParse(docSource, document, logger);
 }

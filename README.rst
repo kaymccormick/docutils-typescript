@@ -68,7 +68,9 @@ Setup and configuration
 Using the API
 =============
 
-Take a look at tools/rst2pojo.js. The API is in flux, because a
+
+
+Take a look at ``tools/rst2pojo.js``. The API is in flux, because a
 straight port of the docutils interfaces is not appropriate for a JS
 API. JS does not have native IO - this is provided via the host in
 some way. Node provides its own ``fs`` module, and web browsers of

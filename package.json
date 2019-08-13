@@ -51,6 +51,8 @@
     "nyc": "^13.3.0",
     "prettier": "^1.16.4",
     "recast": "^0.18.1",
+    "rollup": "^1.17.0",
+    "rollup-plugin-commonjs": "^10.0.1",
     "sinon": "^7.3.2",
     "ts-jest": "^24.0.2",
     "ts-morph": "^2.3.0",
@@ -60,7 +62,7 @@
     "xpath": "^0.0.27"
   },
   "jest": {
-      "preset": "ts-jest"
+    "preset": "ts-jest"
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.0",

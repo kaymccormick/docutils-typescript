@@ -2,7 +2,6 @@ import * as nodes from "./nodes";
 import { isIterable } from "./utils";
 import { SystemMessage, UnimplementedError as Unimp } from "./Exceptions";
 import { Attributes, NodeInterface, ReporterInterface, Systemmessage, WritableStream } from "./types";
-import { logger} from './logger';
 
 
 /**
@@ -123,7 +122,6 @@ class Reporter implements ReporterInterface {
             this.stream.write(`${msg.astext()}\n`);
         }
         if (level >= this.haltLevel) {
-	    logger.silly(`${level}>=${this.haltLevel}`);
             throw new SystemMessage(msg, level);
         }
         if (level > this.debugLevel || this.debugFlag) {

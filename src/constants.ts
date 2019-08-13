@@ -13,7 +13,7 @@ export const nodeBasicAttributes = [
     namesAttributeName,
     dupnamesAttributeName,
 ];
-export const defaultConsoleLogLevel = 'info';
+export const defaultConsoleLogLevel = 'debug';
 export const standaloneReaderName = 'standalone';
 export const restructuredtextParserName= 'restructuredtext';
 export const defaultUsage = '%%prog [options] [<source> [<destination>]]';

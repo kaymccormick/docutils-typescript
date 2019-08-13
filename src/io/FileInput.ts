@@ -19,6 +19,7 @@ export default class FileInput extends Input {
     }
 
     public read(cb: ReadInputCallback<string | string[] | {}>): void {
+    const logger = this.logger;
         this.logger.silly('read');
         if(this.finished) {
             this.logger.silly('data already read,handing off to callback');
@@ -27,10 +28,14 @@ export default class FileInput extends Input {
         } else{
             this.logger.silly('data not read');
             this.source.on('end', () => {
-                this.logger.silly('end of source');
+	    try {
+                logger.error('end of source');
                 this.finished = true;
                 this.source.close();
-                this.logger.silly('handing off to cb');
+                logger.silly('handing off to cb');
+		}catch(err) {
+		throw err;
+		}
                 cb(undefined, this.data);
             });
         }

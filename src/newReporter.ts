@@ -1,7 +1,7 @@
 import Reporter from './Reporter';
 import { ApplicationError } from './Exceptions';
-import {DocutilsCoreOptionParser, Settings} from '../gen/Settings';
-import { ReporterInterface, GenericSettings } from "./types";
+import {Settings} from '../gen/Settings';
+import { ReporterInterface} from "./types";
 
 export default function newReporter(labeled: { sourcePath: string }, settings: Settings): ReporterInterface {
     const keys = ['reportLevel', 'haltLevel', //'warningStream',

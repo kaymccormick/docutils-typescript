@@ -19,9 +19,27 @@ import Input from './io/Input';
 import Writer from "./Writer";
 import Reader from "./Reader";
 
+
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
 
-export type LoggerType = Logger;
+type LogCallback = (error?: any, level?: string, message?: string, meta?: any) => void;
+
+export interface LeveledLogMethod {
+    (message: string, callback: LogCallback): Logger;
+    (message: string, meta: any, callback: LogCallback): Logger;
+    (message: string, ...meta: any[]): Logger;
+    (message: any): Logger;
+    (infoObject: object): Logger;
+  }
+
+export interface LoggerType {
+  debug: LeveledLogMethod;
+  silly: LeveledLogMethod;
+  error: LeveledLogMethod;
+  warn: LeveledLogMethod;
+  info: LeveledLogMethod;
+}
+
 export interface ConfigSettings {
     [name: string]: any;
 }
