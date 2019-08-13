@@ -70,7 +70,7 @@ function buildRegexp(definition: any[], compile = true) {
     myParts.forEach((part) => {
         const fakeTuple3 = Array.isArray(part) ? part[0] : undefined;
         if (fakeTuple3 === 1) {
-            const [regexp, subGroupNames] = buildRegexp(part);
+            const [regexp, subGroupNames] = buildRegexp(part, false);
             // @ts-ignore
             groupNames.push(null, ...subGroupNames);
             partStrings.push(regexp);
@@ -91,7 +91,7 @@ function buildRegexp(definition: any[], compile = true) {
     groupNames.splice(0, 0, ...prefixNames, name);
 
     groupNames.push(...suffixNames);
-    //    console.log('groupnames')
+    //e    console.log('groupnames')
     //    console.log(groupNames);
     //    console.log(`regexp is ${regexp}`);
     if (compile) {
@@ -609,7 +609,7 @@ class Inliner implements InlinerInterface {
             uri: new RegExp(`${startStringPrefix}((([a-zA-Z][a-zA-Z0-9.+-]*):(((//?)?${uric}*${uriEnd})(\\?${uric}*${uriEnd})?(\\#${uriEnd})?))|(${emailPattern}))${endStringSuffix}`),
 	    // need pep
 	    // need rfc
-	    
+
         };
 
         this.implicitDispatch.push(this.patterns.uri);//, this.standaloneUri);
@@ -635,7 +635,7 @@ class Inliner implements InlinerInterface {
         let unprocessed = [];
         const messages = [];
         while (remaining) {
-	    this.logger.silly(`checking pattern ${this.patterns.initial[0]}`);
+	    this.logger.debug(`checking pattern ${this.patterns.initial[0]}`);
             const match = this.patterns.initial[0].exec(remaining);
             //          console.log(match);
             if (match) {

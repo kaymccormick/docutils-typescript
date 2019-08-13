@@ -1746,14 +1746,14 @@ class document extends Element implements Document {
     }
 
     public noteRefname(node: NodeInterface): void {
-        if(node === undefined || node.refname === undefined) {
+        if(node === undefined || node.attributes.refname === undefined) {
             throw new InvalidStateError();
         }
         const a = [node];
-        if (this.refNames[node.refname]) {
-            this.refNames[node.refname].push(node);
+        if (this.refNames[node.attributes.refname]) {
+            this.refNames[node.attributes.refname].push(node);
         } else {
-            this.refNames[node.refname] = a;
+            this.refNames[node.attributes.refname] = a;
         }
     }
 
