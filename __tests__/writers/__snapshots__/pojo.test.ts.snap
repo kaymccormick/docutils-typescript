@@ -28,11 +28,6 @@ Array [
         "I like food.",
       ],
     ],
-    Array [
-      "paragraph",
-      Object {},
-      Array [],
-    ],
   ],
 ]
 `;

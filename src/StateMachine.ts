@@ -99,9 +99,9 @@ class StateMachine implements Statemachine {
 
     private observers: ObserverCallback[];
 
-    private currentState?: string;
+    protected currentState?: string;
 
-    private initialState?: string;
+    protected initialState?: string;
 
     public logger: LoggerType;
 
@@ -217,8 +217,7 @@ class StateMachine implements Statemachine {
         this.lineOffset = -1;
         this.currentState = initialState || this.initialState;
         if (this.debug && this.debugFn !== undefined) {
-            const line1 = `\nStateMachine.run: input_lines (line_offset=${this.lineOffset}):\n| ${this.inputLines.join('\n| ')}`;
-            this.debugFn(line1);
+            this.debugFn(`\nStateMachine.run: input_lines (line_offset=${this.lineOffset}):\n| ${this.inputLines.join('\n| ')}`);
         }
         let transitions: TransitionsArray | undefined
         const results: (string|{})[] = [];

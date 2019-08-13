@@ -17,6 +17,10 @@ class NestedStateMachine extends StateMachineWS implements Nestedstatemachine{
         memo?: RstMemo, ...rest: any[]): (string|{})[] {
 
         this.logger.debug('run');
+        if(initialState !== undefined) {
+            this.initialState = initialState;
+        }
+
         /* istanbul ignore if */
         if (matchTitles === undefined) {
             this.matchTitles = true;

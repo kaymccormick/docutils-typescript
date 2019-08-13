@@ -64,7 +64,7 @@ class StateWS extends State {
     //public knownIndentSmKwargs: StateMachineConstructorArgs | undefined;
 
     /** Patterns for default whitespace transitions.  May be overridden in subclasses. */
-    private wsPatterns: Patterns = { blank: / *$/, indent: / +/ };
+    private wsPatterns: Patterns = { blank: /^ *$/, indent: /^ +/ };
 
     /**
      * Default initial whitespace transitions, added before those listed in

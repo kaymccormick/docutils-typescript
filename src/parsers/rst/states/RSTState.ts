@@ -218,7 +218,7 @@ abstract class RSTState extends StateWS {
         //     stateMachine.states[myargs.initialState][key] = myargs.extraSettings[key];
         // });
         stateMachine.run(block, myargs.inputOffset || 0,
-            undefined, undefined, undefined, myargs.node, myargs.matchTitles,
+            undefined, undefined, myargs.initialState, myargs.node, myargs.matchTitles,
             this.memo);
 
         this.logger.debug(`checking blank finish state of ${myargs.blankFinishState}`);

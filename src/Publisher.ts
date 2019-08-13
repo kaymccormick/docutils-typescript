@@ -380,7 +380,7 @@ export class Publisher {
                     writer.assembleParts();
 		    this.debuggingDumps();
                     // @ts-ignore
-                    cb(undefined, output);
+                    cb(undefined, writer.output);
                 }),
             );
         } catch (error) {

@@ -123,7 +123,7 @@ class State implements StateInterface {
                 throw new UnknownTransitionError(name);
             }
         }));
-        this.transitionOrder.push(...names);
+        this.transitionOrder.splice(0, 0, ...names);
         Object.keys(transitions).forEach((key: string): void => {
             //this.logger.silly('addTransition', { value:key});
             this.transitions[key] = transitions[key];
