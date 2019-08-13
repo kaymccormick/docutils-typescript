@@ -6,8 +6,8 @@ import { Document, LoggerType } from "./types";
 import { NoOpLogger } from './NoOpLogger';
 
 export interface ParseOptions {
-  logger?: LoggerType;
-  settings?: Settings;
+    logger?: LoggerType;
+    settings?: Settings;
 }
   
 /**
@@ -18,7 +18,7 @@ function parse(
     docSource: string,
     options: ParseOptions,
 ): Document {
-   const opt = { ...(options || {}) };
+    const opt = { ...(options || {}) };
     const logger = opt.logger || new NoOpLogger();
     const lSettings: Settings = opt.settings || { ...getDefaultSettings() };
     const document = newDocument({ logger, sourcePath: '' }, lSettings);

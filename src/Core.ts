@@ -68,7 +68,7 @@ export function publishCmdLine(args: PublishCmdLineArgs, cb: any): void {
     };
     args = { ..._defaults, ...args };
     if(args.logger === undefined) {
-    args.logger = new NoOpLogger();
+        args.logger = new NoOpLogger();
     }
     args.logger.silly('publishCmdLine');
     const {

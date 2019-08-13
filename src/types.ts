@@ -30,14 +30,14 @@ export interface LeveledLogMethod {
     (message: string, ...meta: any[]): Logger;
     (message: any): Logger;
     (infoObject: object): Logger;
-  }
+}
 
 export interface LoggerType {
-  debug: LeveledLogMethod;
-  silly: LeveledLogMethod;
-  error: LeveledLogMethod;
-  warn: LeveledLogMethod;
-  info: LeveledLogMethod;
+    debug: LeveledLogMethod;
+    silly: LeveledLogMethod;
+    error: LeveledLogMethod;
+    warn: LeveledLogMethod;
+    info: LeveledLogMethod;
 }
 
 export interface ConfigSettings {
