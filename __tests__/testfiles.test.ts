@@ -26,7 +26,7 @@ const defaultArgs = {
 
 const defaultSettings = { ...getDefaultSettings() };
 
-test.skip.each(table)('%s', (file, input) => {
+test.each(table)('%s', (file, input) => {
 const logger = createLogger();
     const myOpts: any = {};
 

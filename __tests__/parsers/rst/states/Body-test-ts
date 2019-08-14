@@ -6,10 +6,7 @@ import StateFactory from '../../../../src/parsers/rst/StateFactory';
 import * as nodes from '../../../../src/nodes';
 
 import { fullyNormalizeName } from "../../../../src/nodeUtils";
-/*jest.mock('../../../../src/nodes');
-jest.mock('../../../../src/parsers/rst/RSTStateMachine');
-jest.mock('../../../../src/parsers/rst/StateFactory');
-*/
+
 beforeAll(() => {
     sinon.spy(nodes, 'document');
     sinon.spy(nodes, 'citation');

@@ -30,7 +30,7 @@ exports[`bullet_from_spec.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <bullet_list bullet=\\"-\\">
 <list_item>
-<paragraph>This is a bullet list.</paragraph></list_item><bullet_list bullet=\\"-\\"><list_item><paragraph>Bullets can be &quot;*&quot;, &quot;+&quot;, or &quot;-&quot;.</paragraph></list_item></bullet_list></bullet_list></document>"
+<paragraph>This is a bullet list.</paragraph></list_item><list_item><paragraph>Bullets can be &quot;*&quot;, &quot;+&quot;, or &quot;-&quot;.</paragraph></list_item></bullet_list></document>"
 `;
 
 exports[`bullet_list__invalid_input.txt 1`] = `
@@ -38,7 +38,7 @@ exports[`bullet_list__invalid_input.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <bullet_list bullet=\\"*\\">
 <list_item>
-<paragraph>bullet</paragraph></list_item><paragraph>invalid</paragraph></bullet_list><system_message line=\\"4\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message></document>"
+<paragraph>bullet</paragraph></list_item></bullet_list><system_message line=\\"2\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message><paragraph>invalid</paragraph></document>"
 `;
 
 exports[`bullet_list__invalid_input_doctest.txt 1`] = `
@@ -46,7 +46,7 @@ exports[`bullet_list__invalid_input_doctest.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <bullet_list bullet=\\"*\\">
 <list_item>
-<paragraph>bullet</paragraph></list_item><doctest_block>&gt;&gt;&gt; foo</doctest_block></bullet_list><system_message line=\\"4\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message></document>"
+<paragraph>bullet</paragraph></list_item></bullet_list><system_message line=\\"2\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message><doctest_block>&gt;&gt;&gt; foo</doctest_block></document>"
 `;
 
 exports[`bullet_list__invalid_input_field_marker.txt 1`] = `
@@ -54,7 +54,7 @@ exports[`bullet_list__invalid_input_field_marker.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <bullet_list bullet=\\"*\\">
 <list_item>
-<paragraph>bullet</paragraph></list_item><field_list><field><field_name>Hello</field_name><field_body><paragraph>foo</paragraph></field_body></field></field_list></bullet_list><system_message line=\\"5\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message></document>"
+<paragraph>bullet</paragraph></list_item></bullet_list><system_message line=\\"2\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message><field_list><field><field_name>Hello</field_name><field_body><paragraph>foo</paragraph></field_body></field></field_list></document>"
 `;
 
 exports[`bullet_list__invalid_input_line.txt 1`] = `
@@ -62,7 +62,7 @@ exports[`bullet_list__invalid_input_line.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <bullet_list bullet=\\"*\\">
 <list_item>
-<paragraph>bullet</paragraph></list_item><transition></transition></bullet_list><system_message line=\\"4\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message></document>"
+<paragraph>bullet</paragraph></list_item></bullet_list><system_message line=\\"2\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message><transition></transition></document>"
 `;
 
 exports[`bullet_no_unindent.txt 1`] = `
@@ -107,9 +107,9 @@ exports[`definition_list.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <definition_list>
 <definition_list_item>
-<term>what</term><definition><paragraph>Definition lists associate a term with a definition.</paragraph></definition></definition_list_item><definition_list><definition_list_item><term>how</term><definition><paragraph>The term is a one-line phrase, and the definition is one
+<term>what</term><definition><paragraph>Definition lists associate a term with a definition.</paragraph></definition></definition_list_item><definition_list_item><term>how</term><definition><paragraph>The term is a one-line phrase, and the definition is one
 or more paragraphs or body elements, indented relative to
-the term.</paragraph></definition></definition_list_item></definition_list></definition_list></document>"
+the term.</paragraph></definition></definition_list_item></definition_list></document>"
 `;
 
 exports[`definition_list_with_classifier_term.txt 1`] = `
@@ -117,9 +117,9 @@ exports[`definition_list_with_classifier_term.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <definition_list>
 <definition_list_item>
-<term>term</term><classifier>classifier</classifier><definition><paragraph>test</paragraph></definition></definition_list_item><definition_list><definition_list_item><term>what</term><definition><paragraph>Definition lists associate a term with a definition.</paragraph></definition></definition_list_item><definition_list><definition_list_item><term>how</term><definition><paragraph>The term is a one-line phrase, and the definition is one
+<term>term</term><classifier>classifier</classifier><definition><paragraph>test</paragraph></definition></definition_list_item><definition_list_item><term>what</term><definition><paragraph>Definition lists associate a term with a definition.</paragraph></definition></definition_list_item><definition_list_item><term>how</term><definition><paragraph>The term is a one-line phrase, and the definition is one
 or more paragraphs or body elements, indented relative to
-the term.</paragraph></definition></definition_list_item></definition_list></definition_list></definition_list></document>"
+the term.</paragraph></definition></definition_list_item></definition_list></document>"
 `;
 
 exports[`doctest_block.txt 1`] = `
@@ -134,57 +134,58 @@ Python-specific usage examples; begun with &quot;&gt;&gt;&gt;&quot;
 
 exports[`docutils_title.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
-<document ids=\\"docutil-project-documentation-overview\\" names=\\"docutils_\\\\ project\\\\ documentation\\\\ overview\\" source=\\"&lt;string&gt;\\" title=\\"Docutils_ Project Documentation Overview\\">
-<title>Docutils_ Project Documentation Overview</title></document>"
+<document ids=\\"docutil-project-documentation-overview\\" names=\\"docutils\\\\ project\\\\ documentation\\\\ overview\\" source=\\"&lt;string&gt;\\" title=\\"Docutils
+
+ Project Documentation Overview\\">
+<title><reference name=\\"Docutils\\" refname=\\"docutils\\">Docutils</reference> Project Documentation Overview</title></document>"
 `;
 
 exports[`emphasis.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>*hello*</paragraph></document>"
+<paragraph><emphasis>hello</emphasis></paragraph></document>"
 `;
 
 exports[`emphasis_and_inline.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>*hello* and **goodbye**</paragraph></document>"
+<paragraph><emphasis>hello</emphasis> and <strong>goodbye</strong></paragraph></document>"
 `;
 
 exports[`emphasis_followed_by_text.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>*hello* test</paragraph></document>"
+<paragraph><emphasis>hello</emphasis> test</paragraph></document>"
 `;
 
 exports[`emphasis_preceded_by_text.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>stuff *hello*</paragraph></document>"
+<paragraph>stuff <emphasis>hello</emphasis></paragraph></document>"
 `;
 
 exports[`emphasis_surrounded_by_text.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>stuff *hello* things</paragraph></document>"
+<paragraph>stuff <emphasis>hello</emphasis> things</paragraph></document>"
 `;
 
 exports[`escaping_1.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>*escape* \`\`with\`\` &quot;&quot;</paragraph></document>"
+<paragraph><emphasis>escape</emphasis> <literal>with</literal> &quot;&quot;</paragraph></document>"
 `;
 
 exports[`escaping_2.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>*escape* \`\`with\`\` &quot;\\\\&quot;</paragraph></document>"
+<paragraph><emphasis>escape</emphasis> <literal>with</literal> &quot;\\\\&quot;</paragraph></document>"
 `;
 
 exports[`excerpt_1.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
-<document source=\\"&lt;string&gt;\\">
-<paragraph>Configuration settings:
-\`footnote_references &lt;footnote_references setting_&gt;\`_.</paragraph><target ids=\\"footnote\\" names=\\"footnote\\" refuri=\\"../doctree.html#footnote\\"></target><target ids=\\"label\\" names=\\"label\\" refuri=\\"../doctree.html#label\\"></target><target ids=\\"footnote-reference-etting\\" names=\\"footnote_references\\\\ setting\\" refuri=\\"../../uer/config.html#footnote-reference-html4c1-writer\\"></target><system_message line=\\"11\\"><paragraph>Explicit markup ends without a blank line; unexpected unindent.</paragraph></system_message><system_message line=\\"12\\"><paragraph>Explicit markup ends without a blank line; unexpected unindent.</paragraph></system_message></document>"
+<document ids=\\"configuration-etting\\" names=\\"configuration\\\\ settings:\\" source=\\"&lt;string&gt;\\" title=\\"Configuration settings:\\">
+<title>Configuration settings:</title><target ids=\\"footnote\\" names=\\"footnote\\" refuri=\\"../doctree.html#footnote\\"></target><target ids=\\"label\\" names=\\"label\\" refuri=\\"../doctree.html#label\\"></target><target ids=\\"footnote-reference-etting\\" names=\\"footnote_references\\\\ setting\\" refuri=\\"../../uer/config.html#footnote-reference-html4c1-writer\\"></target></document>"
 `;
 
 exports[`field_list.txt 1`] = `
@@ -192,7 +193,7 @@ exports[`field_list.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <field_list>
 <field>
-<field_name>Author</field_name><field_body><paragraph>David Goodger</paragraph></field_body></field><field_list><field><field_name>Contact</field_name><field_body><paragraph>docutils-develop@lists.sourceforge.net</paragraph></field_body></field><field_list><field><field_name>Revision</field_name><field_body><paragraph>$Revision: 8205 $</paragraph></field_body></field><field_list><field><field_name>Date</field_name><field_body><paragraph>$Date: 2017-11-27 03:07:28 -0800 (Mon, 27 Nov 2017) $</paragraph></field_body></field><field_list><field><field_name>Copyright</field_name><field_body><paragraph>This document has been placed in the public domain.</paragraph></field_body></field></field_list></field_list><system_message line=\\"8\\"><paragraph>Field list ends without a blank line; unexpected unindent.</paragraph></system_message></field_list><system_message line=\\"9\\"><paragraph>Field list ends without a blank line; unexpected unindent.</paragraph></system_message></field_list><system_message line=\\"10\\"><paragraph>Field list ends without a blank line; unexpected unindent.</paragraph></system_message></field_list><system_message line=\\"11\\"><paragraph>Field list ends without a blank line; unexpected unindent.</paragraph></system_message></document>"
+<field_name>Author</field_name><field_body><paragraph>David Goodger</paragraph></field_body></field><field><field_name>Contact</field_name><field_body><paragraph>docutils-develop@lists.sourceforge.net</paragraph></field_body></field><field><field_name>Revision</field_name><field_body><paragraph>$Revision: 8205 $</paragraph></field_body></field><field><field_name>Date</field_name><field_body><paragraph>$Date: 2017-11-27 03:07:28 -0800 (Mon, 27 Nov 2017) $</paragraph></field_body></field><field><field_name>Copyright</field_name><field_body><paragraph>This document has been placed in the public domain.</paragraph></field_body></field></field_list></document>"
 `;
 
 exports[`footnote.txt 1`] = `
@@ -206,7 +207,7 @@ indented by at least 3 spaces.</paragraph></footnote></document>"
 exports[`footnote_auto-symbol.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>Here is a symbolic footnote reference: [*]_.</paragraph><footnote ids=\\"1\\" auto=\\"*\\"><paragraph>This is the footnote.</paragraph></footnote></document>"
+<paragraph>Here is a symbolic footnote reference: <footnote_reference ids=\\"1\\" auto=\\"*\\"></footnote_reference>.</paragraph><footnote ids=\\"2\\" auto=\\"*\\"><paragraph>This is the footnote.</paragraph></footnote></document>"
 `;
 
 exports[`footnote_reference_strangeness.txt 1`] = `
@@ -220,16 +221,27 @@ hyperlink reference).</paragraph><footnote ids=\\"note\\" names=\\"note\\" auto=
 
 exports[`footnotes_multiple_refs.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
-<document source=\\"&lt;string&gt;\\">
-<paragraph>[#]_ is a reference to footnote 1, and [#]_ is a reference to
-footnote 2.</paragraph><footnote ids=\\"1\\" auto=\\"1\\"><paragraph>This is footnote 1.</paragraph></footnote><footnote ids=\\"2\\" auto=\\"1\\"><paragraph>This is footnote 2.</paragraph></footnote><footnote ids=\\"3\\" auto=\\"1\\"><paragraph>This is footnote 3.</paragraph></footnote><paragraph>[#]_ is a reference to footnote 3.</paragraph><system_message line=\\"11\\"><paragraph>Explicit markup ends without a blank line; unexpected unindent.</paragraph></system_message><system_message line=\\"12\\"><paragraph>Explicit markup ends without a blank line; unexpected unindent.</paragraph></system_message></document>"
+<document ids=\\"i-a-reference-to-footnote-1-and-i-a-reference-to\\" names=\\"\\\\ is\\\\ a\\\\ reference\\\\ to\\\\ footnote\\\\ 1,\\\\ and\\\\ 
+
+
+
+\\\\ is\\\\ a\\\\ reference\\\\ to\\" source=\\"&lt;string&gt;\\" title=\\"
+
+ is a reference to footnote 1, and 
+
+
+
+ is a reference to\\">
+<title><footnote_reference ids=\\"1\\" auto=\\"1\\"></footnote_reference> is a reference to footnote 1, and <footnote_reference ids=\\"2\\" auto=\\"1\\"></footnote_reference> is a reference to</title><system_message line=\\"2\\"><paragraph>Title underline too short.</paragraph><literal_block>[#]_ is a reference to footnote 1, and [#]_ is a reference to
+footnote 2.</literal_block></system_message><footnote ids=\\"3\\" auto=\\"1\\"><paragraph>This is footnote 1.</paragraph></footnote><footnote ids=\\"4\\" auto=\\"1\\"><paragraph>This is footnote 2.</paragraph></footnote><footnote ids=\\"5\\" auto=\\"1\\"><paragraph>This is footnote 3.</paragraph></footnote><paragraph><footnote_reference ids=\\"6\\" auto=\\"1\\"></footnote_reference> is a reference to footnote 3.</paragraph></document>"
 `;
 
 exports[`image_directive.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
 <system_message line=\\"1\\">
-<paragraph>Using English fallback for directive image</paragraph></system_message><system_message line=\\"1\\"><paragraph>Unknown directive type &quot;image&quot;.</paragraph><literal_block>.. image:: mylogo.png</literal_block></system_message></document>"
+</system_message><system_message line=\\"1\\">
+<paragraph>Unknown directive type &quot;image&quot;.</paragraph><literal_block>.. image:: mylogo.png</literal_block></system_message></document>"
 `;
 
 exports[`incomplete_substitution_definition_with_image.txt 1`] = `
@@ -241,7 +253,7 @@ exports[`incomplete_substitution_definition_with_image.txt 1`] = `
 exports[`inline_followed_by_emphasis.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>**hello** and *goodbye*</paragraph></document>"
+<paragraph><strong>hello</strong> and <emphasis>goodbye</emphasis></paragraph></document>"
 `;
 
 exports[`inline_internal_targets.txt 1`] = `
@@ -249,63 +261,64 @@ exports[`inline_internal_targets.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <bullet_list bullet=\\"*\\">
 <list_item>
-<paragraph>bullet list</paragraph><target ids=\\"econd-item-\\" names=\\"second\\\\ item\`\\"></target></list_item><bullet_list bullet=\\"*\\"><list_item><paragraph>second item, with hyperlink target.</paragraph></list_item></bullet_list></bullet_list></document>"
+<paragraph>bullet list</paragraph><target ids=\\"econd-item-\\" names=\\"second\\\\ item\`\\"></target></list_item><list_item><paragraph>second item, with hyperlink target.</paragraph></list_item></bullet_list></document>"
 `;
 
 exports[`interpreted_text_role_emphasis_prefix.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>:emphasis:\`test\`</paragraph></document>"
+<paragraph><emphasis>test</emphasis></paragraph></document>"
 `;
 
 exports[`interpreted_text_role_emphasis_suffix.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>\`test\`:emphasis:</paragraph></document>"
+<paragraph><emphasis>test</emphasis></paragraph></document>"
 `;
 
 exports[`interpreted_text_role_prefix.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>:role:\`test\`</paragraph></document>"
+<paragraph><problematic ids=\\"2\\" refid=\\"1\\">:role:\`test\`</problematic></paragraph><system_message ids=\\"1\\" backrefs=\\"2\\" line=\\"1\\"><paragraph>Unknown interpreted text role &quot;role&quot;.</paragraph></system_message></document>"
 `;
 
 exports[`interpreted_text_role_suffix.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>\`test\`:role:</paragraph></document>"
+<paragraph><problematic ids=\\"2\\" refid=\\"1\\">\`test\`:role:</problematic></paragraph><system_message ids=\\"1\\" backrefs=\\"2\\" line=\\"1\\"><paragraph>Unknown interpreted text role &quot;role&quot;.</paragraph></system_message></document>"
 `;
 
 exports[`interpreted_text_with_both_roles.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>:role:\`test\`:role:</paragraph></document>"
+<paragraph><problematic ids=\\"2\\" refid=\\"1\\">:role:\`test\`:role:</problematic></paragraph><system_message ids=\\"1\\" backrefs=\\"2\\" line=\\"1\\"><paragraph>Multiple roles in interpreted text (both prefix and suffix present; only one allowed).</paragraph></system_message></document>"
 `;
 
 exports[`interpreted_text_with_no_end_string_suffix.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>\`test</paragraph></document>"
+<paragraph><problematic ids=\\"2\\" refid=\\"1\\">\`</problematic>test</paragraph><system_message ids=\\"1\\" backrefs=\\"2\\" line=\\"1\\"><paragraph>Inline interpreted text or phrase reference start-string without end-string.</paragraph></system_message></document>"
 `;
 
 exports[`interpreted_text_with_no_role.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>\`test\`</paragraph></document>"
+<paragraph><title_reference>test</title_reference></paragraph></document>"
 `;
 
 exports[`line_block_with_continuation_line.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
 <line_block>
-<line indent=\\"0\\">Lend us a couple of bob till Thursday.</line><line_block><line indent=\\"0\\">I&apos;m absolutely skint.</line><line_block><line indent=\\"0\\">But I&apos;m expecting a postal order and I can pay you back
-as soon as it comes.</line><line_block><line indent=\\"0\\">Love, Ewan.</line></line_block></line_block><system_message line=\\"4\\"><paragraph>Line block ends without a blank line.</paragraph></system_message></line_block><system_message line=\\"3\\"><paragraph>Line block ends without a blank line.</paragraph></system_message></line_block><system_message line=\\"2\\"><paragraph>Line block ends without a blank line.</paragraph></system_message></document>"
+<line indent=\\"0\\">Lend us a couple of bob till Thursday.</line><line>I&apos;m absolutely skint.</line><line>But I&apos;m expecting a postal order and I can pay you back
+as soon as it comes.</line><line>Love, Ewan.</line><line indent=\\"0\\">Lend us a couple of bob till Thursday.</line><line>I&apos;m absolutely skint.</line><line>But I&apos;m expecting a postal order and I can pay you back
+as soon as it comes.</line><line>Love, Ewan.</line></line_block></document>"
 `;
 
 exports[`links.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<target ids=\\"a-re-tructuredtext-primer\\" names=\\"a\\\\ restructuredtext\\\\ primer\\" refuri=\\"../../uer/rt/quicktart.html\\"></target><target ids=\\"quick-re-tructuredtext\\" names=\\"quick\\\\ restructuredtext\\" refuri=\\"../../uer/rt/quickref.html\\"></target><system_message line=\\"5\\"><paragraph>Explicit markup ends without a blank line; unexpected unindent.</paragraph></system_message></document>"
+<target ids=\\"a-re-tructuredtext-primer\\" names=\\"a\\\\ restructuredtext\\\\ primer\\" refuri=\\"../../uer/rt/quicktart.html\\"></target><target ids=\\"quick-re-tructuredtext\\" names=\\"quick\\\\ restructuredtext\\" refuri=\\"../../uer/rt/quickref.html\\"></target></document>"
 `;
 
 exports[`literal_block.txt 1`] = `
@@ -337,7 +350,7 @@ exports[`mixed_bullets.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <bullet_list bullet=\\"*\\">
 <list_item>
-<paragraph>bullet</paragraph></list_item><bullet_list bullet=\\"+\\"><list_item><paragraph>bullet</paragraph></list_item></bullet_list></bullet_list><system_message line=\\"5\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message></document>"
+<paragraph>bullet</paragraph></list_item></bullet_list><system_message line=\\"2\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message><bullet_list bullet=\\"+\\"><list_item><paragraph>bullet</paragraph></list_item></bullet_list></document>"
 `;
 
 exports[`multilevel_blockquote.txt 1`] = `
@@ -353,14 +366,14 @@ exports[`nested_bullets.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <bullet_list bullet=\\"*\\">
 <list_item>
-<paragraph>bullet</paragraph></list_item><block_quote><bullet_list bullet=\\"+\\"><list_item><paragraph>bullet</paragraph></list_item><bullet_list bullet=\\"+\\"><list_item><paragraph>bullet</paragraph></list_item></bullet_list></bullet_list></block_quote><bullet_list bullet=\\"*\\"><list_item><paragraph>bullet</paragraph></list_item></bullet_list></bullet_list></document>"
+<paragraph>bullet</paragraph></list_item></bullet_list><block_quote><bullet_list bullet=\\"+\\"><list_item><paragraph>bullet</paragraph></list_item><list_item><paragraph>bullet</paragraph></list_item></bullet_list></block_quote><bullet_list bullet=\\"*\\"><list_item><paragraph>bullet</paragraph></list_item></bullet_list></document>"
 `;
 
 exports[`nested_sections.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
 <section ids=\\"title\\" names=\\"title\\">
-<title>Title</title><paragraph>Section-------</paragraph><paragraph>Third@@@@@</paragraph></section><section ids=\\"econd\\" names=\\"second\\"><title>Second</title><subtitle ids=\\"ooop\\" names=\\"ooops\\">Ooops</subtitle></section></document>"
+<title>Title</title><paragraph>Section-------</paragraph><paragraph>Third@@@@@</paragraph></section><section ids=\\"econd\\" names=\\"second\\"><title>Second</title><section ids=\\"ooop\\" names=\\"ooops\\"><title>Ooops</title></section><title>Second</title><subtitle ids=\\"ooop\\" names=\\"ooops\\">Ooops</subtitle></section></document>"
 `;
 
 exports[`option_list.txt 1`] = `
@@ -371,9 +384,9 @@ exports[`option_list.txt 1`] = `
 <option_list_item>
 <option_group>
 <option>
-<option_string>-a</option_string></option></option_group><description><paragraph>command-line option &quot;a&quot;</paragraph></description></option_list_item><option_list><option_list_item><option_group><option><option_string>-b</option_string><option_argument delimiter=\\"\\"> file</option_argument></option></option_group><description><paragraph>options can have arguments
-and long descriptions</paragraph></description></option_list_item><option_list><option_list_item><option_group><option><option_string>--long</option_string></option></option_group><description><paragraph>options can be long also</paragraph></description></option_list_item><option_list><option_list_item><option_group><option><option_string>--input</option_string><option_argument delimiter=\\"=\\">file</option_argument></option></option_group><description><paragraph>long options can also have
-arguments</paragraph></description></option_list_item><option_list><option_list_item><option_group><option><option_string>/V</option_string></option></option_group><description><paragraph>DOS/VMS-style options too</paragraph></description></option_list_item></option_list></option_list><system_message line=\\"10\\"><paragraph>Option list ends without a blank line; unexpected unindent.</paragraph></system_message></option_list><system_message line=\\"11\\"><paragraph>Option list ends without a blank line; unexpected unindent.</paragraph></system_message></option_list><system_message line=\\"12\\"><paragraph>Option list ends without a blank line; unexpected unindent.</paragraph></system_message></option_list><system_message line=\\"13\\"><paragraph>Option list ends without a blank line; unexpected unindent.</paragraph></system_message></block_quote></document>"
+<option_string>-a</option_string></option></option_group><description><paragraph>command-line option &quot;a&quot;</paragraph></description></option_list_item><option_list_item><option_group><option><option_string>-b</option_string><option_argument delimiter=\\"\\"> file</option_argument></option></option_group><description><paragraph>options can have arguments
+and long descriptions</paragraph></description></option_list_item><option_list_item><option_group><option><option_string>--long</option_string></option></option_group><description><paragraph>options can be long also</paragraph></description></option_list_item><option_list_item><option_group><option><option_string>--input</option_string><option_argument delimiter=\\"=\\">file</option_argument></option></option_group><description><paragraph>long options can also have
+arguments</paragraph></description></option_list_item><option_list_item><option_group><option><option_string>/V</option_string></option></option_group><description><paragraph>DOS/VMS-style options too</paragraph></description></option_list_item></option_list></block_quote></document>"
 `;
 
 exports[`paragraph_ending_in___.txt 1`] = `
@@ -385,7 +398,7 @@ exports[`paragraph_ending_in___.txt 1`] = `
 exports[`program_lang.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>Want to learn about \`my favorite programming language\`_?</paragraph><target ids=\\"my-favorite-programming-language\\" names=\\"my\\\\ favorite\\\\ programming\\\\ language\\" refuri=\\"http://www.python.org\\"></target></document>"
+<paragraph>Want to learn about <reference name=\\"my favorite programming language\\" refname=\\"my favorite programming language\\">my favorite programming language</reference>?</paragraph><target ids=\\"my-favorite-programming-language\\" names=\\"my\\\\ favorite\\\\ programming\\\\ language\\" refuri=\\"http://www.python.org\\"></target></document>"
 `;
 
 exports[`random.txt 1`] = `
@@ -393,7 +406,7 @@ exports[`random.txt 1`] = `
 <document source=\\"&lt;string&gt;\\">
 <bullet_list bullet=\\"*\\">
 <list_item>
-<paragraph>bullet</paragraph></list_item><bullet_list bullet=\\"*\\"><list_item><paragraph>bullet</paragraph></list_item></bullet_list></bullet_list><system_message line=\\"7\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message></document>"
+<paragraph>bullet</paragraph></list_item><list_item><paragraph>bullet</paragraph></list_item></bullet_list></document>"
 `;
 
 exports[`random_2.txt 1`] = `
@@ -408,7 +421,7 @@ Test3
 exports[`random_4.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document ids=\\"te-t3\\" names=\\"test3\\" source=\\"&lt;string&gt;\\" title=\\"Test3\\">
-<title>Test3</title><paragraph>This is a test.</paragraph><bullet_list bullet=\\"*\\"><list_item><paragraph>BUllet list 1</paragraph></list_item><bullet_list bullet=\\"*\\"><list_item><paragraph>The emacs rst editor is weird.</paragraph></list_item></bullet_list></bullet_list><system_message line=\\"10\\"><paragraph>Bullet list ends without a blank line; unexpected unindent.</paragraph></system_message></document>"
+<title>Test3</title><paragraph>This is a test.</paragraph><bullet_list bullet=\\"*\\"><list_item><paragraph>BUllet list 1</paragraph></list_item><list_item><paragraph>The emacs rst editor is weird.</paragraph></list_item></bullet_list></document>"
 `;
 
 exports[`random_indent.txt 1`] = `
@@ -469,13 +482,14 @@ exports[`simple_table_from_policies.txt.txt 1`] = `
 exports[`strong.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>**hello**</paragraph></document>"
+<paragraph><strong>hello</strong></paragraph></document>"
 `;
 
 exports[`substitution_definition_with_image.txt 1`] = `
 "<!-- generated by Docutils 0.14js -->
 <document source=\\"&lt;string&gt;\\">
-<paragraph>symbol here| image:: symbol.png</paragraph><system_message source=\\"\\" line=\\"1\\"><paragraph>Substitution definition &quot;symbol here&quot; empty or invalid.</paragraph><literal_block>.. |symbol here| image:: symbol.png</literal_block></system_message></document>"
+<system_message line=\\"1\\">
+<paragraph>Unknown directive type &quot;image&quot;.</paragraph><literal_block>symbol here| image:: symbol.png</literal_block></system_message><system_message source=\\"\\" line=\\"1\\"><paragraph>Substitution definition &quot;symbol here&quot; empty or invalid.</paragraph><literal_block>.. |symbol here| image:: symbol.png</literal_block></system_message></document>"
 `;
 
 exports[`tabs.txt 1`] = `
