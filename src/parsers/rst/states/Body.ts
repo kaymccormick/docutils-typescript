@@ -193,7 +193,8 @@ class Body extends RSTState implements BodyState {
         pats.alpha = "[a-zA-Z]";
         pats.alphanum = "[a-zA-Z0-9]";
         pats.alphanumplus = "[a-zA-Z0-9_-]";
-        pats.enum = `^(${enum_.sequences.map(name => enum_.sequencepats![name!]).join('|')}|#)`;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        pats.enum = `^(${enum_.sequences.filter((name): boolean => name !== undefined).map((name): string => enum_.sequencepats![name!]).join('|')}|#)`;
         pats.optname = `${pats.alphanum}${pats.alphanumplus}*`;
         pats.optarg = `(${pats.alpha}${pats.alphanumplus}*|<[^<>]+>)`;
         pats.shortopt = `(-|\\+)${pats.alphanum}( ?${pats.optarg})?`;
@@ -1097,6 +1098,7 @@ class Body extends RSTState implements BodyState {
 
         Return ``None`` for invalid (out of range) ordinals.
 */
+    // eslint-disable-next-line @typescript-eslint/camelcase
     public make_enumerator(ordinal: number, sequence: string, format: string): [string, string]|undefined {
     /*
     let enumerator: string|undefined;

@@ -91,7 +91,7 @@ function buildRegexp(definition: any[], compile = true) {
     groupNames.splice(0, 0, ...prefixNames, name);
 
     groupNames.push(...suffixNames);
-    //e    console.log('groupnames')
+    //    console.log('groupnames')
     //    console.log(groupNames);
     //    console.log(`regexp is ${regexp}`);
     if (compile) {
