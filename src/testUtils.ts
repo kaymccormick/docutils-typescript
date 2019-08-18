@@ -36,8 +36,18 @@ export function createPublisher() {
     return publisher;
 }
 
-export function createStateMachine() {
+export function createRSTStateMachine({logger}) {
+const sm = new RSTStateMachine({
+            stateFactory: new StateFactory({logger}),
+            initialState: 'Body',
+            debugFn: true,
+            debug: true,
+	    logger,
+        });
+	return sm;
+
 }
+
 
 export function createStateFactory(): StateFactory {
     return new StateFactory({ logger: createLogger() });
