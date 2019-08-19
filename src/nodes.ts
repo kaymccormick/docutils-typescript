@@ -559,14 +559,7 @@ abstract class Node implements NodeInterface {
     public referenced: boolean = false;
 
     public names: string[] = [];
-
-    /* This is confusing because some portions of the application
-       appear to reference 'refname' in the attributes.
-     */
-    public refname?: string;
-
-    public refid?: string;
-
+    
     public currentSource: string = "";
 
     public currentLine: number = 0;
@@ -1488,8 +1481,6 @@ class Text extends Node {
 
     public document?: Document;
     public _parent?: NodeInterface;
-    public refid?: string;
-    public refname?: string;
 
     public emptytag(): string {
         return "";
@@ -1758,14 +1749,14 @@ class document extends Element implements Document {
     }
 
     public noteRefId(node: NodeInterface): void | never {
-        if(node === undefined || node.refid === undefined) {
+        if(node === undefined || node.attributes.refid === undefined) {
             throw new InvalidStateError();
         }
         const a = [node];
-        if (this.refIds[node.refid]) {
-            this.refIds[node.refid].push(node);
+        if (this.refIds[node.attributes.refid]) {
+            this.refIds[node.attributes.refid].push(node);
         } else {
-            this.refIds[node.refid] = a;
+            this.refIds[node.attributes.refid] = a;
         }
     }
 
@@ -1807,15 +1798,15 @@ class document extends Element implements Document {
     }
 
     public noteFootnoteRef(ref: NodeInterface): void {
-        if(ref === undefined || ref.refname === undefined) {
+        if(ref === undefined || ref.attributes.refname === undefined) {
             throw new InvalidStateError();
         }
         this.setId(ref);
         const a = [ref];
-        if (this.footnoteRefs[ref.refname]) {
-            this.footnoteRefs[ref.refname].push(ref);
+        if (this.footnoteRefs[ref.attributes.refname]) {
+            this.footnoteRefs[ref.attributes.refname].push(ref);
         } else {
-            this.footnoteRefs[ref.refname] = a;
+            this.footnoteRefs[ref.attributes.refname] = a;
         }
         this.noteRefname(ref);
     }
@@ -1825,14 +1816,14 @@ class document extends Element implements Document {
     }
 
     public noteCitationRef(ref: NodeInterface): void | never {
-        if(ref === undefined || ref.refname === undefined) {
+        if(ref === undefined || ref.attributes.refname === undefined) {
             throw new InvalidStateError();
         }
         this.setId(ref);
-        if (this.citationRefs[ref.refname]) {
-            this.citationRefs[ref.refname].push(ref);
+        if (this.citationRefs[ref.attributes.refname]) {
+            this.citationRefs[ref.attributes.refname].push(ref);
         } else {
-            this.citationRefs[ref.refname] = [ref];
+            this.citationRefs[ref.attributes.refname] = [ref];
         }
         this.noteRefname(ref);
     }
@@ -1854,7 +1845,7 @@ class document extends Element implements Document {
     }
 
     public noteSubstitutionRef(subref: NodeInterface, refname: string): void {
-        subref.refname = whitespaceNormalizeName(refname);
+        subref.attributes.refname = whitespaceNormalizeName(refname);
     }
 
     public notePending(pending: NodeInterface, priority: number): void {

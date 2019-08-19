@@ -1989,7 +1989,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
             atts = {};
             if (Object.prototype.hasOwnProperty.call(node, 'refid')) {
                 atts.class = 'toc-backref';
-                atts.href = `#${node.refid}`;
+                atts.href = `#${node.attributes.refid}`;
             }
             if (Object.keys(atts).length) {
                 this.body.push(this.starttag(node, 'a', '', false, atts));

@@ -87,8 +87,6 @@ export interface QuoteattrCallback {
 export interface NodeInterface extends SourceLocation {
     referenced: boolean;
     names: string[];
-    refname?: string;
-    refid?: string;
     rawsource: string;
     /** Back-reference to the Node immediately containing this Node. */
     parent?: NodeInterface;
