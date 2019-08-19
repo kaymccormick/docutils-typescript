@@ -47,18 +47,11 @@ I like food.
         source, destination, settings, debug: true, debugFn,logger,
     });
     pub.setComponents(readerName, parserName, writerName);
-    return new Promise((resolve, reject) => {
-        pub.publish({}, (error: Error|{}|undefined) => {
-            if (error) {
-                reject(error);
-                return;
-            }
+    return pub.publish({}).then((result) => {
             expect(destination).toBeDefined();
             expect(destination.destination).toBeDefined();
             // @ts-ignore
             expect(JSON.parse(destination.destination)).toMatchSnapshot();
             currentLogLines.length = 0;
-            resolve();
         });
-    });
 });

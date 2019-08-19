@@ -331,7 +331,7 @@ export class Publisher {
 
     /* This doesnt seem to return anything ? */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public publish(args: any, cb: (error: Error | undefined | {}, output: undefined | {}) => void): void {
+    public publish(args: any): Promise<any> {
         this.logger.silly('Publisher.publish');
 
         const {
@@ -339,53 +339,43 @@ export class Publisher {
             argv, usage, description, settingsSpec, settingsOverrides, configSection, enableExitStatus,
         } = args;
         /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
-        try {
-            if (this.settings === undefined) {
-                this.processCommandLine({
-                    argv, usage, description, settingsSpec, configSection, settingsOverrides,
-                });
-            }
-            this.setIO();
 
-            if (this.reader === undefined) {
-                throw new ApplicationError('Need defined reader with "read" method');
-            }
-            if(this.writer === undefined || this.source === undefined || this.parser === undefined) {
-                throw new InvalidStateError('need Writer and source');
-            }
-            const writer = this.writer;
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            if(this.settings! === undefined) {
-                throw new InvalidStateError('need serttings');
-            }
-            this.logger.silly('calling read');
-            this.reader.read(
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                this.source, this.parser, this.settings!,
-                ((error: Error | {} | undefined, document: Document|undefined): void => {
-                    if (error) {
-                        cb(error, undefined);
-                        return;
-                    }
-                    this._document = document;
-                    if (document === undefined) {
-		    throw new InvalidStateError('need document');
-		    }
-		    if(this.destination === undefined) {
-		    throw new InvalidStateError('need destination');
-                    }
-                    this.applyTransforms();
-
-                    const output = writer.write(document, this.destination);
-                    writer.assembleParts();
-		    this.debuggingDumps();
-                    // @ts-ignore
-                    cb(undefined, writer.output);
-                }),
-            );
-        } catch (error) {
-            cb(error, undefined);
+        if (this.settings === undefined) {
+            this.processCommandLine({
+                argv, usage, description, settingsSpec, configSection, settingsOverrides,
+            });
         }
+        this.setIO();
+
+        if (this.reader === undefined) {
+            throw new ApplicationError('Need defined reader with "read" method');
+        }
+        if(this.writer === undefined || this.source === undefined || this.parser === undefined) {
+            throw new InvalidStateError('need Writer and source');
+        }
+        const writer = this.writer;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        if(this.settings! === undefined) {
+            throw new InvalidStateError('need serttings');
+        }
+        this.logger.silly('calling read');
+        return this.reader.read(
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.source, this.parser, this.settings!).then((result: any) => {
+            this._document = result;
+            if (this._document === undefined) {
+                throw new InvalidStateError('need document');
+            }
+            if (this.destination === undefined) {
+                throw new InvalidStateError('need destination');
+            }
+            this.applyTransforms();
+
+            const output = writer.write(this._document!, this.destination);
+            writer.assembleParts();
+            this.debuggingDumps();
+            return writer.output;
+        });
     }
 
     public debuggingDumps(): void {

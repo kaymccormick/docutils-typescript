@@ -58,7 +58,7 @@ export interface PublishCmdLineArgs {
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function publishCmdLine(args: PublishCmdLineArgs, cb: any): void {
+export function publishCmdLine(args: PublishCmdLineArgs): Promise<any> {
     const _defaults = {
         readerName: 'standalone',
         parserName: 'restructuredtext',
@@ -80,7 +80,7 @@ export function publishCmdLine(args: PublishCmdLineArgs, cb: any): void {
         reader, parser, writer, settings, logger:args.logger,
     });
     pub.setComponents(readerName, parserName, writerName);
-    pub.publish({
-        argv, usage, description, settingsSpec, settingsOverrides, configSection, enableExitStatus,
-    }, cb);
+    return pub.publish({
+        argv, usage, description, settingsSpec, settingsOverrides, configSection, enableExitStatus
+    });
 }

@@ -7,12 +7,6 @@ const logger = createLogger({level: 'debug', defaultMeta: { program: 'rst2xml'}}
 
 const description = `Generates (X)HTML documents from standalone reStructuredText sources.  ${defaultDescription}`;
 
-publishCmdLine({logger, writerName: 'xml', description }, (error: Error, output: any): void => {
-    if(error) {
-        console.log(error.stack);
-        console.log(error.message);
-    } else {
-        console.log(output);
-        process.exit(0);
-    }
+publishCmdLine({ logger, writerName: "xml", description }).then((result) => {
+
 });

@@ -18,25 +18,26 @@ export default class FileInput extends Input {
         });
     }
 
-    public read(cb: ReadInputCallback<string | string[] | {}>): void {
+    public read(): Promise<any> {
         const logger = this.logger;
         this.logger.silly('read');
         if(this.finished) {
             this.logger.silly('data already read,handing off to callback');
-
-            cb(undefined, this.data);
+            return Promise.resolve(this.data);
         } else{
             this.logger.silly('data not read');
-            this.source.on('end', () => {
-	    try {
-                    logger.error('end of source');
-                    this.finished = true;
-                    this.source.close();
-                    logger.silly('handing off to cb');
-                }catch(err) {
-                    throw err;
-                }
-                cb(undefined, this.data);
+            return new Promise((resolve, reject) => {
+                this.source.on('end', () => {
+                    try {
+                        logger.error('end of source');
+                        this.finished = true;
+                        this.source.close();
+                        logger.silly('handing off to cb');
+                    } catch (err) {
+                        reject(err);
+                    }
+                    resolve(this.data);
+                });
             });
         }
     }

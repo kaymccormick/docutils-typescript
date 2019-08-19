@@ -86,7 +86,7 @@ export default class Reader extends Component {
       *   test123
       *
       */
-    public read(source: Input, parser: Parser, settings: Settings, cb: HandleDocumentCallback): void {
+    public read(source: Input, parser: Parser, settings: Settings): Promise<Document> {
         this.source = source;
         if (!this.parser) {
             this.parser = parser;
@@ -97,18 +97,11 @@ export default class Reader extends Component {
         }
         this.logger.silly('calling read on source');
 
-        this.source.read((error: Error | undefined | {}, output: string | {}  | string[] | undefined): void => {
-            this.logger.silly('in cb');
-            if (error) {
-                cb(error, undefined);
-                return;
-            }
-            if(output !== undefined && (Array.isArray(output) || typeof output === 'string')) {
-                this.input = output;
-            }
-            this.logger.silly('calling parse');
+        return this.source.read().then((input) => {
+            this.input = input;
             this.parse();
-            cb(undefined, this.document);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            return this.document!;
         });
     }
 

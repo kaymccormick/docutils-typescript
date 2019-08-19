@@ -7,14 +7,15 @@ import { defaultConsoleLogLevel } from './constants';
 import {Publisher} from './Publisher';
 import path from 'path';
 import StateFactory from './parsers/rst/StateFactory';
+import RSTStateMachine from './parsers/rst/RSTStateMachine';
 import { LoggerType } from './types';
 import process from 'process';
 
-let logger: LoggerType|undefined;
+let _logger: LoggerType|undefined;
 
 export function createLogger(options?: LoggerOptions): LoggerType {
-    if(logger !== undefined) {
-        return logger;
+    if(_logger !== undefined) {
+        return _logger;
     }
     let myOpt = options === undefined ? {} : { ...options};
     if(myOpt.format === undefined) {
@@ -26,8 +27,8 @@ export function createLogger(options?: LoggerOptions): LoggerType {
             new transports.File({filename: `${path.basename(process.argv[1])}-${process.pid}.log`, level: 'silly'}),
         ];
     }
-    logger = winston.createLogger(myOpt);
-    return logger;
+    _logger = winston.createLogger(myOpt);
+    return _logger;
 }
 
 export function createPublisher() {
@@ -36,13 +37,13 @@ export function createPublisher() {
     return publisher;
 }
 
-export function createRSTStateMachine({logger}) {
+export function createRSTStateMachine(args: {logger: LoggerType}) {
 const sm = new RSTStateMachine({
-            stateFactory: new StateFactory({logger}),
+            stateFactory: new StateFactory({logger: args.logger}),
             initialState: 'Body',
-            debugFn: true,
+            debugFn: args.logger.debug.bind(args.logger),
             debug: true,
-	    logger,
+	    logger: args.logger,
         });
 	return sm;
 

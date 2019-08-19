@@ -22,7 +22,7 @@ const defaultArgs = {
     writerName: 'xml',
 };
 
-test.only('full rst2xml pipeline with specific input', (done) => {
+test.only('full rst2xml pipeline with specific input', () => {
     const logger = createLogger();
     const source = new StringInput(
         `.. _A ReStructuredText Primer: ../../user/rst/quickstart.html
@@ -32,15 +32,7 @@ test.only('full rst2xml pipeline with specific input', (done) => {
     );
     const destination = new StringOutput(logger);
 
-    publishCmdLine({logger, writerName: 'xml', argv: ['input.txt', 'output.txt']}, (error: Error, output: any): void => {
-        if(error){
-            throw error;
-        }
-	
-        expect(destination.destination).toMatchSnapshot();
-
-        done();
-    });
+    return publishCmdLine({ logger, writerName: "xml", argv: ["input.txt", "output.txt"] });
 });
 
 /*

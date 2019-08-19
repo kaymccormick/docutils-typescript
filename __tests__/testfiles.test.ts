@@ -5,6 +5,25 @@ import { getDefaultSettings } from "../src/";
 import {NodeInterface} from "../src/types";
 import { createLogger } from '../src/testUtils';
 
+class Visitor extends nodes.GenericNodeVisitor {
+    /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
+    default_departure(node: NodeInterface) {
+        /**/
+    }
+ 
+    /* eslint-disable-next-line @typescript-eslint/camelcase,camelcae */
+    default_visit(node: NodeInterface) {
+        if (node.attributes && node.attributes.refuri) {
+            //                                console.log(node.attrites.refuri);
+            if (!/^https?:\/\//.test(node.attributes.refuri)) {
+                const msg = `Invalid refuri ${node.attributes.refuri}`;
+                const messages = [node.document!.reporter.warning(msg, [], {})];
+                node.add(messages);
+            }
+        }
+    }
+}
+
 const path = require('path');
 const fs = require('fs');
 
@@ -27,7 +46,7 @@ const defaultArgs = {
 const defaultSettings = { ...getDefaultSettings() };
 
 test.each(table)('%s', (file, input) => {
-const logger = createLogger();
+    const logger = createLogger();
     const myOpts: any = {};
 
     const settings = { ...defaultSettings };
@@ -40,43 +59,11 @@ const logger = createLogger();
         source, destination, settings, logger,
     });
     pub.setComponents(readerName, parserName, writerName);
-    return new Promise((resolve, reject) => {
-        /* {argv, usage, description, settingsSpec,
-           settingsOverrides, configSection, enableExitStatus } */
-        const fn = () => pub.publish({}, (error: any) => {
-            if (error) {
-                if (myOpts.expectError) {
-                    resolve();
-                } else {
-                    reject(error);
-                }
-                return;
-            }
-            const document = pub.document;
-
-            const Visitor = class extends nodes.GenericNodeVisitor {
-                /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-                default_departure(node: NodeInterface) {
-                    /**/
-                }
-
-                /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-                default_visit(node: NodeInterface) {
-                    if (node.attributes && node.attributes.refuri) {
-                        //                                console.log(node.attributes.refuri);
-                        if (!/^https?:\/\//.test(node.attributes.refuri)) {
-                            const msg = `Invalid refuri ${node.attributes.refuri}`;
-                            const messages = [document!.reporter.warning(msg, [], {})];
-                            node.add(messages);
-                        }
-                    }
-                }
-            };
-            const visitor = new Visitor(document!);
-            document!.walkabout(visitor);
-            expect(destination.destination).toMatchSnapshot();
-            resolve();
-        });
-        fn();
+    return pub.publish({}).then(() => {
+        const document = pub.document;
+ 	const visitor = new Visitor(document!);
+ 	document!.walkabout(visitor);
+        expect(destination.destination!).toMatchSnapshot();
     });
+
 });

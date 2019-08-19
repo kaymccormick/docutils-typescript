@@ -9,8 +9,8 @@ export class StringInput extends Input {
         this.sourcePath = '<string>';
     }
 
-    public read(cb: ReadInputCallback<string|string[]|{}>): void {
-        cb(undefined, this.source);
+    public read(): Promise<any> {
+        return Promise.resolve(this.source);
     }
 }
 
