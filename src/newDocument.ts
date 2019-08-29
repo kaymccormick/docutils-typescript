@@ -4,8 +4,10 @@
 import { document } from './nodes';
 import newReporter from './newReporter';
 import {Settings} from "../gen/Settings";
-import { Document } from "./types";
-import uuidv1 from 'uuid/v1';
+import { OptionParser } from './Frontend';
+import { Document, LoggerType } from "./types";
+import { RSTParser} from './parsers/restructuredtext';
+import { InvalidStateError } from './Exceptions';
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
 const __docformat__ = 'reStructuredText';
@@ -30,8 +32,14 @@ const __docformat__ = 'reStructuredText';
  * @returns {module:nodes~document} New document
  * @see module:newDocument~newDocument
  */
-function newDocument(args: { sourcePath: string }, settings: Settings): Document{
+function newDocument(args: { sourcePath: string; logger: LoggerType }, settings?: Settings): Document{
     const {sourcePath} = args;
+    if(settings === undefined) {
+        settings = new OptionParser({ logger: args.logger, settingsSpecs: RSTParser.settingsSpec }).getDefaultValues();
+    }
+    if(settings === undefined) {
+        throw new InvalidStateError('settings should not be undefined');
+    }
     const reporter = newReporter({ sourcePath }, settings);
     const attrs: { source?: string }= {};
     if (typeof sourcePath !== 'undefined') {
@@ -39,10 +47,8 @@ function newDocument(args: { sourcePath: string }, settings: Settings): Document
     }
 
     // eslint-disable-next-line new-cap
-    const myDocument = new document(settings, reporter, '', [], attrs);
+    const myDocument = new document(settings, reporter, args.logger, '', [], attrs);
     myDocument.noteSource(sourcePath, -1);
-    const id = uuidv1();
-    myDocument.uuid = id;
     return myDocument;
 }
 

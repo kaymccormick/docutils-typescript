@@ -18,7 +18,7 @@ class Decorations extends Transform {
         if (headerNodes && headerNodes.length) {
             const decoration = this.document.getDecoration();
             const header = decoration.getHeader();
-            header.children.push(...headerNodes);
+            header.add(headerNodes);
         }
         const footerNodes = this.generateFooter();
         if (footerNodes && footerNodes.length) {
@@ -27,7 +27,7 @@ class Decorations extends Transform {
             if (typeof footer === 'undefined') {
                 throw new Error('unexpected undefined footer');
             }
-            footer.children.push(...footerNodes);
+            footer.add(footerNodes);
         }
     }
 
@@ -43,7 +43,7 @@ class Decorations extends Transform {
         // See https://sourceforge.net/p/docutils/patches/132/
         // and https://reproducible-builds.org/specs/source-date-epoch/
         const settings = this.document.settings;
-        let core = settings.docutilsCoreOptionParser!;
+        let core = settings;
         if (core.generator || core.datestamp || core.sourceLink || core.sourceUrl) {
             const text = [];
             if ((core.sourceLink && settings._source) || core.sourceUrl) {
@@ -91,11 +91,11 @@ class Messages extends Transform {
         if (messages.length) {
             const section = new nodes.section('', [], { classes: 'system-messages' });
             // @@@ get this from the language module?
-            section.children.push(new nodes.title('', 'Docutils System Messages'),
-                ...messages);
+            section.add([new nodes.title('', 'Docutils System Messages'),
+                ...messages]);
             const m = this.document.transformMessages;
             m.splice(0, m.length);
-            this.document.children.push(section);
+            this.document.append(section);
         }
     }
 }
@@ -119,9 +119,7 @@ FilterMessages.defaultPriority = 870;
 /**
  * Append all post-parse system messages to the end of the document.
  * Used for testing purposes.
- * @todo
- *  
- * @uuid 40595b24-4180-404f-ab55-5f573327338a
+ * @todo unimplemented
  */
 class TestMessages extends Transform {
     public apply(): void {

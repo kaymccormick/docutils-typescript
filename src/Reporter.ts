@@ -6,6 +6,7 @@ import { isIterable } from "./utils";
 import { SystemMessage, UnimplementedError as Unimp } from "./Exceptions";
 import { Attributes, NodeInterface, ReporterInterface, Systemmessage, WritableStream } from "./types";
 
+
 /**
  *     Return the "source" and "line" attributes from the `node` given or from
  *     its closest ancestor.
@@ -16,7 +17,10 @@ function getSourceLine(node: NodeInterface): [string | undefined, number | undef
         if (myNode.source || myNode.line) {
             return [myNode.source, myNode.line];
         }
-        myNode = myNode.parent;
+        try {
+            myNode = myNode.parent;
+        } catch(error) {
+        }
     }
     return [undefined, undefined];
 }
@@ -53,7 +57,8 @@ class Reporter implements ReporterInterface {
         encoding?: string,
         errorHandler: string = 'backslashreplace'
     ) {
-        if (haltLevel === undefined) {
+        if (haltLevel === undefined || haltLevel == null) {
+            throw new Error('haltLevel undefined');
             haltLevel = 4;
         }
         this.DEBUG_LEVEL = 0;

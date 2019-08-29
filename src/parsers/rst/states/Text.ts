@@ -9,7 +9,15 @@ import * as RegExps from '../RegExps';
 import TransitionCorrection from '../../../TransitionCorrection';
 import UnexpectedIndentationError from '../../../error/UnexpectedIndentationError';
 import {EOFError} from '../../../Exceptions';
-import {NodeInterface} from "../../../types";
+import {
+    NodeInterface,
+    RegexpResult,
+    ContextArray,
+    StateType,
+    StateInterface,
+    ParseMethodReturnType,
+    Patterns,
+} from '../../../types';
 import State from "../../../states/State";
 import RSTStateMachine from "../RSTStateMachine";
 import {RSTStateArgs} from "../types";
@@ -19,14 +27,11 @@ import NestedStateMachine from "../NestedStateMachine";
  * @uuid 6c25a107-b1a0-44f9-a2cf-23b317d83967
  */
 class Text extends RSTState {
-    public _init(stateMachine: RSTStateMachine, debug: boolean = false) {
-        super._init(stateMachine, debug);
-        this.patterns = {
-            underline: '([!-/:-@[-`{-~])\\1* *$',
-            text: '',
-        };
-        this.initialTransitions = [['underline', 'Body'], ['text', 'Body']];
-    }
+    protected initialTransitions?: (string | string[])[] = [['underline', 'Body'], ['text', 'Body']];
+    public patterns: Patterns = {
+        underline: new RegExp('([!-/:-@[-`{-~])\\1* *$'),
+        text: new RegExp(''),
+    };
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
     public blank(match: any, context: any[], nextState: any) {
@@ -52,7 +57,7 @@ class Text extends RSTState {
 
     /** Definition list item. */
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
-    public indent(match: any, context: any[], nextState: any) {
+    public indent(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         const definitionlist = new nodes.definition_list();
         const [definitionlistitem, blankFinish1] = this.definition_list_item(context);
         let blankFinish = blankFinish1;
@@ -188,17 +193,17 @@ class Text extends RSTState {
         // @ts-ignore
         const newAbsOffset = this.nestedParse(
 
-              this.rstStateMachine.inputLines.slice(offset),
-              absLineOffset,
-               parentNode,
-                false,
-          () => NestedStateMachine.createStateMachine(this.rstStateMachine, 'QuotedLiteralBlock', this.rstStateMachine.stateFactory!.withStateClasses(['QuotedLiteralBlock'])));
+            this.rstStateMachine.inputLines.slice(offset),
+            absLineOffset,
+            parentNode,
+            false,
+            () => NestedStateMachine.createStateMachine(this.rstStateMachine, 'QuotedLiteralBlock', this.rstStateMachine.stateFactory!.withStateClasses(['QuotedLiteralBlock'])));
 
 
         if(newAbsOffset !== undefined) {
             this.gotoLine(newAbsOffset);
         }
-        return parentNode.children;
+        return parentNode.getChildren();
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */

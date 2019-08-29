@@ -2,6 +2,8 @@
  * @uuid f048c1a6-ca2d-497a-90c1-45927f992970
  */
 import { isIterable } from "./utils";
+import { defaultDebugFlag } from './constants';
+
 import {
     ApplicationError,
     EOFError,
@@ -23,13 +25,13 @@ import {
     Statemachine,
     StateMachineConstructorArgs,
     States,
-    StateType,
-    TransitionsArray
+    TransitionsArray,
+    StateConstructor,
+    LoggerType,
 } from "./types";
 import State from "./states/State";
 import TransitionCorrection from "./TransitionCorrection";
 import UnexpectedIndentationError from "./error/UnexpectedIndentationError";
-import { name } from "ejs";
 import RSTStateMachine from "./parsers/rst/RSTStateMachine";
 
 /*
@@ -86,7 +88,7 @@ class StateMachine implements Statemachine {
     public inputLines: StringList = new StringList([]);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public debugFn: DebugFunction = (line): void => {};
+    public debugFn: DebugFunction = ((line: string): void => { this.logger.debug(line); }).bind(this);
 
     public debug: boolean;
 
@@ -116,25 +118,30 @@ class StateMachine implements Statemachine {
 
     private observers: ObserverCallback[];
 
-    private currentState?: string;
+    protected currentState?: string;
 
-    private initialState?: string;
+    protected initialState?: string;
+
+    public logger: LoggerType;
+
+    /*    def __init__(self, state_classes, initial_state, debug=False): */
+    /* export interface StateMachineConstructorArgs { stateFactory?: Statefactory; initialState?: string; debug?: boolean; debugFn?: DebugFunction; } */
 
     public constructor(
         args: StateMachineConstructorArgs
     ) {
         const cArgs = { ... args };
+        this.logger = cArgs.logger;
         /* Initialize instance junk that we can't do except through
            this method. */
-        this._init();
-        if (!cArgs.debug) {
-            cArgs.debug = false;
+        if (cArgs.debug === undefined) {
+            cArgs.debug = defaultDebugFlag;
         }
         if (cArgs.debug && !cArgs.debugFn) {
             // make this unexpected error?
             // throw new Error("unexpected lack of debug function");
             /* eslint-disable-next-line no-console */
-            cArgs.debugFn = console.log;
+            cArgs.debugFn = this.logger.debug.bind(this.logger);
         }
         if(cArgs.stateFactory !== undefined) {
             this.stateFactory = cArgs.stateFactory;
@@ -159,10 +166,8 @@ class StateMachine implements Statemachine {
         this.observers = [];
     }
 
-    public _init(): void {
-        // do-nothing
-    }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public createStateMachine(rstStateMachine: RSTStateMachine, initialState?: string, stateFactory: Statefactory|undefined=rstStateMachine.stateFactory): Statemachine {
 
         // @ts-ignore
@@ -209,8 +214,10 @@ class StateMachine implements Statemachine {
         inputOffset: number,
         runContext?: ContextKind,
         inputSource?: {},
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-explicit-any
         initialState?: string, ...rest: any[]):
         (string|{})[] {
+        this.logger.debug('run');
         // RUNTIMEINIT
         let lines: string | string[] | StringList = inputLines;
         this.runtimeInit();
@@ -254,6 +261,7 @@ class StateMachine implements Statemachine {
                 try {
                     try {
                         this.nextLine();
+                        this.logger.debug('line', {value: this.line});
                         if (this.debug) {
                             if (Number.isNaN(this.lineOffset)) {
                                 /* istanbul ignore if */
@@ -383,7 +391,7 @@ class StateMachine implements Statemachine {
     }
 
     public isNextLineBlank(): boolean {
-        return !(this.inputLines[this.lineOffset + 1].trim());
+        return this.inputLines.length > this.lineOffset + 1 ? !this.inputLines[this.lineOffset + 1].trim() : true;
     }
 
     public atEof(): boolean {
@@ -499,16 +507,17 @@ class StateMachine implements Statemachine {
      */
     public checkLine(context: {}[], state: StateInterface,
         transitions?: TransitionsArray):  [{}[], (string | StateInterface | undefined), {}[]] {
+        this.logger.silly({kind: 'enterFunction', function: 'checkLine'});
         /* istanbul ignore if */
         if (!Array.isArray(context)) {
             throw new Error('context should be array');
         }
+        if (transitions === undefined) {
+            transitions = state.transitionOrder;
+        }
         if (this.debug) {
             this.debugFn(`\nStateMachine.check_line: ` +
               `state="${state.constructor.name}", transitions=${transitions}.`);
-        }
-        if (transitions === undefined) {
-            transitions = state.transitionOrder;
         }
         /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
         const stateCorrection = true;
@@ -525,11 +534,13 @@ class StateMachine implements Statemachine {
             if(!pattern.exec){
                 throw new InvalidStateError(`unexpected pattern ${v}`);
             }
+	    this.logger.silly(`executing for ${t} pattern ${pattern} on line ${this.line}`);
             const result = pattern.exec(this.line);
             if (result) {
+	    this.logger.debug(`line matched transition ${t}`, { value: t});
                 if (this.debug) {
                     this.debugFn(`\nStateMachine.checkLine: `
-                      + `Matched transition '"${name}"`
+                      + `Matched transition '"${t}"`
                       + `in state "${state.constructor.name}`);
                 }
                 const r = method.bind(state)({ pattern, result, input: this.line },
@@ -547,20 +558,16 @@ class StateMachine implements Statemachine {
         return state.noMatch(context, transitions);
     }
 
-    public addState(stateClass: StateType): void {
-        if (typeof stateClass === 'undefined') {
-        // throw new InvalidArgumentsError('stateClass should be a class');
-            return;
-        }
+    public addState(stateClass: StateConstructor): void {
         let stateName;
         if (typeof stateClass === 'string') {
             stateName = stateClass;
         } else {
             stateName = stateClass.stateName;
         }
-        // console.log(`adding state ${stateName}`);
+        //this.logger.silly(`adding state ${stateName}`, { stateName });
 
-        if(this.hasState(stateName)) {
+        if(this.hasState(stateName!)) {
             throw new DuplicateStateError(stateName);
         }
         if (!stateName) {
@@ -574,7 +581,7 @@ class StateMachine implements Statemachine {
         this.states[stateName] = r;
     }
 
-    public addStates(stateClasses: StateType[]): void {
+    public addStates(stateClasses: StateConstructor[]): void {
         if (!stateClasses) {
             throw new Error('');
         }

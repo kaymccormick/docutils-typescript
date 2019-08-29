@@ -7,13 +7,55 @@
  */
 // eslint-disable-next-line @typescript-eslint/camelcase
 import { citation, decoration, Element, footnote, reference, substitution_definition } from "./nodes";
+import { Logger } from 'winston';
 import { Settings } from "../gen/Settings";
+export { Settings };
+
 import Transformer from "./Transformer";
 import StringList from "./StringList";
 import { InlinerInterface } from "./parsers/rst/types";
 import Parser from "./Parser";
 import Output from "./io/Output";
 import RSTStateMachine from "./parsers/rst/RSTStateMachine";
+import Input from './io/Input';
+import Writer from "./Writer";
+import Reader from "./Reader";
+
+
+export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
+
+type LogCallback = (error?: any, level?: string, message?: string, meta?: any) => void;
+
+export interface LeveledLogMethod {
+    (message: string, callback: LogCallback): Logger;
+    (message: string, meta: any, callback: LogCallback): Logger;
+    (message: string, ...meta: any[]): Logger;
+    (message: any): Logger;
+    (infoObject: object): Logger;
+}
+
+export interface LoggerType {
+    debug: LeveledLogMethod;
+    silly: LeveledLogMethod;
+    error: LeveledLogMethod;
+    warn: LeveledLogMethod;
+    info: LeveledLogMethod;
+}
+
+export interface ConfigSettings {
+    [name: string]: any;
+}
+
+export type SettingsSpecType = [string|undefined, string|undefined|null, [string, string[], { [name: string]: any }][]];
+
+export type StateType = StateInterface | string;
+export interface OptionSpec {
+    [optionName: string]: (arg: string) => string;
+}
+
+export interface Options {
+    [optionName: string]: any;
+}
 
 export interface ParserArgs
 {
@@ -21,14 +63,14 @@ export interface ParserArgs
     rfc2822?: boolean;
     debug?: boolean;
     debugFn?: DebugFunction;
+    logger: LoggerType;
 }
-
-export interface SettingsInterface {
-    getSettings(name: string): {};
-}
-
 export interface WritableStream {
     write: (data: string) => void;
+}
+
+export interface GenericSettings {
+    [settingName: string]: any;
 }
 
 export interface SourceLocation {
@@ -47,8 +89,6 @@ export interface QuoteattrCallback {
 export interface NodeInterface extends SourceLocation {
     referenced: boolean;
     names: string[];
-    refname?: string;
-    refid?: string;
     rawsource: string;
     /** Back-reference to the Node immediately containing this Node. */
     parent?: NodeInterface;
@@ -103,7 +143,13 @@ export interface NodeInterface extends SourceLocation {
 
     tagname: string;
     classTypes: {}[];
-    children: NodeInterface[];
+    getChild(index: number): NodeInterface;
+    hasChildren(): boolean;
+    getNumChildren(): number;
+    clearChildren(): void;
+    getChildren(): NodeInterface[];
+    append(item: NodeInterface): void;
+    removeChild(index: number): void;
 
     // eslint-disable-next-line max-len
     traverse(args: TraverseArgs): NodeInterface[];
@@ -149,6 +195,7 @@ export interface NodeInterface extends SourceLocation {
     getCustomAttr(attrName: string): undefined;
 
     isAdmonition(): boolean;
+    isSetup: boolean;
 }
 
 export interface Attributes {
@@ -168,9 +215,41 @@ export interface ElementInterface extends NodeInterface {
 export interface TextElementInterface extends ElementInterface {
 }
 
+export interface SubstitutionNames {
+    [name: string]: string;
+}
+
+export interface SubstitutionDefs {
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    [name: string]: substitution_definition;
+}
+
+export interface RefNames {
+    [refName: string]: NodeInterface[];
+}
+
+export interface RefIds {
+    [refId: string]: NodeInterface[];
+}
+
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface NameTypes {
+    [name: string]: boolean;
+}
+
+export interface Ids {
+    [id: string]: NodeInterface ;
+}
+
 export interface Document extends ElementInterface {
+    logger: LoggerType;
     transformMessages: Systemmessage[];
     nameIds: NameIds;
+    parseMessages: Systemmessage[];
+    substitutionDefs: SubstitutionDefs;
+
+    substitutionNames: SubstitutionNames;
 
     reporter: ReporterInterface;
     settings: Settings;
@@ -298,12 +377,9 @@ export interface ReporterInterface {
 }
 
 export interface Statefactory {
-
-    withStateClasses(stateClasses: (StateType|string)[]): Statefactory;
-
+    withStateClasses(stateClasses: (StateConstructor|string)[]): this;
     createState(stateName: string, stateMachine: Statemachine): StateInterface;
-
-    getStateClasses(): StateType[];
+    getStateClasses(): StateConstructor[];
 }
 
 export interface States {
@@ -311,6 +387,7 @@ export interface States {
 }
 
 export interface Statemachine {
+    logger: LoggerType;
     stateFactory?: Statefactory;
 
     createStateMachine(rstStateMachine: RSTStateMachine, initialState?: string, stateFactory?: Statefactory): Statemachine;
@@ -353,10 +430,6 @@ export interface Statemachine {
     getState2(stateName: string): StateInterface;
 }
 
-export interface StateType {
-    stateName: string;
-
-}
 export interface StateInterface {
     stateName: string;
     blankFinish?: boolean;
@@ -481,10 +554,6 @@ export interface CoreLanguage {
     bibliographicFields: {};
     authorSeparators: string[];
 }
-
-export interface ApplyFunction {
-    (): void;
-}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Systemmessage extends NodeInterface {
 }
@@ -559,6 +628,7 @@ export interface StateMachineConstructorArgs {
     initialState?: string;
     debug?: boolean;
     debugFn?: DebugFunction;
+    logger: LoggerType;
 }
 
 export interface CreateStateMachineFunction<T> {
@@ -571,3 +641,56 @@ export interface StateMachineFactoryFunction<T> {
 }
 
 export type ContextKind = string[] | {}[];
+
+export type ParseResult2 = any[];
+export type ParseMethodReturnType = [ContextArray, StateType, ParseResult2]
+export type ParseResult  = [NodeInterface[], boolean];
+export type IsolateTableResult= [StringList, NodeInterface[], boolean]
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface StateConstructor {
+    stateName?: string;
+}
+
+export interface RegexpResult {
+    pattern: RegExp;
+    result: RegExpExecArray;
+    input: string;
+}
+
+export type ContextArray = string[];
+
+export interface Patterns {
+    [patternName: string]: RegExp;
+}
+export interface InputConstructorArgs {
+    source?: {};
+	    sourcePath?: string;
+	    encoding?: string;
+	    errorHandler?: string;
+	   logger: LoggerType;
+	    }
+export interface InputConstructor {
+    new (args: InputConstructorArgs): Input;
+}
+
+export interface WriterConstructor {
+    new (args: { logger: LoggerType}): Writer;
+}
+
+export interface ReaderConstructorArgs {
+    parser?: Parser;
+    parseFn?: ParseFunction;
+    parserName?: string;
+    debugFn?: DebugFunction;
+    debug?: boolean;
+    logger: LoggerType;
+}
+
+export interface ReaderConstructor {
+    new (args: ReaderConstructorArgs): Reader;
+
+}
+export interface ParseFunction {
+    (source: string, settings?: Settings): Document;
+}
+

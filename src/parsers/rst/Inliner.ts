@@ -2,14 +2,23 @@
  * @uuid 2309871e-c4df-4f93-8cf9-12321cf29d08
  */
 import * as nodes from "../../nodes";
-import { escape2null, getTrimFootnoteRefSpace, isIterable, splitEscapedWhitespace } from "../../utils";
+import { escape2null,
+    getTrimFootnoteRefSpace,
+    isIterable, splitEscapedWhitespace } from "../../utils";
 import { matchChars } from "../../utils/punctuationChars";
 import roleInterface from "./Roles";
 import { ApplicationError } from "../../Exceptions";
 import unescape from "../../utils/unescape";
-import { Document, ElementInterface, NodeInterface, ReporterInterface } from "../../types";
+import {
+    Document,
+    ElementInterface,
+    NodeInterface,
+    ReporterInterface,
+    LoggerType,
+} from "../../types";
 import { Settings } from "../../../gen/Settings";
 import { InlinerInterface } from "./types";
+import { fullyNormalizeName } from "../../nodeUtils";
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
 const __docformat__ = 'reStructuredText';
@@ -64,7 +73,7 @@ function buildRegexp(definition: any[], compile = true) {
     myParts.forEach((part) => {
         const fakeTuple3 = Array.isArray(part) ? part[0] : undefined;
         if (fakeTuple3 === 1) {
-            const [regexp, subGroupNames] = buildRegexp(part);
+            const [regexp, subGroupNames] = buildRegexp(part, false);
             // @ts-ignore
             groupNames.push(null, ...subGroupNames);
             partStrings.push(regexp);
@@ -117,10 +126,12 @@ class Inliner implements InlinerInterface {
     private parts: any[] = [];
     private startStringPrefix: string = '';
     private endStringSuffix: string = '';
+    private logger: LoggerType;
     /**
      * Create Inliner instance
      */
-    public constructor(document: Document) {
+    public constructor(document: Document, logger: LoggerType) {
+        this.logger = logger;
         this.dispatch = {
             '*': this.emphasis.bind(this),
             '**': this.strong.bind(this),
@@ -134,8 +145,8 @@ class Inliner implements InlinerInterface {
         };
         this.document = document;
 
-this.reporter = document.reporter;
-this.implicitDispatch = [];
+        this.reporter = document.reporter;
+        this.implicitDispatch = [];
         this.nonWhitespaceAfter = '';
         this.nonWhitespaceBefore = '(?<!\\s)';
         this.nonWhitespaceEscapeBefore = '(?<![\\s\\x00])';
@@ -154,7 +165,7 @@ this.implicitDispatch = [];
         if (inlines && inlines.length && inlines[0] instanceof nodes.target) {
             // assert len(inlines) == 1
             const target = inlines[0];
-            const name = nodes.fullyNormalizeName(target.astext());
+            const name = fullyNormalizeName(target.astext());
             target.attributes.names.push(name);
             this.document.noteExplicitTarget(target, this.parent);
         }
@@ -179,7 +190,7 @@ this.implicitDispatch = [];
                     if (endstring.endsWith('__')) {
                         referenceNode.attributes.anonymous = 1;
                     } else {
-                        referenceNode.attributes.refname = nodes.fullyNormalizeName(subrefText);
+                        referenceNode.attributes.refname = fullyNormalizeName(subrefText);
                         this.document!.noteRefname(referenceNode);
                     }
                     referenceNode.add(subrefNode);
@@ -193,7 +204,7 @@ this.implicitDispatch = [];
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
     public footnote_reference(match: any, lineno: number) {
         const label = match.groups.footnotelabel;
-        let refname = nodes.fullyNormalizeName(label);
+        let refname = fullyNormalizeName(label);
         const string = match.result.input;
         let before = string.substring(0, match.result.index);
         const remaining = string.substring(match.result.index + match.result[0].length);
@@ -231,13 +242,13 @@ this.implicitDispatch = [];
 
     public reference(match: any, lineno: number, anonymous = false) {
         const referencename = match.groups.refname;
-        const refname = nodes.fullyNormalizeName(referencename);
+        const refname = fullyNormalizeName(referencename);
         const referencenode = new nodes.reference(
             referencename + match.groups.refend, referencename,
             [],
             { name: nodes.whitespaceNormalizeName(referencename) },
         );
-        referencenode.children[0].rawsource = referencename;
+        referencenode.getChild(0).rawsource = referencename;
         if (anonymous) {
             referencenode.attributes.anonymous = 1;
         } else {
@@ -372,7 +383,7 @@ this.implicitDispatch = [];
             if (aliastext.endsWith('_') && !(underscoreEscaped
                                              || this.patterns.uri.exec(aliastext))) {
                 aliastype = 'name';
-                alias = nodes.fullyNormalizeName(aliastext.substring(0, aliastext.length - 1));
+                alias = fullyNormalizeName(aliastext.substring(0, aliastext.length - 1));
                 target = new nodes.target(match[1], '', [], { refname: alias });
                 target.indirectReferenceName = aliastext.substring(0, aliastext.length - 1);
             } else {
@@ -400,10 +411,10 @@ this.implicitDispatch = [];
             rawtext = unescape(escaped, true);
         }
 
-        const refname = nodes.fullyNormalizeName(text);
+        const refname = fullyNormalizeName(text);
         const reference = new nodes.reference(rawsource, text, [],
             { name: nodes.whitespaceNormalizeName(text) });
-        reference.children[0].rawsource = rawtext;
+        reference.getChild(0).rawsource = rawtext;
         const nodeList = [reference];
 
         if (rawsource.endsWith('__')) {
@@ -498,7 +509,7 @@ this.implicitDispatch = [];
             const textend = matchend + endmatch.index + endmatch[0].length;
             rawsource = unescape(string.substring(matchstart, textend), true);
             const node = new nodeclass(rawsource, text);
-            node.children[0].rawsource = unescape(_text, true);
+            node.getChild(0).rawsource = unescape(_text, true);
             return [string.substr(0, matchstart), [node],
                 string.substr(textend), [], endmatch[1]];
         }
@@ -520,7 +531,7 @@ this.implicitDispatch = [];
         let
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
             esn;
-        if (settings.docutilsParsersRstParser!.characterLevelInlineMarkup) {
+        if (settings.characterLevelInlineMarkup) {
             startStringPrefix = "(^|(?<!\\x00))";
             ssn = [null, null];
             endStringSuffix = "";
@@ -600,24 +611,40 @@ this.implicitDispatch = [];
                 endStringSuffix}`),
             email: new RegExp(emailPattern), // fixme % args + '$',
             // re.VERBOSE | re.UNICODE),
-            uri: new RegExp(`${startStringPrefix}((([a-zA-Z][a-zA-Z0-9.+-]*):(((//?)?${uric}*${uriEnd})(\\?${uric}*${uriEnd})?(\\#${uriEnd})?))|(${emailPattern}))${endStringSuffix}`)
+            uri: new RegExp(`${startStringPrefix}((([a-zA-Z][a-zA-Z0-9.+-]*):(((//?)?${uric}*${uriEnd})(\\?${uric}*${uriEnd})?(\\#${uriEnd})?))|(${emailPattern}))${endStringSuffix}`),
+	    // need pep
+	    // need rfc
+
         };
+
+        this.implicitDispatch.push(this.patterns.uri);//, this.standaloneUri);
+        /*        if settings.pep_references:
+            self.implicit_dispatch.append((self.patterns.pep,
+                                           self.pep_reference))
+        if settings.rfc_references:
+            self.implicit_dispatch.append((self.patterns.rfc,
+                                           self.rfc_reference))
+         */
     }
 
     parse(text: string, args: { lineno: number; memo: any; parent: ElementInterface }) {
+        this.logger.silly('parse');
         const { lineno, memo, parent } = args;
         this.reporter = memo.reporter;
         this.document = memo.document;
         this.language = memo.language;
         this.parent = parent;
         let remaining = escape2null(text);
+        this.logger.silly('remaining', { value: remaining });
         const processed = [];
         let unprocessed = [];
         const messages = [];
         while (remaining) {
+	    this.logger.debug(`checking pattern ${this.patterns.initial[0]}`);
             const match = this.patterns.initial[0].exec(remaining);
             //          console.log(match);
             if (match) {
+  	      this.logger.silly('matched',{ value:match});
                 const rr: any = {};
 
                 this.patterns.initial[1].forEach((x: any, index: number) => {
@@ -653,24 +680,27 @@ this.implicitDispatch = [];
                     unprocessed = [];
                 }
             } else {
+	    this.logger.silly('break');
                 break;
             }
         }
         if (remaining) {
+            this.logger.silly('have remaining', { value: remaining });
             processed.push(...this.implicit_inline(remaining, lineno));
         }
         //      console.log(processed);
         return [processed, messages];
     }
 
+    /*
+     * Check each of the patterns in `self.implicit_dispatch` for a match,
+     * and dispatch to the stored method for the pattern.  Recursively check
+     * the text before and after the match.  Return a list of `nodes.Text`
+     * and inline element nodes.
+     */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
     implicit_inline(text: string, lineno: number) {
-        /*
-          Check each of the patterns in `self.implicit_dispatch` for a match,
-          and dispatch to the stored method for the pattern.  Recursively check
-          the text before and after the match.  Return a list of `nodes.Text`
-          and inline element nodes.
-        */
+        this.logger.silly('implicit_inline', {value:text});
         if (!text) {
             return [];
         }
@@ -709,7 +739,7 @@ this.implicitDispatch = [];
         if (roleFn) {
             const [theNodes, messages2] = roleFn.invoke(role, rawsource, text, lineno, this);
             try {
-                theNodes[0].children[0].rawsource = unescape(text, true);
+                theNodes[0].getChild(0).rawsource = unescape(text, true);
             } catch (error) {
                 /* istanbul ignore if */
                 if (!(error instanceof TypeError)) {

@@ -1,8 +1,10 @@
 const fs = require('fs');
-const camelcase = require('@typescript-eslint/camelcase,camelcase');
+const camelcase = require('camelcase');
 const spec = require('../gen/settingsSpec');
 const specOut: any = {};
 const componentMap: any = {};
+
+/* Not sure if this is out of date or not?? */
 Object.keys(spec).forEach(key => {
     const outKey = camelcase(key, { pascalCase: true });
 
@@ -15,6 +17,7 @@ Object.keys(spec).forEach(key => {
         const [opt1] = opts;
         const f2 = (e.validator || '').replace(/^validate_/, '');
         const x = {
+	opts,
             desc,
             t: f2
         }

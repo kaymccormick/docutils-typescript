@@ -5,29 +5,33 @@ import Body from './Body';
 import { EOFError } from '../../../Exceptions';
 import RSTStateMachine from "../RSTStateMachine";
 import {RSTStateArgs} from "../types";
-
-/**
- * @uuid 2f73fc21-252e-4f18-b37c-9be0e5f5494f
- */
+import {
+    RegexpResult,
+    ContextArray,
+    StateType,
+    StateInterface,
+    ParseMethodReturnType,
+    Patterns,
+} from '../../../types';
 class SpecializedBody extends Body {
 
     /* istanbul ignore next */
     // @ts-ignore
-    public indent() {
+    public indent(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
 
     /* istanbul ignore next */
     // @ts-ignore
-    public bullet() {
+    public bullet(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
 
     /* istanbul ignore next */
     // @ts-ignore
-    public enumerator() {
+    public (match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
@@ -35,7 +39,7 @@ class SpecializedBody extends Body {
     /* istanbul ignore next */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
     // @ts-ignore
-    public field_marker() {
+    public field_marker(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
@@ -43,14 +47,14 @@ class SpecializedBody extends Body {
     /* istanbul ignore next */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
     // @ts-ignore
-    public option_marker() {
+    public option_marker(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
 
     /* istanbul ignore next */
     // @ts-ignore
-    public doctest() {
+    public doctest(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
@@ -58,7 +62,7 @@ class SpecializedBody extends Body {
     /* istanbul ignore next */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
     // @ts-ignore
-    public line_block() {
+    public line_block(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
@@ -66,7 +70,7 @@ class SpecializedBody extends Body {
     /* istanbul ignore next */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
     // @ts-ignore
-    public grid_table_top() {
+    public grid_table_top(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
@@ -74,7 +78,7 @@ class SpecializedBody extends Body {
     /* istanbul ignore next */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
     // @ts-ignore
-    public simple_table_top() {
+    public simple_table_top(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
@@ -82,35 +86,35 @@ class SpecializedBody extends Body {
     /* istanbul ignore next */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
     // @ts-ignore
-    public explicit_markup() {
+    public explicit_markup(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
 
     /* istanbul ignore next */
     // @ts-ignore
-    public anonymous() {
+    public anonymous(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
 
     /* istanbul ignore next */
     // @ts-ignore
-    public line() {
+    public line(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
 
     /* istanbul ignore next */
     // @ts-ignore
-    public text() {
+    public text(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         // @ts-ignore
         this.invalid_input();
     }
 
     /* istanbul ignore next */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public invalid_input(match: any, context: any[], nextState: any): any[] {
+    public invalid_input(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         this.rstStateMachine.previousLine();
         throw new EOFError();
     }

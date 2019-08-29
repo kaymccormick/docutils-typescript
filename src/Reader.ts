@@ -5,7 +5,15 @@ import Component from "./Component";
 import * as universal from "./transforms/universal";
 import parsers from "./parsers";
 import newDocument from "./newDocument";
-import { DebugFunction, Document, ParserConsructor, TransformType } from "./types";
+import {
+    DebugFunction,
+    Document,
+    ParserConsructor,
+    TransformType,
+    LoggerType,
+    ReaderConstructorArgs,
+    ParseFunction,
+} from "./types";
 import { Settings } from "../gen/Settings";
 import Parser from "./Parser";
 import Input from "./io/Input";
@@ -13,10 +21,6 @@ import { InvalidStateError } from "./Exceptions";
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
 const __docformat__ = 'reStructuredText';
-
-interface ParseFunction {
-    (source: string, settings?: Settings): Document;
-}
 
 interface TransformClass {
     apply(): void;
@@ -45,15 +49,13 @@ export default class Reader extends Component {
     }
 
     public constructor(
-        args: { parser?: Parser; parseFn?: ParseFunction; parserName?: string;
-            debugFn?: DebugFunction;
-            debug?: boolean; }
+        args: ReaderConstructorArgs,
     ) {
-        super();
+        super({ logger: args.logger });
         const { parser, parseFn, parserName } = args;
         this.componentType = 'reader';
         this.configSection = 'readers';
-        if(parser !== undefined) {
+	      if(parser !== undefined) {
             this.parser = parser;
         }
         if(parseFn !== undefined) {
@@ -80,6 +82,7 @@ export default class Reader extends Component {
         this.parser = new ParserClass({
             debug: this.debug,
             debugFn: this.debugFn,
+	    logger: this.logger,
         });
     }
 
@@ -89,7 +92,7 @@ export default class Reader extends Component {
       *   test123
       *
       */
-    public read(source: Input, parser: Parser, settings: Settings, cb: HandleDocumentCallback): void {
+    public read(source: Input, parser: Parser, settings: Settings): Promise<Document> {
         this.source = source;
         if (!this.parser) {
             this.parser = parser;
@@ -98,17 +101,13 @@ export default class Reader extends Component {
         if (!this.source) {
             throw new Error('Need source');
         }
+        this.logger.silly('calling read on source');
 
-        this.source.read((error: Error | undefined | {}, output: string | {}  | string[] | undefined): void => {
-            if (error) {
-                cb(error, undefined);
-                return;
-            }
-            if(output !== undefined && (Array.isArray(output) || typeof output === 'string')) {
-                this.input = output;
-            }
+        return this.source.read().then((input) => {
+            this.input = input;
             this.parse();
-            cb(undefined, this.document);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            return this.document!;
         });
     }
 
@@ -148,6 +147,7 @@ export default class Reader extends Component {
             throw new InvalidStateError("need settings");
         }
         const document = newDocument({
+	    logger:this.logger,
             sourcePath:
                                        this.source && this.source.sourcePath || '',
         },

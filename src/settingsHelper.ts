@@ -1,9 +1,6 @@
-/**
- * @uuid e6868db7-677c-4bdd-ae6e-9655175ac8af
- */
-import { Settings } from '../gen/Settings';
-import{ defaults} from '../gen/defaults';
+import baseSettings from './baseSettings';
+import { Settings } from './';
 
 export function getDefaultSettings(): Settings {
-    return defaults;
+    return { ... baseSettings };
 }

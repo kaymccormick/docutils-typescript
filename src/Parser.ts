@@ -9,11 +9,12 @@ import { DebugFunction, Document, ParserArgs } from "./types";
  */
 abstract class Parser extends Component {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public debugFn: DebugFunction = (msg: string): void => {};
+    public debugFn: DebugFunction = this.logger.debug.bind(this.logger);
+
     protected debug: boolean;
 
-    public constructor(args: ParserArgs = {}) {
-        super();
+    public constructor(args: ParserArgs) {
+        super({ logger: args.logger});
         this.componentType = 'parser';
         this.configSection = 'parsers';
         this.debug = args.debug || false;

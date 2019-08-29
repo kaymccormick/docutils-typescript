@@ -3,20 +3,19 @@
  */
 import Input from './io/Input';
 import Output from './io/Output';
-import { ReadInputCallback } from "./types";
+import { ReadInputCallback, LoggerType } from "./types";
 
 /** Direct string input. 
  * @uuid ae2c2dd1-3766-4ae6-a68c-a3a4a0b71cb3
 */
 export class StringInput extends Input {
-
-    public constructor(source: string, sourcePath?: string, encoding?: string, errorHandler?: string) {
-        super({source, sourcePath, encoding, errorHandler});
+    public constructor(source: string, logger: LoggerType, sourcePath?: string, encoding?: string, errorHandler?: string) {
+        super({source, sourcePath, encoding, errorHandler, logger});
         this.sourcePath = '<string>';
     }
 
-    public read(cb: ReadInputCallback<string|string[]|{}>): void {
-        cb(undefined, this.source);
+    public read(): Promise<any> {
+        return Promise.resolve(this.source);
     }
 }
 
@@ -25,12 +24,13 @@ export class StringInput extends Input {
 */
 export class StringOutput extends Output<string> {
     public constructor(
+        logger: LoggerType,
         destination?: string,
         destinationPath?: string,
         encoding?: string,
         errorHandler?: string
     ) {
-        super(destination, destinationPath, encoding, errorHandler);
+        super(logger, destination, destinationPath, encoding, errorHandler);
         this.defaultDestinationPath = '<string>';
 
     }

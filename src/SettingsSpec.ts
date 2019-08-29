@@ -6,14 +6,12 @@
  * 
  * SettingsSpec subclass objects used by `docutils.frontend.OptionParser`.
  */
-/**
- * @uuid affb0be9-a282-4a31-b861-ac8a78bdb718
- */
+import { SettingsSpecType, GenericSettings } from './types';
 class SettingsSpec {
-    private settingsSpec: {}[] = [];
-    private settingsDefaults?: {};
-    private settingsDefaultOverrides?: {};
-    private relativePathSettings: {}[] = [];
+    public settingsSpec: SettingsSpecType[] = [];
+    public settingsDefaults: GenericSettings = {};
+    public settingsDefaultOverrides?: GenericSettings;
+    public relativePathSettings: string[] = [];
     public configSection: string = '';
     public configSectionDependencies: string[] = [];
 }

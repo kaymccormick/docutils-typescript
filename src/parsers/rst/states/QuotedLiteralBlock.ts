@@ -8,6 +8,13 @@ import * as nodes from '../../../nodes';
 import { EOFError } from '../../../Exceptions';
 import RSTStateMachine from "../RSTStateMachine";
 import {RSTStateArgs} from "../types";
+import {
+    RegexpResult,
+    ContextArray,
+    StateInterface,
+    ParseMethodReturnType,
+    Patterns,
+} from "../../../types";
 
 /**
  * Nested parse handler for quoted (unindented) literal blocks.
@@ -18,17 +25,12 @@ import {RSTStateArgs} from "../types";
  */
 class QuotedLiteralBlock extends RSTState {
     private initial_lineno?: number;
-    public _init(stateMachine: RSTStateMachine, debug: boolean) {
-        super._init(stateMachine, debug);
-        this.patterns = {
-            // eslint-disable-next-line @typescript-eslint/camelcase
-            initial_quoted: `(${RegExps.nonalphanum7bit})`,
-            text: '',
-        };
-        this.initialTransitions = ['initial_quoted', 'text'];
-        this.initial_lineno = undefined;
-    }
-
+    protected initialTransitions?: (string | string[])[] = ['initial_quoted', 'text'];
+    public patterns: Patterns = {
+        initial_quoted: new RegExp(`(${RegExps.nonalphanum7bit})`),
+        text: new RegExp(''),
+    };
+    
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
     // @ts-ignore
     public blank(match, context, nextState) {
@@ -63,9 +65,9 @@ class QuotedLiteralBlock extends RSTState {
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
-    public indent(match: any, context: any[], nextState: any): any[] {
-        //        assert context, ('QuotedLiteralBlock.indent: context should not '
-        //                         'be empty!')
+    public indent(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
+        // assert context, ('QuotedLiteralBlock.indent: context should not '
+        // 'be empty!')
         this.messages.push(
             this.reporter!.error('Unexpected indentation.', [],
                 { line: this.rstStateMachine.absLineNumber() }),

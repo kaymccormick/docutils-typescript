@@ -10,7 +10,12 @@ import {
     DebugFunction,
     Statemachine,
     StateMachineConstructorArgs,
-    StateMachineFactoryFunction
+    StateMachineFactoryFunction,
+    RegexpResult,
+    ContextArray,
+    StateInterface,
+    ParseMethodReturnType,
+    Patterns,
 } from "../types";
 
 /**
@@ -64,13 +69,13 @@ class StateWS extends State {
     //public knownIndentSmKwargs: StateMachineConstructorArgs | undefined;
 
     /** Patterns for default whitespace transitions.  May be overridden in subclasses. */
-    private wsPatterns: any;
+    private wsPatterns: Patterns = { blank: /^ *$/, indent: /^ +/ };
 
     /**
      * Default initial whitespace transitions, added before those listed in
      * `State.initial_transitions`.  May be overridden in subclasses.
      */
-    private wsInitialTransitions: string[] | undefined;
+    private wsInitialTransitions: string[] | undefined = ['blank', 'indent'];
     //protected nestedSm: StatemachineConstructor<Statemachine> | undefined;
     private wsStateMachine: StateMachineWS;
     private debugFn: DebugFunction = (line) => {};
@@ -97,21 +102,10 @@ class StateWS extends State {
         }*/
     }
 
-    public _init(stateMachine: any, args: any) {
-        super._init(stateMachine, args);
-        /*this.indentSm = undefined;
-        this.indentSmKwargs = null;
-        this.knownIndentSm = undefined;
-        this.knownIndentSmKwargs = undefined;
-        */this.wsPatterns = {
-            blank: ' *$',
-            indent: ' +',
-        };
-        this.wsInitialTransitions = ['blank', 'indent'];
-    }
-
     public addInitialTransitions() {
         super.addInitialTransitions();
+        //this.logger.silly('addInitialTransitions');
+        /* Alteration of patterns ! */
         this.patterns = {...this.patterns, ...this.wsPatterns};
         if(this.wsInitialTransitions === undefined) {
             throw new InvalidStateError();
@@ -124,7 +118,7 @@ class StateWS extends State {
         return this.nop(match, context, nextState);
     }
 
-    public indent(match: any, context: any[], nextState: any) {
+    public indent(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
         const [indented, indent, lineOffset, blankFinish] = this.wsStateMachine.getIndented({});
         if(!this.createIndentStateMachine) {

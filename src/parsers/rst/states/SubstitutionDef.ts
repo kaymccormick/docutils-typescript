@@ -7,7 +7,14 @@ import * as nodes from '../../../nodes';
 import * as RegExps from '../RegExps';
 import RSTStateMachine from "../RSTStateMachine";
 import {RSTStateArgs} from "../types";
-import { NodeInterface, StateInterface } from "../../../types";
+import {
+    NodeInterface,
+    StateInterface,
+    RegexpResult,
+    ContextArray,
+    ParseMethodReturnType,
+    Patterns,
+} from "../../../types";
 import StringList from "../../../StringList";
 
 /**
@@ -15,15 +22,11 @@ import StringList from "../../../StringList";
  * @uuid 4cbf2eb1-7a76-49e0-a2e5-faccccda8308
  */
 class SubstitutionDef extends Body {
-    public _init(stateMachine: RSTStateMachine, debug: boolean = false) {
-        super._init(stateMachine, debug);
-        this.patterns = {
-            // eslint-disable-next-line @typescript-eslint/camelcase
-            embedded_directive: new RegExp(`(${RegExps.simplename})::( +|$)`),
-            text: '',
-        };
-        this.initialTransitions = ['embedded_directive', 'text'];
-    }
+    protected initialTransitions?: (string | string[])[] = ['embedded_directive', 'text'];;
+    public patterns: Patterns = {
+        embedded_directive: new RegExp(`(${RegExps.simplename})::( +|$)`),
+        text: new RegExp(''),
+	    };
 
     /** Return a list of nodes. */
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type,@typescript-eslint/no-unused-vars,@typescript-eslint/camelcase
@@ -70,7 +73,7 @@ class SubstitutionDef extends Body {
 
         //@ts-ignore
         this.gotoLine(newAbsOffset!);
-        return parentNode.children;
+        return parentNode.getChildren();
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
@@ -88,7 +91,7 @@ class SubstitutionDef extends Body {
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
-    public text(match: {}, context: string[], nextState: string): any[] {
+    public text(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {
         if (!this.rstStateMachine.atEof()) {
             this.blankFinish = this.rstStateMachine.isNextLineBlank();
         }

@@ -3,7 +3,7 @@
  */
 import Component from "./Component";
 import { getLanguage } from "./languages";
-import { Destination, Document, WriterParts } from "./types";
+import { Document, WriterParts } from "./types";
 import Output from "./io/Output";
 import { InvalidStateError } from "./Exceptions";
 
@@ -15,33 +15,25 @@ const __version__ = '';
  * @uuid 7c403eae-30e5-4349-be6f-1b3918c58ff6
 */
 export default abstract class Writer extends Component {
-    public parts: WriterParts;
+    public parts: WriterParts = {};
     public document?: Document;
     private language?: {};
     /**
      * Final translated form of `document` (Unicode string for text, binary
      * string for other forms); set by `translate`.
      */
-    protected output?: string|{};
+    public output?: string|{};
     /**
      * `docutils.io` Output object; where to write the document.
      * Set by `write`.
      */
     private destination?: Output<string>;
-    /*
-     * @constructor
-     *
-     */
-    public constructor() {
-        super();
-        this.parts = {};
-    }
 
-    public write(document: Document, destination: Destination|undefined): string|{}|undefined {
+    public write(document: Document, destination: Output<string>|undefined): string|{}|undefined {
         this.document = document;
         if(document !== undefined) {
             // @ts-ignore
-            this.language = getLanguage(document.settings.docutilsCoreOptionParser.languageCode,
+            this.language = getLanguage(document.settings.languageCode,
                 document.reporter);
         }
         this.destination = destination;
@@ -70,7 +62,7 @@ export default abstract class Writer extends Component {
         }
         // @ts-ignore
         this.parts.whole = this.output;
-        this.parts.encoding = this.document.settings.docutilsCoreOptionParser.outputEncoding;
+        this.parts.encoding = this.document.settings.outputEncoding;
         this.parts.version = __version__;
     }
 }

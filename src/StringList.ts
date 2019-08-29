@@ -5,6 +5,7 @@ import ViewList from './ViewList';
 import {columnIndicies} from './utils';
 import UnexpectedIndentationError from './error/UnexpectedIndentationError';
 import {GetIndentedArgs} from "./types";
+import { InvalidStateError } from "./Exceptions";
 
 /**
  * @uuid 4aa5310a-5594-4527-b7ed-4fb77451e80a
@@ -107,7 +108,10 @@ class StringList extends ViewList {
         }
 
         const block = this.slice(cArgs.start, end) as StringList;
-        if (firstIndent != null && block) {
+        if (firstIndent != null && block && block.length) {
+            if(block[0] === undefined) {
+                throw new InvalidStateError('block[0]is undefined');
+            }
             block[0] = block[0].substring(firstIndent);
         }
         if (indent && cArgs.stripIndent) {

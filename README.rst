@@ -3,10 +3,10 @@ Docutils-JS
 
 :Author: Kay McCormick
 :Contact: kaym2038@gmail.com
-:Date: Thu 18 Apr 2019 06:40:03 PM PDT
+:Date: Fri 26 Jul 2019 04:44:32 PM UTC
 :Copyright: MIT License
 
-.. _docutils-js GitHub repository: http://github.com/kaymccormick/docutils-js.git
+.. _docutils-js GitHub repository: http://github.com/kaymccormick/docutils-typescript.git
 .. _Docutils: http://docutils.sourceforge.net/
 .. _Docutils distribution: http://docutils.sourceforge.net/#download
 
@@ -68,7 +68,9 @@ Setup and configuration
 Using the API
 =============
 
-Take a look at tools/rst2pojo.js. The API is in flux, because a
+
+
+Take a look at ``tools/rst2pojo.js``. The API is in flux, because a
 straight port of the docutils interfaces is not appropriate for a JS
 API. JS does not have native IO - this is provided via the host in
 some way. Node provides its own ``fs`` module, and web browsers of

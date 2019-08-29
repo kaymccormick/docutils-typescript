@@ -4,7 +4,7 @@
 import Component from './Component';
 import Reader from './Reader';
 import * as standalone from './readers/standalone';
-import { TransformType } from "./types";
+import { TransformType, ReaderConstructor } from "./types";
 
 /*
  * @uuid 43c83259-3df9-4500-b0ed-2d00a5dfefd5
@@ -19,7 +19,7 @@ export class ReReader extends Reader {
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
 const _ReaderAliases = {};
 
-export function getReaderClass(readerName: string): {} {
+export function getReaderClass(readerName: string): ReaderConstructor {
 //    console.log(readerName);
     if (readerName === 'standalone') {
         return standalone.default;

@@ -48,21 +48,22 @@ class RSTStateMachine extends StateMachineWS implements Rststatemachine {
         this.inputLines = inputLines;
         this.inputOffset = inputOffset;
         try {
-if(document.settings === undefined) {
-    throw new Error('unexpected');
-}
-        const languageCode = document.settings.docutilsCoreOptionParser.languageCode;
-        if (languageCode !== undefined) {
-            this.rstLanguage = getLanguage(languageCode);
-        }
-    } catch(error) {
+            if(document.settings === undefined) {
+                throw new Error('unexpected');
+            }
+            const languageCode = document.settings.languageCode;
+            if (languageCode !== undefined) {
+                this.rstLanguage = getLanguage(languageCode);
+            }
+        } catch(error) {
             console.log(error);
             throw error;
         }
         this.matchTitles = matchTitles;
         /* istanbul ignore next */
         if (inliner === undefined) {
-            this.inliner = new Inliner(document);
+	    this.logger.silly('creating new inliner');
+            this.inliner = new Inliner(document, this.logger);
         } else {
             this.inliner = inliner;
         }

@@ -2,7 +2,7 @@
  * @uuid 2362fa8e-300e-4aa4-b2d5-ab12d3cfa6ac
  */
 import TransformSpec from '../TransformSpec';
-import { ReadCallback, ReadInputCallback } from "../types";
+import { ReadCallback, ReadInputCallback, InputConstructorArgs } from "../types";
 
 /**
  * @uuid 84bae676-c673-41e6-ab8a-b5b026a3ea16
@@ -15,13 +15,10 @@ abstract class Input extends TransformSpec {
     private encoding?: string;
     private errorHandler?: string;
     public sourcePath?: string;
-    protected source?: {};
+    protected source?: any;
     public constructor(
-        args: {
-            source?: {}; sourcePath?: string; encoding?: string; errorHandler?: string;
-        }
-    ) {
-        super();
+        args: InputConstructorArgs) {
+        super({ logger: args.logger });
         const { source, sourcePath, encoding, errorHandler } = args;
         this.encoding = encoding;
         this.errorHandler = errorHandler;
@@ -34,7 +31,7 @@ abstract class Input extends TransformSpec {
     }
 
     /* istanbul ignore method */
-    abstract read(cb: ReadInputCallback<string | string[] | {}>): void;
+    abstract read(): Promise<any>;
 
     /* istanbul ignore method */
     public decode(data: string): string {

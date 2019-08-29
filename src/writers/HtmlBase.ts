@@ -1,32 +1,36 @@
-/**
- * @uuid 67dc2a57-7ca5-4837-b201-8223dd5c7440
- */
-import * as ejs from 'ejs';
+import { compile, TemplateFunction }  from 'ejs';
+import * as constants from '../constants';
 import BaseWriter from '../Writer';
 import * as nodes from '../nodes';
 import * as utils from '../utils';
 import { basename } from '../utils/paths';
 import { UnimplementedError } from '../Exceptions';
 import {Settings} from "../../gen/Settings";
-import {Document, Attributes, NodeInterface} from "../types";
+import {Document, Attributes, NodeInterface, SettingsSpecType, GenericSettings} from "../types";
 import {row, tgroup} from "../nodes";
 import { RSTLanguage } from "../parsers/rst/types";
 import { getLanguage } from "../parsers/rst/languages";
+import { logger as baseLogger } from '../logger';
 
+const logger = baseLogger.child({'class': 'HtmlBase'});
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
 const __docformat__ = 'reStructuredText';
+export interface TemplateVars {
+    [varName: string]: string|(() => string)|undefined;
+}
 
 interface AttributionFormats {
     dash: string[];
     parentheses: string[];
     parens: string[];
     none: string[];
+    [name: string]: string[];
 }
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
 const __version__ = '';
 
-const defaultTemplate = `<%- head_prefix %>
+const defaultTemplate = `<%- headPrefix %>
 <%- head %>
 <%- stylesheet %>
 <%- bodyPrefix %>
@@ -36,7 +40,93 @@ const defaultTemplate = `<%- head_prefix %>
 <%- bodySuffix %>
 `;
 
-const template = ejs.compile(defaultTemplate, {});
+const template = compile(defaultTemplate, {});
+
+/**
+ *  Raise `nodes.NodeFound` if non-simple list item is encountered.
+ *
+ *      Here "simple" means a list item containing nothing other than a single
+ *  paragraph, a simple list, or a paragraph followed by a simple list.
+ *
+ *      This version also checks for simple field lists and docinfo.
+ */
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
+class SimpleListChecker extends nodes.GenericNodeVisitor {
+    /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
+    public default_visit(node: NodeInterface): void {
+        super.default_visit(node);
+    }
+
+    /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
+    public default_departure(node: NodeInterface): void {
+        super.default_departure(node);
+    }
+}
+// def default_visit(self, node):
+// raise nodes.NodeFound
+//
+// def visit_list_item(self, node):
+// # print "visiting list item", node.__class__
+// children = [child for child in node.children
+//     if not isinstance(child, nodes.Invisible)]
+// # print "has %s visible children" % len(children)
+// if (children and isinstance(children[0], nodes.paragraph)
+// and (isinstance(children[-1], nodes.bullet_list) or
+// isinstance(children[-1], nodes.enumerated_list) or
+// isinstance(children[-1], nodes.field_list))):
+// children.pop()
+// # print "%s children remain" % len(children)
+// if len(children) <= 1:
+// return
+// else:
+// # print "found", child.__class__, "in", node.__class__
+// raise nodes.NodeFound
+//
+// def pass_node(self, node):
+// pass
+//
+// def ignore_node(self, node):
+// # ignore nodes that are never complex (can contain only inline nodes)
+// raise nodes.SkipNode
+//
+// # Paragraphs and text
+// visit_Text = ignore_node
+// visit_paragraph = ignore_node
+//
+// # Lists
+// visit_bullet_list = pass_node
+// visit_enumerated_list = pass_node
+// visit_docinfo = pass_node
+//
+// # Docinfo nodes:
+//     visit_author = ignore_node
+// visit_authors = visit_list_item
+// visit_address = visit_list_item
+// visit_contact = pass_node
+// visit_copyright = ignore_node
+// visit_date = ignore_node
+// visit_organization = ignore_node
+// visit_status = ignore_node
+// visit_version = visit_list_item
+//
+// # Definition list:
+//     visit_definition_list = pass_node
+// visit_definition_list_item = pass_node
+// visit_term = ignore_node
+// visit_classifier = pass_node
+// visit_definition = visit_list_item
+//
+// # Field list:
+//     visit_field_list = pass_node
+// visit_field = pass_node
+// # the field body corresponds to a list item
+// visit_field_body = visit_list_item
+// visit_field_name = ignore_node
+//
+// # Invisible nodes should be ignored.
+//     visit_comment = ignore_node
+// visit_substitution_definition = ignore_node
+// visit_target = ignore_node
 
 /**
  * HTMLTranslator class
@@ -44,14 +134,21 @@ const template = ejs.compile(defaultTemplate, {});
  * @uuid 01f5d00d-c3c8-453c-a06a-e17dfa4524ca
  */
 class HTMLTranslator extends nodes.NodeVisitor {
+    private xmlDeclaration: TemplateFunction = compile('<?xml version="1.0" encoding="<%=encoding%>" ?>\n');
+    private doctype: string= '<!DOCTYPE html>\n';
+    private doctypeMathML: string = this.doctype;
+    private headPrefixTemplate: TemplateFunction = compile('<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%=lang%>" lang="<%=lang%>">\n<head>\n');
+    private contentType: TemplateFunction = compile('<meta charset="<%=charset%>"/>\n');
+    private generator: TemplateFunction = compile('<meta name="generator" content="Docutils <%=version%>: http://docutils.sourceforge.net/" />\n');
+
     private body: string[];
     private settings: Settings;
     private language?: RSTLanguage;
     private meta: string[];
     private headPrefix: string[];
     private htmlProlog: string[];
-    private compactSimple: boolean;
-    private context: string[] = [];
+    private compactSimple?: boolean;
+    private context: any[] = [];
     private compactParagraph?: boolean;
     private bodyPreDocinfo: string[];
     private inDocumentTitle: number;
@@ -63,26 +160,24 @@ class HTMLTranslator extends nodes.NodeVisitor {
     private colspecs: NodeInterface[];
     private inMailto: boolean;
     private inFootnoteList: boolean;
-    private doctype: string= '';
     private head: string[];
     private docinfo: string[];
-    private attribution_formats: any;
-    private mathHeader: any[];
+    private attributionFormats?: AttributionFormats;
+    private mathHeader: string[];
     private authorInAuthors: boolean;
-    private htmlBody: any[];
-    private htmlSubtitle: any[];
-    private htmlHead: any[];
-    private footer: any[];
-    private subtitle: any[];
-    private header: any[];
+    private htmlBody: string[];
+    private htmlSubtitle: string[];
+    private htmlHead: string[];
+    private footer: string[];
+    private subtitle: string[];
+    private header: string[];
     private inSidebar: boolean;
     private compactFieldList: boolean;
     private inDocinfo: boolean;
-    private contentType?: string;
     private readonly langAttribute: string = 'lang';
     private mathOutput: string = '';
     private mathOutputOptions: string[] = [];
-    private fragment: any[];
+    private fragment: string[];
     private bodySuffix: string[];
     private bodyPrefix: string[];
     private tableStyle: string = '';
@@ -90,20 +185,20 @@ class HTMLTranslator extends nodes.NodeVisitor {
     private cloakEmailAddresses: boolean = true;
     private compactLists?: number;
     private compactFieldLists?: number;
-
+    private stylesheet: string[];
     public constructor(document: Document) {
         super(document);
         this.settings = document.settings;
         const settings = this.settings;
-        const langCode = settings.docutilsCoreOptionParser.languageCode;
+        const langCode = settings.languageCode;
         if(langCode !== undefined) {
             this.language = getLanguage(langCode);
         }
-        this.meta = [];// fixme: this.meta = [this.generator % docutils.__version__]
+        this.meta = [this.generator({ version: constants.__version__})];
         this.headPrefix = [];
         this.htmlProlog = [];
 
-        let myConfig = settings.docutilsWritersHtml4Css1Writer;
+        let myConfig = settings;
         if(myConfig !== undefined) {
             this.cloakEmailAddresses = myConfig.cloakEmailAddresses || true;
             if(myConfig.attribution !== undefined) {
@@ -114,14 +209,10 @@ class HTMLTranslator extends nodes.NodeVisitor {
             }
         }
         if (myConfig && myConfig.xmlDeclaration) {
-            /*            this.head_prefix.append(this.xml_declaration
-                          % settings.output_encoding)
-                          # this.content_type = ""
-                          # encoding not interpolated:
-                          this.html_prolog.append(this.xml_declaration)
-            */
+            this.headPrefix.push(this.xmlDeclaration({ encoding: settings.outputEncoding }));
         }
         this.head = this.meta.slice();
+        this.stylesheet = [];
         /* fixme
            this.stylesheet = utils.getStylesheetList(settings).
            map(this.stylesheetCall.bind(this));
@@ -135,15 +226,15 @@ class HTMLTranslator extends nodes.NodeVisitor {
         this.sectionLevel = 0;
         if(myConfig) {
             if(myConfig.initialHeaderLevel !== undefined) {
-                this.initialHeaderLevel = myConfig.initialHeaderLevel;
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                this.initialHeaderLevel = myConfig.initialHeaderLevel!;
             }
             const mathOutput = utils.pySplit(myConfig.mathOutput || '');
 
             this.mathOutputOptions = mathOutput.slice(1, this.mathOutput.length - 1);
-            this.mathOutput = this.mathOutput[0].toLowerCase();
-        }this.context = [];
-
-
+            this.mathOutput = mathOutput[0].toLowerCase();
+        }
+        this.context = [];
         this.topicClasses = [];
         this.colspecs = [];
         this.compactParagraph = true;
@@ -156,7 +247,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
         this.subtitle = [];
         this.header = [];
         this.footer = [];
-        this.htmlHead = [this.contentType];
+        this.htmlHead = [/*this.contentType*/];
         this.htmlTitle = [];
         this.htmlSubtitle = [];
         this.htmlBody = [];
@@ -166,12 +257,28 @@ class HTMLTranslator extends nodes.NodeVisitor {
         this.mathHeader = [];
     }
 
+
+    public astext(): string {
+        return [this.headPrefix, this.head, this.stylesheet, this.bodyPrefix].map((a): string => a.join('')).join('');
+    }
+
+    public encode(text: string): string {
+        return text; // fixme
+    }
+
+    public cloakMailto(href: string): string {
+        return href;
+    }
+
+    public cloakEmail(encoded: string): string {
+        return encoded;
+    }
     /**
      * Cleanse, HTML encode, and return attribute value text.
      * @param {String} text - text to cleanse
      * @param {RegExp} whitespace - regexp for matching whitespace.
      */
-    public attVal(text: string, whitespace: RegExp = /[\n\r\t\v\f]/g) {
+    public attVal(text: string, whitespace: RegExp = /[\n\r\t\v\f]/g): string {
         if (!text) {
             text = '';
         }
@@ -185,6 +292,12 @@ class HTMLTranslator extends nodes.NodeVisitor {
         return encoded;
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
+    public stylesheetCall(path: string): string {
+        return '';
+    }
+
+
     /*
      * Construct and return a start tag given a node (id & class attributes
      * are extracted), tag name, and optional attributes.
@@ -195,27 +308,24 @@ class HTMLTranslator extends nodes.NodeVisitor {
         suffix: string = '\n',
         empty: boolean = false,
         attributes: Attributes = {}
-    ) {
+    ): string {
         if (typeof suffix !== 'string') {
             throw new Error('suffix should be a string!!');
         }
 
         const myTagname = tagname.toLowerCase();
-        const prefix: any[] = [];
-        const atts: any = {};
-        const ids = [];
-        Object.entries(attributes).forEach(([name, value]) => {
+        const prefix: string[] = [];
+        const atts: Attributes = {};
+        const ids: string[] = [];
+        Object.entries(attributes).forEach(([name, value]): void => {
             atts[name.toLowerCase()] = value;
         });
         const classes: string[] = [];
         const languages: string[] = [];
         // unify class arguments and move language specification
         const c: string[] = (node.attributes && node.attributes.classes) || [];
-        //      console.log(c);
-        //      console.log(atts.class);
         c.splice(c.length - 1, 0, ...utils.pySplit(atts.class || ''));
-        //      console.log(c);
-        c.forEach((cls) => {
+        c.forEach((cls): void => {
             if (cls.substring(0, 8) === 'language-') {
                 languages.splice(0, 0, cls.substring(9));
             } else if (cls.trim() && classes.indexOf(cls) === -1) {
@@ -258,7 +368,8 @@ class HTMLTranslator extends nodes.NodeVisitor {
         const attlist = { ...atts };
         // attlist.sort()
         const parts = [myTagname];
-        Object.keys(attlist).forEach((name: string) => {
+        Object.keys(attlist).forEach((name: string): void => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const value: any | any[] | undefined | null = attlist[name];
             // value=None was used for boolean attributes without
             // value, but this isn't supported by XHTML.
@@ -296,27 +407,12 @@ class HTMLTranslator extends nodes.NodeVisitor {
         return this.starttag(node, tagname, suffix, true, attributes);
     }
 
-
-    public encode(text: string): string {
-        return text; // fixme
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
+    public setClassOnChild(node: NodeInterface, class_: string, index: number = 0): void {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_section(node: NodeInterface) {
-        this.sectionLevel += 1;
-        this.body.push(
-            this.starttag(node, 'div', '\n', false, { CLASS: 'section' }),
-        );
-    }
-
-    /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_section(node: NodeInterface) {
-        this.sectionLevel -= 1;
-        this.body.push('</div>\n');
-    }
-
-    /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_Text(node: NodeInterface) {
+    public visit_Text(node: NodeInterface): void {
         const text = node.astext();
         let encoded = this.encode(text);
         if (this.inMailto && this.cloakEmailAddresses) {
@@ -326,53 +422,67 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_Text(node: NodeInterface) {
+    public depart_Text(node: NodeInterface): void {
 
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_abbreviation(node: NodeInterface) {
+    public visit_section(node: NodeInterface): void {
+        this.sectionLevel += 1;
+        this.body.push(
+            this.starttag(node, 'div', '\n', false, { CLASS: 'section' }),
+        );
+    }
+
+    /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
+    public depart_section(node: NodeInterface): void {
+        this.sectionLevel -= 1;
+        this.body.push('</div>\n');
+    }
+
+    /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
+    public visit_abbreviation(node: NodeInterface): void {
         // @@@ implementation incomplete ("title" attribute)
         this.body.push(this.starttag(node, 'abbr', ''));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_abbreviation(node: NodeInterface) {
+    public depart_abbreviation(node: NodeInterface): void {
         this.body.push('</abbr>');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_acronym(node: NodeInterface) {
+    public visit_acronym(node: NodeInterface): void {
         // @@@ implementation incomplete ("title" attribute)
         this.body.push(this.starttag(node, 'acronym', ''));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_acronym(node: NodeInterface) {
+    public depart_acronym(node: NodeInterface): void {
         this.body.push('</acronym>');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
     /*
-      visit_address(node: NodeInterface) {
+      visit_address(node: NodeInterface): void {
       this.visitDocinfoItem(node, 'address', meta = false);
       this.body.push(this.starttag(node, 'pre',
       suffix = '', false, { CLASS: 'address' }));
       }
 
-      depart_address(node: NodeInterface) {
+      depart_address(node: NodeInterface): void {
       this.body.push('\n</pre>\n');
       this.departDocinfoItem();
       } */
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_admonition(node: NodeInterface) {
+    public visit_admonition(node: NodeInterface): void {
         node.attributes.classes.splice(0, 0, 'admonition');
         this.body.push(this.starttag(node, 'div'));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_admonition(node: NodeInterface) {
+    public depart_admonition(node: NodeInterface): void {
         this.body.push('</div>\n');
 
         /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
@@ -385,8 +495,8 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_attribution(node: NodeInterface) {
-        const [prefix, suffix] = this.attribution_formats[this.attribution];
+    public visit_attribution(node: NodeInterface): void {
+        const [prefix, suffix] = this.attributionFormats![this.attribution];
         this.context.push(suffix);
         this.body.push(
             this.starttag(node, 'p', prefix, false, { CLASS: 'attribution' }),
@@ -394,12 +504,12 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_attribution(node: NodeInterface) {
+    public depart_attribution(node: NodeInterface): void {
         this.body.push(`${this.context.pop()}</p>\n`);
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_author(node: NodeInterface) {
+    public visit_author(node: NodeInterface): void {
         if (!(node.parent instanceof nodes.authors)) {
             this.visitDocinfoItem(node, 'author');
         }
@@ -407,7 +517,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public depart_author(node: NodeInterface) {
+    public depart_author(node: NodeInterface): void {
         this.body.push('</p>');
         if (!(node.parent instanceof nodes.authors)) {
             this.body.push('\n');
@@ -417,22 +527,22 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_authors(node: NodeInterface) {
+    public visit_authors(node: NodeInterface): void {
         this.visitDocinfoItem(node, 'authors');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_authors(node: NodeInterface) {
+    public depart_authors(node: NodeInterface): void {
         this.departDocinfoItem();
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_block_quote(node: NodeInterface) {
+    public visit_block_quote(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'blockquote'));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_block_quote(node: NodeInterface) {
+    public depart_block_quote(node: NodeInterface): void {
         this.body.push('</blockquote>\n');
     }
 
@@ -441,7 +551,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
      */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
     /*
-      checkSimpleList(node: NodeInterface) {
+      checkSimpleList(node: NodeInterface): void {
       const visitor = new SimpleListChecker(this.document);
       try {
       node.walk(visitor);
@@ -495,12 +605,12 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_caption(node: NodeInterface) {
+    public visit_caption(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'p', '', false, { CLASS: 'caption' }));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_caption(node: NodeInterface) {
+    public depart_caption(node: NodeInterface): void {
         this.body.push('</p>\n');
     }
 
@@ -510,7 +620,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
     // Join adjacent citation entries.
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public visit_citation(node: NodeInterface) {
+    public visit_citation(node: NodeInterface): void {
         if (!this.inFootnoteList) {
             this.body.push('<dl class="citation">\n');
         }
@@ -518,7 +628,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public depart_citation(node: NodeInterface) {
+    public depart_citation(node: NodeInterface): void {
         this.body.push('</dd>\n');
         if (!(node.nextNode({ descend: false, siblings: true }) instanceof nodes.citation)) {
             this.body.push('</dl>\n');
@@ -527,7 +637,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_citation_reference(node: NodeInterface) {
+    public visit_citation_reference(node: NodeInterface): void {
         let href = '#';
         if ('refid' in node.attributes) {
             href += node.attributes.refid;
@@ -543,7 +653,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
 
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_citation_reference(node: NodeInterface) {
+    public depart_citation_reference(node: NodeInterface): void {
         this.body.push(']</a>');
 
         // classifier
@@ -552,24 +662,24 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_classifier(node: NodeInterface) {
+    public visit_classifier(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'span', '', false, { CLASS: 'classifier' }));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_classifier(node: NodeInterface) {
+    public depart_classifier(node: NodeInterface): void {
         this.body.push('</span>');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_colspec(node: NodeInterface) {
+    public visit_colspec(node: NodeInterface): void {
         this.colspecs.push(node);
         // "stubs" list is an attribute of the tgroup element:
         //node.parent!.stubs.push(node.attributes.stub); fixme
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public depart_colspec(node: NodeInterface) {
+    public depart_colspec(node: NodeInterface): void {
         // write out <colgroup> when all colspecs are processed
         if (node.nextNode({ descend: false, siblings: true }) instanceof nodes.colspec) {
             return;
@@ -579,17 +689,17 @@ class HTMLTranslator extends nodes.NodeVisitor {
         if ('colwidths-auto' in node.parent!.parent!.attributes.classes
           // @ts-ignore
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          || ('colwidths-auto' in this.settings.docutilsWritersHtml4Css1Writer!.tableStyle
+          || ('colwidths-auto' in this.settings.tableStyle
             // @ts-ignore
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             && (!('colwidths-given' in node.parent!.parent!.attributes.classes)))) {
             return;
         }
         /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-        const totalWidth = this.colspecs.map(subNode => subNode.attributes.colwidth)
-            .reduce((a, c) => a + c);
+        const totalWidth = this.colspecs.map((subNode): number => parseInt(subNode.attributes.colwidth, 10))
+            .reduce((a, c): number => a + c);
         this.body.push(this.starttag(node, 'colgroup'));
-        this.colspecs.forEach((subNode) => {
+        this.colspecs.forEach((subNode): void => {
             const colWidth = parseInt(subNode.attributes.colwidth, 10) * 100.0 / totalWidth + 0.5;
             this.body.push(this.emptytag(subNode, 'col', '', { style: `width: ${colWidth}` }));
         });
@@ -605,7 +715,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
       raise nodes.SkipNode
       }
 
-      visit_compound(node: NodeInterface) {
+      visit_compound(node: NodeInterface): void {
       this.body.push(this.starttag(node, 'div', { CLASS: 'compound' }))
       if len(node: NodeInterface) > 1:
       node.attributes[0]['classes'].push('compound-first')
@@ -614,72 +724,72 @@ class HTMLTranslator extends nodes.NodeVisitor {
       child['classes'].push('compound-middle')
       }
 
-      depart_compound(node: NodeInterface) {
+      depart_compound(node: NodeInterface): void {
       this.body.push('</div>\n')
       }
 
     */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_container(node: NodeInterface) {
+    public visit_container(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'div', '\n', false, { CLASS: 'docutils container' }));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_container(node: NodeInterface) {
+    public depart_container(node: NodeInterface): void {
         this.body.push('</div>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_contact(node: NodeInterface) {
+    public visit_contact(node: NodeInterface): void {
         this.visitDocinfoItem(node, 'contact', false);
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_contact(node: NodeInterface) {
+    public depart_contact(node: NodeInterface): void {
         this.departDocinfoItem();
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_copyright(node: NodeInterface) {
+    public visit_copyright(node: NodeInterface): void {
         this.visitDocinfoItem(node, 'copyright');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_copyright(node: NodeInterface) {
+    public depart_copyright(node: NodeInterface): void {
         this.departDocinfoItem();
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_date(node: NodeInterface) {
+    public visit_date(node: NodeInterface): void {
         this.visitDocinfoItem(node, 'date');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_date(node: NodeInterface) {
+    public depart_date(node: NodeInterface): void {
         this.departDocinfoItem();
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public visit_decoration(node: NodeInterface) {
+    public visit_decoration(node: NodeInterface): void {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_decoration(node: NodeInterface) {
+    public depart_decoration(node: NodeInterface): void {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_definition(node: NodeInterface) {
+    public visit_definition(node: NodeInterface): void {
         this.body.push('</dt>\n');
         this.body.push(this.starttag(node, 'dd', ''));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_definition(node: NodeInterface) {
+    public depart_definition(node: NodeInterface): void {
         this.body.push('</dd>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_definition_list(node: NodeInterface) {
+    public visit_definition_list(node: NodeInterface): void {
         if (node.attributes.classes == null) {
             node.attributes.classes = [];
         }
@@ -691,34 +801,34 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_definition_list(node: NodeInterface) {
+    public depart_definition_list(node: NodeInterface): void {
         this.body.push('</dl>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_definition_list_item(node: NodeInterface) {
+    public visit_definition_list_item(node: NodeInterface): void {
         // pass class arguments, ids and names to definition term:
-        node.children[0].attributes.classes.splice(0, 0, ...(node.attributes.classes || []));
-        node.children[0].attributes.ids.splice(0, 0, ...(node.attributes.ids || []));
-        node.children[0].attributes.names.splice(0, 0, ...(node.attributes.names || []));
+        node.getChild(0).attributes.classes.splice(0, 0, ...(node.attributes.classes || []));
+        node.getChild(0).attributes.ids.splice(0, 0, ...(node.attributes.ids || []));
+        node.getChild(0).attributes.names.splice(0, 0, ...(node.attributes.names || []));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_definition_list_item(node: NodeInterface) {
+    public depart_definition_list_item(node: NodeInterface): void {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_description(node: NodeInterface) {
+    public visit_description(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'dd', ''));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_description(node: NodeInterface) {
+    public depart_description(node: NodeInterface): void {
         this.body.push('</dd>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_docinfo(node: NodeInterface) {
+    public visit_docinfo(node: NodeInterface): void {
         this.context.push(this.body.length.toString());
         let classes = 'docinfo';
         if (this.isCompactable(node)) {
@@ -728,14 +838,16 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_docinfo(node: NodeInterface) {
+    public depart_docinfo(node: NodeInterface): void {
         this.body.push('</dl>\n');
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const start = this.context.pop()!;
+        // @ts-ignore
         this.docinfo = this.body.slice(parseInt(start, 10));
         this.body = [];
     }
 
-    public visitDocinfoItem(node: NodeInterface, name: string, meta: boolean= true) {
+    public visitDocinfoItem(node: NodeInterface, name: string, meta: boolean= true): void {
         if (meta) {
             const metaTag = `<meta name="${name}" content="${this.attVal(node.astext())}" />\n`;
             this.addMeta(metaTag);
@@ -746,30 +858,39 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
-    public departDocinfoItem() {
+    public departDocinfoItem(): void {
         this.body.push('</dd>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_doctest_block(node: NodeInterface) {
+    public visit_doctest_block(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'pre', '', false,
             { CLASS: 'code javascript doctest' }));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_doctest_block(node: NodeInterface) {
+    public depart_doctest_block(node: NodeInterface): void {
         this.body.push('\n</pre>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_document(node: NodeInterface) {
+    public visit_document(node: NodeInterface): void {
         const title = ((node.attributes.title || '') || basename(node.attributes.source) || 'docutils document without title');
         this.head.push(`<title>${this.encode(title)}</title>\n`);
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_document(node: NodeInterface) {
-        this.headPrefix.push(this.doctype);
+    public depart_document(node: NodeInterface): void {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.headPrefix.push(this.doctype, this.headPrefixTemplate({lang: this.settings!.languageCode}));
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.meta.splice(0, 0, this.contentType({charset: this.settings!.outputEncoding}));
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.head.splice(0, 0, this.contentType({charset: this.settings!.outputEncoding}));
+        this.htmlHead.splice(this.htmlHead.length, 0, ...this.head.slice(1));
+        this.bodyPrefix.push(this.starttag(node, 'div', '\n', false, { CLASS: 'document' }));
+        this.fragment.push(...this.body);
+        this.htmlBody.push(...this.bodyPrefix.slice(1), ...this.bodyPreDocinfo, ...this.docinfo, ...this.body, ...this.bodySuffix.slice(0, this.bodySuffix.length - 1));
     }
 
     /*
@@ -798,32 +919,32 @@ class HTMLTranslator extends nodes.NodeVisitor {
       }
     */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_emphasis(node: NodeInterface) {
+    public visit_emphasis(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'em', ''));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_emphasis(node: NodeInterface) {
+    public depart_emphasis(node: NodeInterface): void {
         this.body.push('</em>');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_entry(node: NodeInterface) {
-        const atts: any = { class: [] };
+    public visit_entry(node: nodes.entry): void {
+        const atts: Attributes = { class: [] };
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         if (node.parent!.parent instanceof nodes.thead) {
             atts.class.push('head');
         }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const ggParent = node.parent!.parent!.parent!;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // @ts-ignore
-        let stubs: any[] = ggParent.getCustomAttr('stubs');
+        //        let stubs: any[] = ggParent.getCustomAttr('stubs');
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        // @ts-ignore
-        if(stubs[node.parent!.getCustomAttr('column')]) {
+
+        /*        if(stubs[node.parent!.getCustomAttr('column')]) {
             // "stubs" list is an attribute of the tgroup element
             atts.class.push('stub');
-        }
+        }*/
         let tagname;
         if (atts.class.length) {
             tagname = 'th';
@@ -834,16 +955,14 @@ class HTMLTranslator extends nodes.NodeVisitor {
         }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        // @ts-ignore
-
-        node.parent!.column += 1;
+        (node.parent! as nodes.row).column! += 1;
         if ('morerows' in node.attributes) {
             atts.rowspan = node.attributes.morerows + 1;
         }
         if ('morecols' in node.attributes) {
             atts.colspan = node.attributes.morecols + 1;
-            // eslint-disable-next-line @typescript-eslint/no-angle-bracket-type-assertion
-            (<row>node.parent!).column += node.attributes.morecols;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            (node.parent! as row).column += node.attributes.morecols;
         }
         this.body.push(this.starttag(node, tagname, '', false, atts));
         this.context.push(`</${tagname.toLowerCase()}>\n`);
@@ -853,14 +972,16 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_entry(node: NodeInterface) {
+    public depart_entry(node: NodeInterface): void {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        // @ts-ignore
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.body.push(this.context.pop()!);
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
     /*
-      visit_enumerated_list(node: NodeInterface) {
+      visit_enumerated_list(node: NodeInterface): void {
       atts = {}
       if 'start' in node:
       atts['start'] = node.attributes['start']
@@ -871,12 +992,12 @@ class HTMLTranslator extends nodes.NodeVisitor {
       this.body.push(this.starttag(node, 'ol', **atts))
       }
 
-      depart_enumerated_list(node: NodeInterface) {
+      depart_enumerated_list(node: NodeInterface): void {
       this.body.push('</ol>\n')
       }
     */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_field_list(node: NodeInterface) {
+    public visit_field_list(node: NodeInterface): void {
         // Keep simple paragraphs in the field_body to enable CSS
         // rule to start body on new line if the label is too long
         let classes = 'field-list';
@@ -887,52 +1008,53 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_field_list(node: NodeInterface) {
+    public depart_field_list(node: NodeInterface): void {
         this.body.push('</dl>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public visit_field(node: NodeInterface) {
+    public visit_field(node: NodeInterface): void {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_field(node: NodeInterface) {
+    public depart_field(node: NodeInterface): void {
     }
 
     // as field is ignored, pass class arguments to field-name and field-body:
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_field_name(node: NodeInterface) {
+    public visit_field_name(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'dt', '', false,
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             { CLASS: node.parent!.attributes.classes.join(' ') }));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_field_name(node: NodeInterface) {
+    public depart_field_name(node: NodeInterface): void {
         this.body.push('</dt>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_field_body(node: NodeInterface) {
+    public visit_field_body(node: NodeInterface): void {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.body.push(this.starttag(node, 'dd', '', false,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             { CLASS: node.parent!.attributes.classes.join(' ') }));
 
         // prevent misalignment of following content if the field is empty:
-        if (!node.children.length) {
+        if (!node.hasChildren()) {
             this.body.push('<p></p>');
         }
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_field_body(node: NodeInterface) {
+    public depart_field_body(node: NodeInterface): void {
         this.body.push('</dd>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
     /*
-      visit_figure(node: NodeInterface) {
+      visit_figure(node: NodeInterface): void {
       atts = {'class': 'figure'}
       if node.get('width'):
       atts['style'] = 'width: %s' % node.attributes['width']
@@ -941,16 +1063,16 @@ class HTMLTranslator extends nodes.NodeVisitor {
       this.body.push(this.starttag(node, 'div', **atts))
       }
 
-      depart_figure(node: NodeInterface) {
+      depart_figure(node: NodeInterface): void {
       this.body.push('</div>\n')
       }
 
       // use HTML 5 <footer> element?
-      visit_footer(node: NodeInterface) {
+      visit_footer(node: NodeInterface): void {
       this.context.push(len(this.body))
       }
 
-      depart_footer(node: NodeInterface) {
+      depart_footer(node: NodeInterface): void {
       start = this.context.pop()
       footer = [this.starttag(node, 'div', { CLASS: 'footer' }),
       '<hr class="footer" />\n']
@@ -968,17 +1090,17 @@ class HTMLTranslator extends nodes.NodeVisitor {
       }
     */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public visit_footnote(node: NodeInterface) {
+    public visit_footnote(node: NodeInterface): void {
         if (!this.inFootnoteList) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const classes = `footnote ${this.settings.docutilsWritersHtml4Css1Writer!.footnoteReferences}`;
+            const classes = `footnote ${this.settings.footnoteReferences}`;
             this.body.push(`<dl class="${classes}">\n`);
             this.inFootnoteList = true;
         }
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public depart_footnote(node: NodeInterface) {
+    public depart_footnote(node: NodeInterface): void {
         this.body.push('</dd>\n');
         if (!(node.nextNode({ descend: false, siblings: true}) instanceof nodes.footnote)) {
             this.body.push('</dl>\n');
@@ -988,40 +1110,40 @@ class HTMLTranslator extends nodes.NodeVisitor {
 
     /* whoops this requires references transform!! */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_footnote_reference(node: NodeInterface) {
+    public visit_footnote_reference(node: NodeInterface): void {
         if (!node.attributes.refid) {
             /* eslint-disable-next-line no-console */
             console.log('warning, no refid ( implement transforms )');
         }
         const href = `#${node.attributes.refid || ''}`;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const classes = `footnote-reference ${this.settings.docutilsWritersHtml4Css1Writer!.footnoteReferences}`;
+        const classes = `footnote-reference ${this.settings.footnoteReferences}`;
         this.body.push(this.starttag(node, 'a', '', // suffix,
             false,
             { CLASS: classes, href }));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_footnote_reference(node: NodeInterface) {
+    public depart_footnote_reference(node: NodeInterface): void {
         this.body.push('</a>');
     }
 
     // Docutils-generated text: put section numbers in a span for CSS styling:
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public visit_generated(node: NodeInterface) {
+    public visit_generated(node: NodeInterface): void {
         /* generating error */
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_generated(node: NodeInterface) {
+    public depart_generated(node: NodeInterface): void {
     }
 
     /*
-          visit_header(node: NodeInterface) {
+          visit_header(node: NodeInterface): void {
           this.context.push(len(this.body))
           }
 
-          depart_header(node: NodeInterface) {
+          depart_header(node: NodeInterface): void {
           start = this.context.pop()
           header = [this.starttag(node, 'div', { CLASS: 'header' })]
           header.extend(this.body[start:])
@@ -1034,7 +1156,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
           // Image types to place in an <object> element
           object_image_types = {'.swf': 'application/x-shockwave-flash'}
 
-          visit_image(node: NodeInterface) {
+          visit_image(node: NodeInterface): void {
           atts = {}
           uri = node.attributes['uri']
           ext = os.path.splitext(uri)[1].lower()
@@ -1100,36 +1222,37 @@ class HTMLTranslator extends nodes.NodeVisitor {
           this.body.push(this.emptytag(node, 'img', suffix, **atts))
           }
 
-          depart_image(node: NodeInterface) {
+          depart_image(node: NodeInterface): void {
           // this.body.push(this.context.pop())
           }
           pass
 
-          visit_inline(node: NodeInterface) {
+          visit_inline(node: NodeInterface): void {
           this.body.push(this.starttag(node, 'span', ''))
           }
 
-          depart_inline(node: NodeInterface) {
+          depart_inline(node: NodeInterface): void {
           this.body.push('</span>')
           }
     */
     // footnote and citation labels:
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_label(node: NodeInterface) {
+    public visit_label(node: NodeInterface): void {
         let classes;
         if (node.parent instanceof nodes.footnote) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            classes = this.settings.docutilsWritersHtml4Css1Writer!.footnoteReferences;
+            classes = this.settings.footnoteReferences;
         } else {
             classes = 'brackets';
         }
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         // pass parent node to get id into starttag:
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.body.push(this.starttag(node.parent!, 'dt', '', false, { CLASS: 'label' }));
         this.body.push(this.starttag(node, 'span', '', false, { CLASS: classes }));
         // footnote/citation backrefs:
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-non-null-assertion
-        if (this.settings.docutilsCoreOptionParser!.footnoteBacklinks) {
+        if (this.settings.footnoteBacklinks) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const backrefs = node.parent!.attributes.backrefs;
             if (backrefs.length === 1) {
                 this.body.push(`<a class="fn-backref" href="//${backrefs[0]}">`);
@@ -1138,66 +1261,68 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public depart_label(node: NodeInterface) {
+    public depart_label(node: NodeInterface): void {
         let backrefs = [];
-        if (this.settings.docutilsCoreOptionParser!.footnoteBacklinks) {
+        if (this.settings.footnoteBacklinks) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             backrefs = node.parent!.attributes.backrefs;
             if (backrefs.length === 1) {
                 this.body.push('</a>');
             }
         }
         this.body.push('</span>');
-        if (this.settings.docutilsCoreOptionParser!.footnoteBacklinks && backrefs.length > 1) {
-            const backlinks = backrefs.map((ref: string, i: number) => `<a href="//${ref}">${i + 1}</a>`);
+        if (this.settings.footnoteBacklinks && backrefs.length > 1) {
+            const backlinks = backrefs.map((ref: string, i: number): string => `<a href="//${ref}">${i + 1}</a>`);
             this.body.push(`<span class="fn-backref">(${backlinks.join(',')})</span>`);
         }
         this.body.push('</dt>\n<dd>');
     }
 
     /*
-      visit_legend(node: NodeInterface) {
+      visit_legend(node: NodeInterface): void {
       this.body.push(this.starttag(node, 'div', { CLASS: 'legend' }))
       }
 
-      depart_legend(node: NodeInterface) {
+      depart_legend(node: NodeInterface): void {
       this.body.push('</div>\n')
       }
 
-      visit_line(node: NodeInterface) {
+      visit_line(node: NodeInterface): void {
       this.body.push(this.starttag(node, 'div', suffix='', { CLASS: 'line' }))
       if not len(node: NodeInterface):
       this.body.push('<br />')
       }
 
-      depart_line(node: NodeInterface) {
+      depart_line(node: NodeInterface): void {
       this.body.push('</div>\n')
       }
 
-      visit_line_block(node: NodeInterface) {
+      visit_line_block(node: NodeInterface): void {
       this.body.push(this.starttag(node, 'div', { CLASS: 'line-block' }))
       }
 
-      depart_line_block(node: NodeInterface) {
+      depart_line_block(node: NodeInterface): void {
       this.body.push('</div>\n')
       }
 
-      visit_list_item(node: NodeInterface) {
+      visit_list_item(node: NodeInterface): void {
       this.body.push(this.starttag(node, 'li', ''))
       }
 
-      depart_list_item(node: NodeInterface) {
+      depart_list_item(node: NodeInterface): void {
       this.body.push('</li>\n')
       }
     */
     // inline literal
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_literal(node: NodeInterface) {
+    public visit_literal(node: NodeInterface): void {
         // special case: "code" role
         const classes = node.attributes.classes || [];
         if (classes.indexOf('code') !== -1) {
             // filter 'code' from class arguments
             // fixme //node.attributes['classes'] = [cls for cls in classes if cls != 'code']
-            return this.body.push(this.starttag(node, 'span', '', false, { CLASS: 'docutils literal' }));
+            this.body.push(this.starttag(node, 'span', '', false, { CLASS: 'docutils literal' }));
+            return;
         }
         /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
         let text = node.astext();
@@ -1208,7 +1333,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
         // Protect text like ``--an-option`` and the regular expression
         // ``[+]?(\d+(\.\d*)?|\.\d+)`` from bad line wrapping
         /* fixme
-           this.wordsAndSpaces.findall(text).forEach((token) => {
+           this.wordsAndSpaces.findall(text).forEach((token): void => {
            if (token.trim() && this.inWordWrapPoint.search(token)) {
            this.body.push(`<span class="pre">${this.encode(token)}</span>`);
            } else {
@@ -1222,13 +1347,13 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_literal(node: NodeInterface) {
+    public depart_literal(node: NodeInterface): void {
         // skipped unless literal element is from "code" role:
         this.body.push('</code>');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_literal_block(node: NodeInterface) {
+    public visit_literal_block(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'pre', '', false, { CLASS: 'literal-block' }));
         if ((node.attributes.classes || []).indexOf('code') !== -1) {
             this.body.push('<code>');
@@ -1236,7 +1361,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_literal_block(node: NodeInterface) {
+    public depart_literal_block(node: NodeInterface): void {
         if ((node.attributes.classes || []).indexOf('code') !== -1) {
             this.body.push('</code>');
         }
@@ -1360,28 +1485,28 @@ class HTMLTranslator extends nodes.NodeVisitor {
       // Content already processed:
       raise nodes.SkipNode
 
-      depart_math(node: NodeInterface) {
+      depart_math(node: NodeInterface): void {
       }
       pass // never reached
 
-      visit_math_block(node: NodeInterface) {
+      visit_math_block(node: NodeInterface): void {
       // print node.astext().encode('utf8')
       math_env = pick_math_environment(node.astext())
       this.visit_math(node, math_env=math_env)
       }
 
-      depart_math_block(node: NodeInterface) {
+      depart_math_block(node: NodeInterface): void {
       }
       pass // never reached
 
       // Meta tags: 'lang' attribute replaced by 'xml:lang' in XHTML 1.1
       // HTML5/polyglot recommends using both
-      visit_meta(node: NodeInterface) {
+      visit_meta(node: NodeInterface): void {
       meta = this.emptytag(node, 'meta', **node.non_default_attributes())
       this.add_meta(meta)
       }
 
-      depart_meta(node: NodeInterface) {
+      depart_meta(node: NodeInterface): void {
       }
       pass
 
@@ -1390,61 +1515,61 @@ class HTMLTranslator extends nodes.NodeVisitor {
       this.head.push(tag)
       }
 
-      visit_option(node: NodeInterface) {
+      visit_option(node: NodeInterface): void {
       this.body.push(this.starttag(node, 'span', '', { CLASS: 'option' }))
       }
 
-      depart_option(node: NodeInterface) {
+      depart_option(node: NodeInterface): void {
       this.body.push('</span>')
       if isinstance(node.next_node(descend=false, siblings=true),
       nodes.option):
       this.body.push(', ')
       }
 
-      visit_option_argument(node: NodeInterface) {
+      visit_option_argument(node: NodeInterface): void {
       this.body.push(node.get('delimiter', ' '))
       this.body.push(this.starttag(node, 'var', ''))
       }
 
-      depart_option_argument(node: NodeInterface) {
+      depart_option_argument(node: NodeInterface): void {
       this.body.push('</var>')
       }
 
-      visit_option_group(node: NodeInterface) {
+      visit_option_group(node: NodeInterface): void {
       this.body.push(this.starttag(node, 'dt', ''))
       this.body.push('<kbd>')
       }
 
-      depart_option_group(node: NodeInterface) {
+      depart_option_group(node: NodeInterface): void {
       this.body.push('</kbd></dt>\n')
       }
 
-      visit_option_list(node: NodeInterface) {
+      visit_option_list(node: NodeInterface): void {
       this.body.push(
       this.starttag(node, 'dl', { CLASS: 'option-list' }))
       }
 
-      depart_option_list(node: NodeInterface) {
+      depart_option_list(node: NodeInterface): void {
       this.body.push('</dl>\n')
       }
 
-      visit_option_list_item(node: NodeInterface) {
+      visit_option_list_item(node: NodeInterface): void {
       }
 
-      depart_option_list_item(node: NodeInterface) {
+      depart_option_list_item(node: NodeInterface): void {
       }
 
-      visit_option_string(node: NodeInterface) {
+      visit_option_string(node: NodeInterface): void {
       }
 
-      depart_option_string(node: NodeInterface) {
+      depart_option_string(node: NodeInterface): void {
       }
 
-      visit_organization(node: NodeInterface) {
+      visit_organization(node: NodeInterface): void {
       this.visitDocinfoItem(node, 'organization')
       }
 
-      depart_organization(node: NodeInterface) {
+      depart_organization(node: NodeInterface): void {
       this.departDocinfoItem()
 
       // Do not omit <p> tags
@@ -1463,11 +1588,11 @@ class HTMLTranslator extends nodes.NodeVisitor {
       //
       // TODO: omit paragraph tags in simple table cells?
 
-      visit_paragraph(node: NodeInterface) {
+      visit_paragraph(node: NodeInterface): void {
       this.body.push(this.starttag(node, 'p', ''))
       }
 
-      depart_paragraph(node: NodeInterface) {
+      depart_paragraph(node: NodeInterface): void {
       this.body.push('</p>')
       if not (isinstance(node.parent, (nodes.list_item, nodes.entry)) and
       (len(node.parent) == 1)):
@@ -1475,7 +1600,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
       }
     */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_problematic(node: NodeInterface) {
+    public visit_problematic(node: NodeInterface): void {
         if (typeof node.attributes.refid !== 'undefined') {
             this.body.push(`<a href="//${node.attributes.refid}">`);
             this.context.push('</a>');
@@ -1486,13 +1611,14 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_problematic(node: NodeInterface) {
+    public depart_problematic(node: NodeInterface): void {
         this.body.push('</span>');
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.body.push(this.context.pop()!);
     }
 
     /*
-      visit_raw(node: NodeInterface) {
+      visit_raw(node: NodeInterface): void {
       if 'html' in node.get('format', '').split():
       t = isinstance(node.parent, nodes.TextElement) and 'span' or 'div'
       if node.attributes['classes']:
@@ -1505,11 +1631,11 @@ class HTMLTranslator extends nodes.NodeVisitor {
       }
     */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_reference(node: NodeInterface) {
-        const atts: any = { class: 'reference' };
+    public visit_reference(node: NodeInterface): void {
+        const atts: Attributes = { class: 'reference' };
         if ('refuri' in node.attributes) {
             atts.href = node.attributes.refuri;
-            if (this.settings.docutilsWritersHtml4Css1Writer!.cloakEmailAddresses
+            if (this.settings.cloakEmailAddresses
                 && atts.href.substring(0, 6) === 'mailto:') {
                 atts.href = this.cloakMailto(atts.href);
                 this.inMailto = true;
@@ -1529,7 +1655,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public depart_reference(node: NodeInterface) {
+    public depart_reference(node: NodeInterface): void {
         this.body.push('</a>');
         if (!(node.parent instanceof nodes.TextElement)) {
             this.body.push('\n');
@@ -1538,95 +1664,95 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /*
-      visit_revision(node: NodeInterface) {
+      visit_revision(node: NodeInterface): void {
       this.visitDocinfoItem(node, 'revision', meta=false)
       }
 
-      depart_revision(node: NodeInterface) {
+      depart_revision(node: NodeInterface): void {
       this.departDocinfoItem()
       }
     */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_row(node: row) {
+    public visit_row(node: row): void {
         this.body.push(this.starttag(node, 'tr', ''));
         node.column = 0;
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_row(node: NodeInterface) {
+    public depart_row(node: NodeInterface): void {
         this.body.push('</tr>\n');
     }
 
     /*
-      visit_rubric(node: NodeInterface) {
+      visit_rubric(node: NodeInterface): void {
       this.body.push(this.starttag(node, 'p', '', { CLASS: 'rubric' }))
       }
 
-      depart_rubric(node: NodeInterface) {
+      depart_rubric(node: NodeInterface): void {
       this.body.push('</p>\n')
       }
 
       // TODO: use the new HTML 5 element <section>?
-      visit_section(node: NodeInterface) {
+      visit_section(node: NodeInterface): void {
       this.section_level += 1
       this.body.push(
       this.starttag(node, 'div', { CLASS: 'section' }))
       }
 
-      depart_section(node: NodeInterface) {
+      depart_section(node: NodeInterface): void {
       this.section_level -= 1
       this.body.push('</div>\n')
 
       // TODO: use the new HTML5 element <aside>? (Also for footnote text)
       }
-      visit_sidebar(node: NodeInterface) {
+      visit_sidebar(node: NodeInterface): void {
       this.body.push(
       this.starttag(node, 'div', { CLASS: 'sidebar' }))
       this.in_sidebar = true
       }
 
-      depart_sidebar(node: NodeInterface) {
+      depart_sidebar(node: NodeInterface): void {
       this.body.push('</div>\n')
       this.in_sidebar = false
       }
 
-      visit_status(node: NodeInterface) {
+      visit_status(node: NodeInterface): void {
       this.visitDocinfoItem(node, 'status', meta=false)
       }
 
-      depart_status(node: NodeInterface) {
+      depart_status(node: NodeInterface): void {
       this.departDocinfoItem()
       }
 
     */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_strong(node: NodeInterface) {
+    public visit_strong(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'strong', ''));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_strong(node: NodeInterface) {
+    public depart_strong(node: NodeInterface): void {
         this.body.push('</strong>');
     }
 
     /*
-      visit_subscript(node: NodeInterface) {
+      visit_subscript(node: NodeInterface): void {
       this.body.push(this.starttag(node, 'sub', ''))
       }
 
-      depart_subscript(node: NodeInterface) {
+      depart_subscript(node: NodeInterface): void {
       this.body.push('</sub>')
       }
 */
 
     /** Internal only. */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public visit_substitution_definition(node: NodeInterface) {
+    public visit_substitution_definition(node: NodeInterface): void {
         throw new nodes.SkipNode();
     }
 
     /*
-      visit_substitution_reference(node: NodeInterface) {
+      visit_substitution_reference(node: NodeInterface): void {
       this.unimplemented_visit(node: NodeInterface)
       }
 
@@ -1634,7 +1760,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
       // alternative titles and taglines unless intended to be the heading for a
       // new section or subsection.
       // -- http://www.w3.org/TR/html/sections.html//headings-and-sections
-      visit_subtitle(node: NodeInterface) {
+      visit_subtitle(node: NodeInterface): void {
       if isinstance(node.parent, nodes.sidebar):
       classes = 'sidebar-subtitle'
       elif isinstance(node.parent, nodes.document):
@@ -1645,7 +1771,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
       this.body.push(this.starttag(node, 'p', '', CLASS=classes))
       }
 
-      depart_subtitle(node: NodeInterface) {
+      depart_subtitle(node: NodeInterface): void {
       this.body.push('</p>\n')
       if isinstance(node.parent, nodes.document):
       this.subtitle = this.body[this.in_document_title:-1]
@@ -1655,17 +1781,17 @@ class HTMLTranslator extends nodes.NodeVisitor {
       del this.body[:]
       }
 
-      visit_superscript(node: NodeInterface) {
+      visit_superscript(node: NodeInterface): void {
       this.body.push(this.starttag(node, 'sup', ''))
       }
 
-      depart_superscript(node: NodeInterface) {
+      depart_superscript(node: NodeInterface): void {
       this.body.push('</sup>')
       }
 
     */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_system_message(node: NodeInterface) {
+    public visit_system_message(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'div', '\n', false, { CLASS: 'system-message' }));
         this.body.push('<p class="system-message-title">');
         let backrefText = '';
@@ -1674,7 +1800,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
             if (backrefs.length === 1) {
                 backrefText = `; <em><a href="//${backrefs[0]}">backlink</a></em>`;
             } else {
-                const backlinks = backrefs.map((backref: string, i: number) => `<a href="//${backref}">${i + 1}</a>`);
+                const backlinks = backrefs.map((backref: string, i: number): string => `<a href="//${backref}">${i + 1}</a>`);
                 backrefText = `; <em>backlinks: ${backlinks.join(', ')}</em>`;
             }
         }
@@ -1688,14 +1814,14 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_system_message(node: NodeInterface) {
+    public depart_system_message(node: NodeInterface): void {
         this.body.push('</div>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_table(node: NodeInterface) {
-        const atts: any = {};
-        const classes = this.tableStyle.split(',').map((cls: string) => cls.replace(/^[ \t\n]*/, '').replace(/[ \t\n]$/, ''));
+    public visit_table(node: NodeInterface): void {
+        const atts: Attributes = {};
+        const classes = this.tableStyle.split(',').map((cls: string): string => cls.replace(/^[ \t\n]*/, '').replace(/[ \t\n]$/, ''));
         if ('align' in node.attributes) {
             classes.push(`align-${node.attributes.align}`);
         }
@@ -1707,38 +1833,39 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_table(node: NodeInterface) {
+    public depart_table(node: NodeInterface): void {
         this.body.push('</table>\n');
     }
 
-    /*
-      visit_target(node: NodeInterface) {
-      if not ('refuri' in node or 'refid' in node
-      or 'refname' in node):
-      this.body.push(this.starttag(node, 'span', '', { CLASS: 'target' }))
-      this.context.push('</span>')
-      else:
-      this.context.push('')
-      }
+    /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
+    public visit_target(node: NodeInterface): void {
+        if(!(('refuri' in node.attributes) || ('refid' in node.attributes) || ('refname' in node.attributes))) {
+            this.body.push(this.starttag(node, 'span', '', false, { CLASS: 'target' }));
+            this.context.push('</span>');
+        } else {
+            this.context.push('');
+        }
+    }
 
-      depart_target(node: NodeInterface) {
-      this.body.push(this.context.pop())
-      }
+    /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
+    public depart_target(node: NodeInterface): void {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.body.push(this.context.pop()!);
+    }
 
-    */
     // no hard-coded vertical alignment in table body
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_tbody(node: NodeInterface) {
+    public visit_tbody(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'tbody'));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_tbody(node: NodeInterface) {
+    public depart_tbody(node: NodeInterface): void {
         this.body.push('</tbody>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_term(node: NodeInterface) {
+    public visit_term(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'dt', ''));
     }
 
@@ -1746,43 +1873,43 @@ class HTMLTranslator extends nodes.NodeVisitor {
      * Leave the end tag to `this.visit_definition()`, in case there's a classifier.
      */
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_term(node: NodeInterface) {
+    public depart_term(node: NodeInterface): void {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_tgroup(node: tgroup) {
+    public visit_tgroup(node: tgroup): void {
         this.colspecs = [];
         node.stubs = [];
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_tgroup(node: NodeInterface) {
+    public depart_tgroup(node: NodeInterface): void {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_thead(node: NodeInterface) {
+    public visit_thead(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'thead'));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_thead(node: NodeInterface) {
+    public depart_thead(node: NodeInterface): void {
         this.body.push('</thead>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_title_reference(node: NodeInterface) {
+    public visit_title_reference(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'cite', ''));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_title_reference(node: NodeInterface) {
+    public depart_title_reference(node: NodeInterface): void {
         this.body.push('</cite>');
 
         // TODO: use the new HTML5 element <aside>? (Also for footnote text)
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_topic(node: NodeInterface) {
+    public visit_topic(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'div', '\n', false, { CLASS: 'topic' }));
         this.topicClasses = node.attributes.classes; // fixme checkme
     }
@@ -1790,38 +1917,38 @@ class HTMLTranslator extends nodes.NodeVisitor {
     //   this.in_contents = 'contents' in node.attributes['classes']
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_topic(node: NodeInterface) {
+    public depart_topic(node: NodeInterface): void {
         this.body.push('</div>\n');
         this.topicClasses = [];
         // TODO this.in_contents = false
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_transition(node: NodeInterface) {
+    public visit_transition(node: NodeInterface): void {
         this.body.push(this.emptytag(node, 'hr', '\n', { CLASS: 'docutils' }));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_transition(node: NodeInterface) {
+    public depart_transition(node: NodeInterface): void {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_version(node: NodeInterface) {
+    public visit_version(node: NodeInterface): void {
         this.visitDocinfoItem(node, 'version', false);
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_version(node: NodeInterface) {
+    public depart_version(node: NodeInterface): void {
         this.departDocinfoItem();
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public unimplemented_visit(node: NodeInterface) {
+    public unimplemented_visit(node: NodeInterface): void {
         throw new UnimplementedError(`visiting unimplemented node type: ${node.tagname}`);
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_title(node: NodeInterface) {
+    public visit_title(node: NodeInterface): void {
         // Only 6 section levels are supported by HTML.
         /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
         const checkId = 0; // TODO: is this a bool (false) or a counter?
@@ -1834,6 +1961,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
             this.body.push(
                 this.starttag(node, 'p', '',false, { CLASS: 'sidebar-title' }),
             );
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         } else if (node.parent!.isAdmonition()) {
             this.body.push(
                 this.starttag(node, 'p', '', false, { CLASS: 'admonition-title' }),
@@ -1850,9 +1978,11 @@ class HTMLTranslator extends nodes.NodeVisitor {
         } else {
             // assert isinstance(node.parent, nodes.section)
             const headerLevel = this.sectionLevel + this.initialHeaderLevel - 1;
-            let atts: any = {};
-            if (node.parent!.children.length >= 2
-                && node.parent!.children[1] instanceof nodes.subtitle) {
+            let atts: Attributes = {};
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            if (node.parent!.getNumChildren() >= 2
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                && node.parent!.getChild(1) instanceof nodes.subtitle) {
                 atts.CLASS = 'with-subtitle';
             }
             this.body.push(
@@ -1861,7 +1991,7 @@ class HTMLTranslator extends nodes.NodeVisitor {
             atts = {};
             if (Object.prototype.hasOwnProperty.call(node, 'refid')) {
                 atts.class = 'toc-backref';
-                atts.href = `#${node.refid}`;
+                atts.href = `#${node.attributes.refid}`;
             }
             if (Object.keys(atts).length) {
                 this.body.push(this.starttag(node, 'a', '', false, atts));
@@ -1874,8 +2004,8 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_title(node: NodeInterface) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    public depart_title(node: NodeInterface): void {
+        // @ts-ignore
         this.body.push(this.context.pop()!);
         if (this.inDocumentTitle) {
             this.title = this.body.slice(this.inDocumentTitle, this.body.length - 2);
@@ -1887,9 +2017,11 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_bullet_list(node: NodeInterface) {
-        const atts: any = {};
+    public visit_bullet_list(node: NodeInterface): void {
+        const atts:  Attributes = {};
         const oldCompactSimple = this.compactSimple;
+        //@ts-ignore
+        this.context.push([this.compactSimple, this.compactParagraph]);
         this.compactParagraph = undefined;
         this.compactSimple = this.isCompactable(node);
         if (this.compactSimple && !oldCompactSimple) {
@@ -1899,73 +2031,65 @@ class HTMLTranslator extends nodes.NodeVisitor {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_bullet_list(node: NodeInterface) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.compactSimple = this.context.pop()!.length > 0;
-        this.compactParagraph = this.compactSimple;
+    public depart_bullet_list(node: NodeInterface): void {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion @ts-ignore
+        [ this.compactSimple, this.compactParagraph ] = this.context.pop()!;
         this.body.push('</ul>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_list_item(node: NodeInterface) {
+    public visit_list_item(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'li', ''));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public depart_list_item(node: NodeInterface) {
+    public depart_list_item(node: NodeInterface): void {
         this.body.push('</li>\n');
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public visit_paragraph(node: NodeInterface) {
+    public visit_paragraph(node: NodeInterface): void {
         this.body.push(this.starttag(node, 'p', ''));
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
-    public depart_paragraph(node: NodeInterface) {
+    public depart_paragraph(node: NodeInterface): void {
         this.body.push('</p>');
         if (!((node.parent instanceof nodes.list_item
                || node.parent instanceof nodes.entry)
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              && node.parent!.children.length === 1)) {
+              && node.parent.getNumChildren() === 1)) {
             this.body.push('\n');
         }
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public passNode(node: NodeInterface) {
+    public passNode(node: NodeInterface): void {
     }
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
-    public ignoreNode(node: NodeInterface) {
+    public ignoreNode(node: NodeInterface): void {
         throw new nodes.SkipNode();
     }
 
-    public cloakMailto(href: any) {
+    /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase,@typescript-eslint/no-unused-vars,no-unused-vars */
+    public addMeta(metaTag: string): void {
 
     }
 
-    public addMeta(metaTag: string) {
-
-    }
-
-    public checkSimpleList(node: any): boolean {
-        //fixme
-    //     """Check for a simple list that can be rendered compactly."""
-    //     visitor = SimpleListChecker(self.document)
-    //     try:
-    //     node.walk(visitor)
-    //     except nodes.NodeFound:
-    //     return False
-    // else:
-    //     return True
-
-        return false;
-    }
-
-    public cloakEmail(encoded: string): string {
-        return encoded;
-
+    /** Check for a simple list that can be rendered compactly. */
+    public checkSimpleList(node: NodeInterface): boolean {
+        const visitor = new SimpleListChecker(this.document);
+        try {
+            node.walk(visitor);
+        } catch(error) {
+            if(error instanceof nodes.NodeFound) {
+                return false;
+            } else {
+                throw error;
+            }
+        }
+        return true;
     }
 }
 
@@ -1975,53 +2099,277 @@ class HTMLTranslator extends nodes.NodeVisitor {
  * @uuid 9e3f415b-52ee-4cfd-8515-fee776dc0bf4
  */
 class HTMLBaseWriter extends BaseWriter {
-    private visitorAttributes: any[] = [];
-    private defaultTemplateContent: any;
-    private visitor: any;
-    private attr: any;
-    private translatorClass: any;
-    private template: any;
-    /**
-     * Create HTMLBaseWriter.
-     * @param {Object} args - arguments to function
-     */
-    public constructor() {
-        super();
-        this.attr = {};
-        this.translatorClass = HTMLTranslator;
-    }
+    private visitorAttributes: string[] = ['headPrefix', 'head', 'stylesheet', 'bodyPrefix', 'bodyPreDocinfo', 'docinfo', 'body',
+        'bodySuffix', 'title',' subtitle', 'header', 'footer', 'meta', 'fragment', 'htmlProlog', 'htmlHead', 'htmlTitle', 'htmlSubtitle',
+        'htmlBody'];
+    /*    private defaultTemplateContent: any;*/
+    private visitor?: HTMLTranslator;
+    /*    private attr: any;*/
+    private translatorClass: typeof HTMLTranslator = HTMLTranslator;
+    private template: TemplateFunction = template;
+    public settingsDefaults: GenericSettings = {
+        outputEncodingErrorHandler: 'xmlcharrefreplace',
+    };
+    public settingsSpec: SettingsSpecType[] = [
+        [
+            "HTML-Specific Options",
+            null,
+            [
+                [
+                    "Specify the template file (UTF-8 encoded).  Default is \"/local/home/jade/docutils-dev/docutils-monorepo/venv/lib/python3.7/site-packages/docutils/writers/html4css1/template.txt\".",
+                    [
+                        "--template"
+                    ],
+                    {
+                        "default": "/local/home/jade/docutils-dev/docutils-monorepo/venv/lib/python3.7/site-packages/docutils/writers/html4css1/template.txt",
+                        "metavar": "<file>"
+                    }
+                ],
+                [
+                    "Comma separated list of stylesheet URLs. Overrides previous --stylesheet and --stylesheet-path settings.",
+                    [
+                        "--stylesheet"
+                    ],
+                    {
+                        "metavar": "<URL[,URL,...]>",
+                        "overrides": "stylesheet_path",
+                        "validator": "validate_comma_separated_list"
+                    }
+                ],
+                [
+                    "Comma separated list of stylesheet paths. Relative paths are expanded if a matching file is found in the --stylesheet-dirs. With --link-stylesheet, the path is rewritten relative to the output HTML file. Default: \"html4css1.css\"",
+                    [
+                        "--stylesheet-path"
+                    ],
+                    {
+                        "metavar": "<file[,file,...]>",
+                        "overrides": "stylesheet",
+                        "validator": "validate_comma_separated_list",
+                        "default": [
+                            "html4css1.css"
+                        ]
+                    }
+                ],
+                [
+                    "Embed the stylesheet(s) in the output HTML file.  The stylesheet files must be accessible during processing. This is the default.",
+                    [
+                        "--embed-stylesheet"
+                    ],
+                    {
+                        "default": 1,
+                        "action": "store_true",
+                        "validator": "validate_boolean"
+                    }
+                ],
+                [
+                    "Link to the stylesheet(s) in the output HTML file. Default: embed stylesheets.",
+                    [
+                        "--link-stylesheet"
+                    ],
+                    {
+                        "dest": "embed_stylesheet",
+                        "action": "store_false"
+                    }
+                ],
+                [
+                    "Comma-separated list of directories where stylesheets are found. Used by --stylesheet-path when expanding relative path arguments. Default: \"['.', '/local/home/jade/docutils-dev/docutils-monorepo/venv/lib/python3.7/site-packages/docutils/writers/html4css1', '/local/home/jade/docutils-dev/docutils-monorepo/venv/lib/python3.7/site-packages/docutils/writers/html5_polyglot']\"",
+                    [
+                        "--stylesheet-dirs"
+                    ],
+                    {
+                        "metavar": "<dir[,dir,...]>",
+                        "validator": "validate_comma_separated_list",
+                        "default": [
+                            ".",
+                            "/local/home/jade/docutils-dev/docutils-monorepo/venv/lib/python3.7/site-packages/docutils/writers/html4css1",
+                            "/local/home/jade/docutils-dev/docutils-monorepo/venv/lib/python3.7/site-packages/docutils/writers/html5_polyglot"
+                        ]
+                    }
+                ],
+                [
+                    "Specify the initial header level.  Default is 1 for \"<h1>\".  Does not affect document title & subtitle (see --no-doc-title).",
+                    [
+                        "--initial-header-level"
+                    ],
+                    {
+                        "choices": [
+                            "1",
+                            "2",
+                            "3",
+                            "4",
+                            "5",
+                            "6"
+                        ],
+                        "default": "1",
+                        "metavar": "<level>"
+                    }
+                ],
+                [
+                    "Specify the maximum width (in characters) for one-column field names.  Longer field names will span an entire row of the table used to render the field list.  Default is 14 characters.  Use 0 for \"no limit\".",
+                    [
+                        "--field-name-limit"
+                    ],
+                    {
+                        "default": 14,
+                        "metavar": "<level>",
+                        "validator": "validate_nonnegative_int"
+                    }
+                ],
+                [
+                    "Specify the maximum width (in characters) for options in option lists.  Longer options will span an entire row of the table used to render the option list.  Default is 14 characters.  Use 0 for \"no limit\".",
+                    [
+                        "--option-limit"
+                    ],
+                    {
+                        "default": 14,
+                        "metavar": "<level>",
+                        "validator": "validate_nonnegative_int"
+                    }
+                ],
+                [
+                    "Format for footnote references: one of \"superscript\" or \"brackets\".  Default is \"brackets\".",
+                    [
+                        "--footnote-references"
+                    ],
+                    {
+                        "choices": [
+                            "superscript",
+                            "brackets"
+                        ],
+                        "default": "brackets",
+                        "metavar": "<format>",
+                        "overrides": "trim_footnote_reference_space"
+                    }
+                ],
+                [
+                    "Format for block quote attributions: one of \"dash\" (em-dash prefix), \"parentheses\"/\"parens\", or \"none\".  Default is \"dash\".",
+                    [
+                        "--attribution"
+                    ],
+                    {
+                        "choices": [
+                            "dash",
+                            "parentheses",
+                            "parens",
+                            "none"
+                        ],
+                        "default": "dash",
+                        "metavar": "<format>"
+                    }
+                ],
+                [
+                    "Remove extra vertical whitespace between items of \"simple\" bullet lists and enumerated lists.  Default: enabled.",
+                    [
+                        "--compact-lists"
+                    ],
+                    {
+                        "default": 1,
+                        "action": "store_true",
+                        "validator": "validate_boolean"
+                    }
+                ],
+                [
+                    "Disable compact simple bullet and enumerated lists.",
+                    [
+                        "--no-compact-lists"
+                    ],
+                    {
+                        "dest": "compact_lists",
+                        "action": "store_false"
+                    }
+                ],
+                [
+                    "Remove extra vertical whitespace between items of simple field lists.  Default: enabled.",
+                    [
+                        "--compact-field-lists"
+                    ],
+                    {
+                        "default": 1,
+                        "action": "store_true",
+                        "validator": "validate_boolean"
+                    }
+                ],
+                [
+                    "Disable compact simple field lists.",
+                    [
+                        "--no-compact-field-lists"
+                    ],
+                    {
+                        "dest": "compact_field_lists",
+                        "action": "store_false"
+                    }
+                ],
+                [
+                    "Added to standard table classes. Defined styles: \"borderless\". Default: \"\"",
+                    [
+                        "--table-style"
+                    ],
+                    {
+                        "default": ""
+                    }
+                ],
+                [
+                    "Math output format, one of \"MathML\", \"HTML\", \"MathJax\" or \"LaTeX\". Default: \"HTML math.css\"",
+                    [
+                        "--math-output"
+                    ],
+                    {
+                        "default": "HTML math.css"
+                    }
+                ],
+                [
+                    "Omit the XML declaration.  Use with caution.",
+                    [
+                        "--no-xml-declaration"
+                    ],
+                    {
+                        "dest": "xml_declaration",
+                        "default": 1,
+                        "action": "store_false",
+                        "validator": "validate_boolean"
+                    }
+                ],
+                [
+                    "Obfuscate email addresses to confuse harvesters while still keeping email links usable with standards-compliant browsers.",
+                    [
+                        "--cloak-email-addresses"
+                    ],
+                    {
+                        "action": "store_true",
+                        "validator": "validate_boolean"
+                    }
+                ]
+            ]
+        ]
+    ];
 
-    public _init() {
-        //fixme
-        // this.defaultTemplateContent = defaultTemplate;
-        this.template = template;
-        this.visitorAttributes = [
-            'headPrefix', 'head', 'stylesheet', 'bodyPrefix',
-            'bodyPreDocinfo', 'docinfo', 'body', 'bodySuffix',
-            'title', 'subtitle', 'header', 'footer', 'meta', 'fragment',
-            'htmlProlog', 'htmlHead', 'htmlTitle', 'htmlSubtitle',
-            'htmlBody'];
-    }
 
-
-    public translate() {
-        this.visitor = new this.translatorClass(this.document);
+    public translate(): void {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.visitor = new this.translatorClass(this.document!);
         const visitor = this.visitor;
         if (!visitor) {
             throw new Error();
         }
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.document!.walkabout(visitor);
-        this.visitorAttributes.forEach((attr) => {
+        const o = {};
+        this.visitorAttributes.forEach((attr): void => {
             // @ts-ignore
             this[attr] = visitor[attr];
+	    if(!Object.prototype.hasOwnProperty.call(visitor, attr)) {
+	    logger.warn(`unknown visitor attribute ${attr}`);
+	    }
+            // @ts-ignore
+	    o[attr] = visitor[attr] ? visitor[attr].join(''): undefined;
         });
-        this.output = visitor.body.join('');// this.applyTemplate();
-        //        console.log(this.output);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.output = this.template!(o);
     }
 
-    public applyTemplate() {
+    public applyTemplate(): string {
         /* eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars */
-        const templateContent = this.defaultTemplateContent;
+        /*        const templateContent = this.defaultTemplateContent;*/
         /*        template_file = open(this.document.settings.template, 'rb')
                   template = unicode(template_file.read(), 'utf-8')
                   template_file.close()
@@ -2031,113 +2379,31 @@ class HTMLBaseWriter extends BaseWriter {
         return template(this.templateVars());
     }
 
-    public templateVars() {
-        const vars: any = {};
+    public templateVars(): TemplateVars {
+        const vars: TemplateVars = {};
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const settings = this.document!.settings;
         // @ts-ignore
         const x = Object.prototype.getOwnPropertyDescriptor.call(this, "test").value;
         console.log(x);
-        this.visitorAttributes.forEach((attr) => {
+        this.visitorAttributes.forEach((attr): void => {
             // @ts-ignore
             vars[attr] = (this[attr] || [].join('').trim());
         });
-        vars.encoding = settings.docutilsFrontendOptionParser!.outputEncoding;
+        vars.encoding = settings.outputEncoding;
         vars.version = __version__;
         return vars;
     }
 
-    public assembleParts() {
+    public assembleParts(): void {
         super.assembleParts();
-        this.visitorAttributes.forEach((part) => {
+        this.visitorAttributes.forEach((part): void => {
             // @ts-ignore
             this.parts[part] = (this[part] || []).join('');
         });
+        logger.silly('HtmlBase.assembleParts');
     }
 }
 
-/**
- * Raise `nodes.NodeFound` if non-simple list item is encountered.
- * 
- * Here "simple" means a list item containing nothing other than a single
- * paragraph, a simple list, or a paragraph followed by a simple list.
- * 
- * This version also checks for simple field lists and docinfo.
- *  
- * @uuid 78cb5029-8afd-4b74-9557-b3426f9a2333
- */
-class SimpleListChecker extends nodes.GenericNodeVisitor {
-    public default_visit(node: NodeInterface) {
-        super.default_visit(node);
-    }
-
-    public default_departure(node: NodeInterface) {
-        super.default_departure(node);
-    }
-}
-// def default_visit(self, node):
-// raise nodes.NodeFound
-//
-// def visit_list_item(self, node):
-// # print "visiting list item", node.__class__
-// children = [child for child in node.children
-//     if not isinstance(child, nodes.Invisible)]
-// # print "has %s visible children" % len(children)
-// if (children and isinstance(children[0], nodes.paragraph)
-// and (isinstance(children[-1], nodes.bullet_list) or
-// isinstance(children[-1], nodes.enumerated_list) or
-// isinstance(children[-1], nodes.field_list))):
-// children.pop()
-// # print "%s children remain" % len(children)
-// if len(children) <= 1:
-// return
-// else:
-// # print "found", child.__class__, "in", node.__class__
-// raise nodes.NodeFound
-//
-// def pass_node(self, node):
-// pass
-//
-// def ignore_node(self, node):
-// # ignore nodes that are never complex (can contain only inline nodes)
-// raise nodes.SkipNode
-//
-// # Paragraphs and text
-// visit_Text = ignore_node
-// visit_paragraph = ignore_node
-//
-// # Lists
-// visit_bullet_list = pass_node
-// visit_enumerated_list = pass_node
-// visit_docinfo = pass_node
-//
-// # Docinfo nodes:
-//     visit_author = ignore_node
-// visit_authors = visit_list_item
-// visit_address = visit_list_item
-// visit_contact = pass_node
-// visit_copyright = ignore_node
-// visit_date = ignore_node
-// visit_organization = ignore_node
-// visit_status = ignore_node
-// visit_version = visit_list_item
-//
-// # Definition list:
-//     visit_definition_list = pass_node
-// visit_definition_list_item = pass_node
-// visit_term = ignore_node
-// visit_classifier = pass_node
-// visit_definition = visit_list_item
-//
-// # Field list:
-//     visit_field_list = pass_node
-// visit_field = pass_node
-// # the field body corresponds to a list item
-// visit_field_body = visit_list_item
-// visit_field_name = ignore_node
-//
-// # Invisible nodes should be ignored.
-//     visit_comment = ignore_node
-// visit_substitution_definition = ignore_node
-// visit_target = ignore_node
 
 export default HTMLBaseWriter;

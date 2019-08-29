@@ -3,34 +3,14 @@
  */
 import Reporter from './Reporter';
 import { ApplicationError } from './Exceptions';
-import {DocutilsCoreOptionParser, Settings} from '../gen/Settings';
-import {defaults }from "../gen/defaults";
-import { ReporterInterface } from "./types";
+import {Settings} from '../gen/Settings';
+import { ReporterInterface} from "./types";
 
 export default function newReporter(labeled: { sourcePath: string }, settings: Settings): ReporterInterface {
     const keys = ['reportLevel', 'haltLevel', //'warningStream',
         'debug',
         'errorEncoding', 'errorEncodingErrorHandler'];
-    const core: DocutilsCoreOptionParser = settings.docutilsCoreOptionParser || {};
-    if(typeof core !== 'undefined') {
-        if (typeof core.reportLevel === 'undefined') {
-            core.reportLevel = defaults.docutilsCoreOptionParser.reportLevel;
-        }
-        if(typeof core.haltLevel === 'undefined') {
-            core.haltLevel = defaults.docutilsCoreOptionParser.haltLevel;
-        }
-        if(typeof core.debug === 'undefined') {
-            core.debug = defaults.docutilsCoreOptionParser.debug;
-        }
-        if(typeof core.errorEncoding === 'undefined') {
-            core.errorEncoding = defaults.docutilsCoreOptionParser.errorEncoding;
-
-        }
-        if(typeof core.errorEncodingErrorHandler === 'undefined') {
-            core.errorEncodingErrorHandler = defaults.docutilsCoreOptionParser.errorEncodingErrorHandler;
-        }
-
-    }
+    const core: Settings = settings || {};
     const missingKeys = keys.filter((key): boolean=> !Object.prototype.hasOwnProperty.call(core, key));
     if (missingKeys.length) {
         throw new ApplicationError(

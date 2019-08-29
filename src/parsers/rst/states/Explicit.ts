@@ -29,7 +29,7 @@ class Explicit extends SpecializedBody {
             if (expmatch) {
                 try {
                     const r = method(expmatch);
-//                  console.log(r);
+                    //                  console.log(r);
                     return r;
                 } catch (error) {
                     if (error instanceof MarkupError) {

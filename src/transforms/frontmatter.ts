@@ -33,7 +33,8 @@ abstract class TitlePromoter extends Transform {
             ...node.children.slice(0, index),
             // @ts-ignore
             ...section.children.slice(1)];
-        node.children = newChildren;
+        node.clearChildren();
+        node.add(newChildren);
         // assert isinstance(node[0], nodes.title)
         return 1;
     }
@@ -59,23 +60,23 @@ abstract class TitlePromoter extends Transform {
 
         // Transfer the contents of the subsection's title to the
         // subtitle:
-        subtitle.children = subsection!.children[0].children.slice();
-        node.children = [node.children[0], // title
+        subtitle.add(subsection!.getChild(0).getChildren());
+        node.add([node.getChild(0), // title
             subtitle,
             // everything that was before the section:
-            ...node.children.slice(1, index),
+            ...node.getChildren().slice(1, index),
             // everything that was in the subsection:
-            ...subsection.children.slice(1)];
+            ...subsection.getChildren().slice(1)]);
         return 1;
     }
 
     public candidateIndex(node: ElementInterface): any[] {
         const index = node.firstChildNotMatchingClass(nodes.PreBibliographic);
-        if (index == null || node.children.length > (index + 1)
-            || !(node.children[index] instanceof nodes.section)) {
+        if (index == null || node.getNumChildren() > (index + 1)
+            || !(node.getChild(index) instanceof nodes.section)) {
             return [null, null];
         }
-        return [node.children[index], index];
+        return [node.getChild(index), index];
     }
 }
 
@@ -86,17 +87,17 @@ export class DocTitle extends TitlePromoter {
 
     public setMetadata() {
         if (!('title' in this.document.attributes)) {
-            let title = this.document.settings.docutilsCoreOptionParser!.title;
+            let title = this.document.settings.title;
             if (title != null) {
                 this.document.attributes.title = title;
-            } else if (this.document.children.length && this.document.children[0] instanceof nodes.title) {
-                this.document.attributes.title = this.document.children[0].astext();
+            } else if (this.document.hasChildren() && this.document.getChild(0) instanceof nodes.title) {
+                this.document.attributes.title = this.document.getChild(0).astext();
             }
         }
     }
 
     public apply() {
-        if (this.document.settings.docutilsReadersStandaloneReader!.doctitleXform || typeof this.document.settings.docutilsReadersStandaloneReader!.doctitleXform === 'undefined') {
+        if (this.document.settings.doctitleXform || typeof this.document.settings.doctitleXform === 'undefined') {
             if (this.promoteTitle(this.document)) {
                 this.promoteSubtitle(this.document);
             }
@@ -112,7 +113,7 @@ DocTitle.defaultPriority = 320;
 export class SectionSubTitle extends TitlePromoter {
 
     public apply() {
-        let reader = this.document.settings.docutilsWritersOdfOdtReader;
+        let reader = this.document.settings;
         if (!reader || (reader.sectsubtitleXform || typeof reader.sectsubtitleXform === 'undefined')) {
             this.document.traverse({ condition: nodes.section }).forEach((section) => {
             // On our way through the node tree, we are deleting

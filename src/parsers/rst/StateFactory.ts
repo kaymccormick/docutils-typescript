@@ -2,16 +2,25 @@
  * @uuid 3159f5f3-953a-444c-82ab-7cf7ed70de8b
  */
 import * as RSTStates from './RSTStates';
-import { Statefactory, StateInterface, Statemachine, StateType } from "../../types";
-import uuidv1 from 'uuid/v1';
+import {
+    Statefactory,
+    StateInterface,
+    Statemachine,
+    StateType,
+    StateConstructor,
+    LoggerType,
+} from "../../types";
 
 /**
  * @uuid 3f466817-f78a-4a12-afd0-855a1f7b9d73
  */
 class StateFactory implements Statefactory {
-    private stateClasses: StateType[]= [];
+    private stateClasses: StateConstructor[]= [];
     private args: any | undefined;
-    public constructor(args?: { stateClasses?: StateType[] }) {
+    private logger: LoggerType;
+    public constructor(args: { logger: LoggerType; stateClasses?: StateConstructor[] }) {
+        this.logger = args.logger;
+        this.logger.silly('constructor');
         this.args = args;
         if (args && args.stateClasses && args.stateClasses.length) {
             this.stateClasses = args.stateClasses;
@@ -108,6 +117,7 @@ class StateFactory implements Statefactory {
     }
 
     public createState(stateName: string, stateMachine?: Statemachine) {
+        //this.logger.silly('createState', { value:stateName});
         if (typeof stateName === 'undefined') {
             throw new Error('Need argument stateName');
         }
@@ -121,17 +131,20 @@ class StateFactory implements Statefactory {
         }
         // @ts-ignore
         const StateClass = RSTStates[stateName];
-        const uuid = uuidv1();
         let state = new StateClass(stateMachine, { });
-        state.uuid = uuid;
+        /* This has to be done post-construction due to how instance
+	   property initiailization order */
+        state.addInitialTransitions();
+        // this.logger.silly('createState finish', { value:stateName});
         return state;
     }
 
-    public getStateClasses(): StateType[] {
+    public getStateClasses(): StateConstructor[] {
         return this.stateClasses;
     }
 
-    public withStateClasses(stateClasses: StateType[]): Statefactory {
+    public withStateClasses(stateClasses: StateConstructor[]): this{
+    // @ts-ignore
         return new StateFactory({ stateClasses });
     }
 }

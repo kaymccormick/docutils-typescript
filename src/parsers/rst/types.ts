@@ -8,6 +8,8 @@ import {
     ElementInterface,
     LogLevel,
     NodeInterface,
+    Options,
+    Patterns,
     ReporterInterface,
     Statemachine,
     StateMachineConstructorArgs,
@@ -17,11 +19,35 @@ import {
 import StringList from "../../StringList";
 import { Settings } from "../../../gen/Settings";
 
-interface Patterns {
-    [patternName: string]: RegExp;
+export interface BodyState {
+    footnote: (match: RegExpExecArray) => [NodeInterface[], boolean];
+    citation: (match: RegExpExecArray) => [NodeInterface[], boolean];
+    hyperlink_target: (match: RegExpExecArray) => [NodeInterface[], boolean];
+    substitution_def: (match: RegExpExecArray) => [NodeInterface[], boolean];
+    directive: (match: RegExpExecArray, optionPresets: Options) => [NodeInterface[], boolean];
 }
+
+export type RowData = TableEntryData[];
+export type CellData = [number, number, number,number, StringList];
+export type TableEntryData = [number, number, number, StringList];
+export type TableData = [number[], RowData[], RowData[]]
+export interface ParserConstructor {
+    new (): any;
+}
+
+export interface DirectiveConstructor {
+    new (typeName: string, args: string[], options: Options, content: StringList, lineno: number,
+        contentOffset: number, blockText: string, u: any, stateMachine: Rststatemachine): any;
+
+    optionalArguments: any;
+    requiredArguments: any;
+    optionSpec: any;
+    hasContent: boolean;
+    finalArgumentWhitespace: boolean;
+}
+
 interface ConstructCallback {
-    (match: RegExpMatchArray, ...rest: any[]): [NodeInterface[], boolean];
+    (match: RegExpExecArray, ...rest: any[]): [NodeInterface[], boolean];
 }
 type ConstructKind = [ConstructCallback, RegExp]
 type ConstructsKind = ConstructKind[]
@@ -91,6 +117,10 @@ export interface DirectiveInterface {
 export interface DirectivesInterface {
     [directiveName: string]: any;
 };
+
+export interface DirectiveOptions {
+    [optionName: string]: any;
+}
 
 export interface RSTLanguage {
     directives: DirectivesInterface;

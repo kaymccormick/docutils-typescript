@@ -10,21 +10,14 @@ import {
     ElementInterface,
     NodeInterface,
     StateInterface,
-    Statemachine, StateMachineFactoryFunction,
+    StateMachineFactoryFunction,
     Systemmessage,
     TransitionsArray
 } from "../../../types";
 import StringList from "../../../StringList";
 import RSTStateMachine from "../RSTStateMachine";
-import {
-    Explicit,
-    InlinerInterface,
-    NestedParseArgs, Nestedstatemachine,
-    RstMemo,
-    RSTStateArgs,
-    Rststatemachine,
-    StatemachineConstructor
-} from "../types";
+import { Explicit, InlinerInterface, NestedParseArgs, Nestedstatemachine, RstMemo } from "../types";
+import { fullyNormalizeName } from "../../../nodeUtils";
 
 /**
  * @uuid 6699632a-1009-4065-a9c8-81d3065b3ec4
@@ -35,7 +28,7 @@ abstract class RSTState extends StateWS {
     }
 
     public set explicit(value: Explicit| undefined) {
-//        console.log(`explicit ${JSON.stringify(value)}`)
+        //        console.log(`explicit ${JSON.stringify(value)}`)
         this._explicit = value;
     }
     // added for us
@@ -56,16 +49,14 @@ abstract class RSTState extends StateWS {
 
     public blankFinish?: boolean;
 
+    /** Padding character for East Asian double-width text. */
     public doubleWidthPadChar: string = '';
 
     public constructor(stateMachine: RSTStateMachine, debug: boolean = false) {
         super(stateMachine, debug);
+        this.logger = stateMachine.logger;
+        //this.logger.silly('constructor');
         this.rstStateMachine = stateMachine;
-    }
-
-    // fixme this whole thing needs rework
-    public _init(stateMachine: RSTStateMachine, debug: boolean = false) {
-        super._init(stateMachine, debug);
         this.createNestedStateMachine = () => NestedStateMachine.createStateMachine(this.rstStateMachine);
         //, undefined, this.rstStateMachine.stateFactory!.withStateClasses(["QuotedLiteralBlock"]));
         this.createIndentedStateMachine = this.createNestedStateMachine;
@@ -85,9 +76,11 @@ abstract class RSTState extends StateWS {
         //     /* eslint-disable-next-line no-console */
         //     debugFn: args && stateMachine ? stateMachine.debugFn : console.log,
         // };
+        //this.logger.silly('end constructor');
     }
 
     public runtimeInit() {
+        //  this.logger.silly('runtimeInit');
         super.runtimeInit();
         const {memo} = this.rstStateMachine;
         this.memo = memo;
@@ -188,6 +181,7 @@ abstract class RSTState extends StateWS {
     }
 
     public nestedListParse(block: StringList, args: NestedParseArgs): [ number, boolean ] {
+        this.logger.debug('nestedListParse', { value: block.join('\n')});
         const myargs: NestedParseArgs = {...args};
         if(myargs.createStateMachine !== undefined) {
             throw Error('not expecing that');
@@ -230,8 +224,10 @@ abstract class RSTState extends StateWS {
         //     stateMachine.states[myargs.initialState][key] = myargs.extraSettings[key];
         // });
         stateMachine.run(block, myargs.inputOffset || 0,
-            undefined, undefined, undefined, myargs.node, myargs.matchTitles,
+            undefined, undefined, myargs.initialState, myargs.node, myargs.matchTitles,
             this.memo);
+
+        this.logger.debug(`checking blank finish state of ${myargs.blankFinishState}`);
 
         const {blankFinish} = stateMachine.getState2(myargs.blankFinishState);
         stateMachine.unlink();
@@ -303,7 +299,7 @@ abstract class RSTState extends StateWS {
         this.parent!.add(sectionNode);
         const [textNodes, titleMessages] = this.inline_text(title, lineno);
         const titleNode = new nodes.title(title, '', textNodes);
-        const name = nodes.fullyNormalizeName(titleNode.astext());
+        const name = fullyNormalizeName(titleNode.astext());
         sectionNode.attributes.names.push(name);
         sectionNode.add(titleNode);
         sectionNode.add(messages);
@@ -364,6 +360,7 @@ abstract class RSTState extends StateWS {
 
     /* eslint-disable-next-line @typescript-eslint/camelcase,camelcase */
     public inline_text(text: string, lineno: number) {
+        this.logger.silly('in transition method inline_text',{ value: text});
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const r = this.inliner!.parse(text, {lineno, memo: this.memo, parent: this.parent!});
         return r;
