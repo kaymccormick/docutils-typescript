@@ -15,7 +15,4 @@ class SettingsSpec {
     public configSection: string = '';
     public configSectionDependencies: string[] = [];
 }
-/**
- * @uuid 00046f4c-d604-4aae-9e61-d8e77e9609be
- */
 export default SettingsSpec;

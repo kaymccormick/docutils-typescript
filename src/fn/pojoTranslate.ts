@@ -1,6 +1,3 @@
-/**
- * @uuid afa98afb-001f-4ee5-9065-332422792bf2
- */
 import Writer from '../writers/pojo';
 import {Document} from "../types";
 

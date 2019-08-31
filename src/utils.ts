@@ -1,6 +1,3 @@
-/**
- * @uuid 47ebd5aa-f442-4264-ac8a-bca30cd35cb6
- */
 import { combining } from "./utils/combining";
 import { Settings } from "../gen/Settings";
 import { Document, NodeInterface } from "./types";
@@ -240,9 +237,6 @@ function assembleOptionDict(optionList: {}, optionsSpec: {}): {} | never {
     return {};
 }
 
-/**
- * @uuid 5ee7a48b-f8bc-4c17-87b8-41e60dac9d81
- */
 class BadOptionError implements Error {
     public constructor(message: string) {
         this.message = message;
@@ -253,9 +247,6 @@ class BadOptionError implements Error {
     public name: string;
 }
 
-/**
- * @uuid 99528d97-eb9f-4661-b232-72974a974d6c
- */
 class BadOptionDataError implements Error {
     public constructor(message: string) {
         this.message = message;

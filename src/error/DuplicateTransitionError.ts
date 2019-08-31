@@ -1,7 +1,3 @@
-/**/
-/**
- * @uuid fbbf52aa-dbdf-4123-aa9e-c24ab3f26486
- */
 class DuplicateTransitionError extends Error {
     public message: string;
     public transition: string;
@@ -15,7 +11,4 @@ class DuplicateTransitionError extends Error {
     }
 }
 
-/**
- * @uuid 0201a231-4a03-43d0-84b8-fdf48ef42432
- */
 export default DuplicateTransitionError;

@@ -1,6 +1,3 @@
-/**
- * @uuid 3f9ba731-1b1d-4369-ab19-e47ad8991d00
- */
 import * as statemachine from '../StateMachine';
 import RSTStateMachine from '../parsers/rst/RSTStateMachine';
 import StateFactory from '../parsers/rst/StateFactory';

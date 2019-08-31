@@ -1,6 +1,3 @@
-/**
- * @uuid db846d8d-dab0-49af-b87b-bdb4f4cdf0b5
- */
 import * as nodes from "../../nodes";
 import * as directives from "./directives";
 import { ReporterInterface } from "../../types";
@@ -19,9 +16,6 @@ function setClasses(options: any) {
     }
 }
 
-/**
- * @uuid a365ca13-9637-4203-9309-9a53f9567994
- */
 class GenericRole {
     private name: string;
 

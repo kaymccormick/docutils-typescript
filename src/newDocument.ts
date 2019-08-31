@@ -1,6 +1,3 @@
-/**
- * @uuid 0d06b200-2a56-4490-890b-fbe9bd10dfd0
- */
 import { document } from './nodes';
 import newReporter from './newReporter';
 import {Settings} from "../gen/Settings";

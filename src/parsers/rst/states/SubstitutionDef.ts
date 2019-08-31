@@ -1,6 +1,3 @@
-/**
- * @uuid b198c11c-5a41-49aa-b5bf-91eaf701a612
- */
 import Body from './Body';
 import { EOFError } from '../../../Exceptions';
 import * as nodes from '../../../nodes';
@@ -19,7 +16,6 @@ import StringList from "../../../StringList";
 
 /**
  * Parser for the contents of a substitution_definition element. 
- * @uuid 4cbf2eb1-7a76-49e0-a2e5-faccccda8308
  */
 class SubstitutionDef extends Body {
     protected initialTransitions?: (string | string[])[] = ['embedded_directive', 'text'];;

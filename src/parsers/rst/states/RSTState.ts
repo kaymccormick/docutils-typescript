@@ -1,6 +1,3 @@
-/**
- * @uuid df2c7922-ee34-47b5-86e6-79ed214be6ed
- */
 import StateWS from "../../../states/StateWS";
 import NestedStateMachine from "../NestedStateMachine";
 import * as nodes from "../../../nodes";
@@ -19,9 +16,6 @@ import RSTStateMachine from "../RSTStateMachine";
 import { Explicit, InlinerInterface, NestedParseArgs, Nestedstatemachine, RstMemo } from "../types";
 import { fullyNormalizeName } from "../../../nodeUtils";
 
-/**
- * @uuid 6699632a-1009-4065-a9c8-81d3065b3ec4
- */
 abstract class RSTState extends StateWS {
     public get explicit(): Explicit | undefined {
         return this._explicit;

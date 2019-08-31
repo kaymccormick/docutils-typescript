@@ -1,6 +1,3 @@
-/**
- * @uuid 5ce6da8e-1107-4294-b124-14f70e7f191e
- */
 import { document } from "./nodes";
 import {
     ComponentInterface,
@@ -24,8 +21,6 @@ interface ReferenceResolver {
 
 /**
  * Transformer class responsible for transforming document output
- *  
- * @uuid 98e4d169-d94a-4d23-8a4b-e8dba03963b4
  */
 class Transformer implements TransformerInterface {
     private logger: LoggerType;

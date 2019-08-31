@@ -1,6 +1,3 @@
-/**
- * @uuid 77ba679b-73fa-4bee-a2da-5df047a1f110
- */
 import SpecializedText from './SpecializedText';
 import {RegexpResult, ContextArray, StateType, StateInterface,ParseMethodReturnType} from '../../../types';
 class Definition extends SpecializedText {

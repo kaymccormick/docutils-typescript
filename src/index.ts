@@ -1,7 +1,3 @@
-/**
- *  eslint-disable-next-line import/prefer-default-export 
- * @uuid 62a09a7d-88ab-4fd5-bc03-98b19d2cc427
- */
 export { parse } from './parse';
 export {NodeInterface, Settings,Document} from './types';
 export { getDefaultSettings } from './settingsHelper';

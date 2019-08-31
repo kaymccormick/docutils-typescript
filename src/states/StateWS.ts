@@ -1,6 +1,3 @@
-/**
- * @uuid 6bd2185e-e8b3-4c4d-9906-9bfd6e35a042
- */
 import State from './State';
 import StateMachineWS from "../StateMachineWS";
 import { RSTStateArgs, StatemachineConstructor } from "../parsers/rst/types";
@@ -35,7 +32,6 @@ import {
  * `known_indent_sm` and `known_indent_sm_kwargs`.  Neither transition method
  * is triggered automatically.
  * 
- * @uuid 252c7ebc-8168-4836-9175-d9775bc527d3
  */
 class StateWS extends State {
     /**

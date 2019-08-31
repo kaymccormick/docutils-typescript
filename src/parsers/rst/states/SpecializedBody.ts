@@ -1,6 +1,3 @@
-/**
- * @uuid 5ff37329-bac5-4e05-b0db-f39bcc4c441b
- */
 import Body from './Body';
 import { EOFError } from '../../../Exceptions';
 import RSTStateMachine from "../RSTStateMachine";
@@ -13,8 +10,8 @@ import {
     ParseMethodReturnType,
     Patterns,
 } from '../../../types';
-class SpecializedBody extends Body {
 
+class SpecializedBody extends Body {
     /* istanbul ignore next */
     // @ts-ignore
     public indent(match: RegexpResult, context: ContextArray, nextState: StateInterface): ParseMethodReturnType {

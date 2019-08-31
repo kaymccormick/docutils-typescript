@@ -1,6 +1,3 @@
-/**
- * @uuid ee073e25-199d-4568-ab56-e2f50fe345e2
- */
 import { StateMachine } from './StateMachine';
 import { Document, GetIndentedArgs, WhitespaceStatemachine } from "./types";
 import StringList from "./StringList";
@@ -12,9 +9,6 @@ interface GetFirstKnownIndentedArgs {
     stripTop?: boolean;
 }
 
-/**
- * @uuid ce74aceb-9b7a-423a-aa50-07fcae6a3b15
- */
 class StateMachineWS extends StateMachine implements WhitespaceStatemachine {
     public document?: Document;
 

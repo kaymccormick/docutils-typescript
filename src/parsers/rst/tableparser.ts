@@ -12,7 +12,6 @@
  * :Function:
  * `update_dict_of_lists()`: Merge two dictionaries containing list values.
  * 
- * @uuid 4129468d-8b62-4601-9841-b4ce732ca644
  */
 
 import { DataError } from '../../Exceptions';
@@ -30,7 +29,6 @@ export interface RowIndicies {
  * The keyword argument `offset` denotes the offset of the problem
  * from the table's start line.
  * 
- * @uuid ebd4ef79-b671-44d0-986b-b585209dc6dc
  */
 class TableMarkupError extends DataError {
     public offset?: number;
@@ -43,7 +41,6 @@ class TableMarkupError extends DataError {
 /**
  *  Abstract superclass for the common parts of the syntax-specific parsers.
  *  
- * @uuid 94f8dcbf-edf4-4fbc-b719-e0f117508b93
  */
 abstract class TableParser {
     protected doubleWidthPadChar: string = '\x00';
@@ -507,7 +504,6 @@ class GridTableParser extends TableParser {
  *       [(0, 0, 12, ['5']),
  *        (0, 0, 12, [''])]])
  * 
- * @uuid fb14daa3-ce78-4cd9-8951-da29068722ca
  */
 class SimpleTableParser extends TableParser {
     private table: any[] = [];

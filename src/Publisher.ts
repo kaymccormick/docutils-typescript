@@ -1,6 +1,3 @@
-/**
- * @uuid e6442770-8e71-4095-a203-dffcf155f4a5
- */
 import { ApplicationError, InvalidStateError } from "./Exceptions";
 import { ArgumentParser } from 'argparse';
 import { OptionParser, OptionParserArgs } from "./Frontend";

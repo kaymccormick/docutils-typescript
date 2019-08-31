@@ -1,6 +1,3 @@
-/**
- * @uuid f2d598cb-b810-4a5e-b209-22331bd5cb93
- */
 export const nonWhitespaceBefore = '(?<!\\s)';
 export const nonWhitespaceEscapeBefore = '(?<![\\s\\x00])';
 export const nonUnescapedWhitespaceEscapeBefore = '(?<!(?<!\\x00)[\\s\\x00])';

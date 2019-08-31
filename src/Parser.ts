@@ -1,12 +1,6 @@
-/**
- * @uuid a894d025-cca4-4314-862a-66cc2f5c7a00
- */
 import Component from "./Component";
 import { DebugFunction, Document, ParserArgs } from "./types";
 
-/**
- * @uuid ff90034f-a6c0-44e7-ad43-9961608d510c
- */
 abstract class Parser extends Component {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public debugFn: DebugFunction = this.logger.debug.bind(this.logger);

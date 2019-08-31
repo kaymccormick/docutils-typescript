@@ -1,6 +1,3 @@
-/**
- * @uuid 1528379e-5544-406c-be34-ba52c670decc
- */
 import SpecializedText from './SpecializedText';
 import { columnWidth } from '../../../utils';
 import { ApplicationError, EOFError, InvalidStateError } from "../../../Exceptions";
@@ -10,9 +7,6 @@ import RSTStateMachine from "../RSTStateMachine";
 import {RSTStateArgs} from "../types";
 
 
-/**
- * @uuid 5fbfb3ab-1643-424c-aab7-897d5b19c470
- */
 class Line extends SpecializedText {
     private eofcheck: boolean = true;
 

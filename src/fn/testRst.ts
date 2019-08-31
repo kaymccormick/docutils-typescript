@@ -1,6 +1,3 @@
-/**
- * @uuid ca1ef12c-69ff-4154-beae-cd76375cfb11
- */
 const testSource = [
     ['Title', 'Title\n=====\nParagraph.', { check: () => true }],
     ['program lang', `Want to learn about \`my favorite programming language\`_?

@@ -1,6 +1,3 @@
-/**
- * @uuid 0b31f82e-af01-48ee-bf60-dda5a270d713
- */
 import { DirectiveError, DirectiveInterface } from "./types";
 import { Statemachine, LogLevel, OptionSpec, Options } from "../../types";
 import StringList from "../../StringList";
@@ -93,7 +90,6 @@ import Body from "./states/Body";
  * return [error]
  * 
  *  
- * @uuid fd02e94e-f5b0-421e-a1a8-1a741a8252d5
  */
 class Directive implements DirectiveInterface {
     public static optionSpec: OptionSpec;

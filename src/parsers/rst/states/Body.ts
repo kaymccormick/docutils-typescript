@@ -1,6 +1,3 @@
-/**
- * @uuid 251d0281-5aa7-48d0-985c-4b8893ab7d2c
- */
 import RSTState from "./RSTState";
 import * as RegExps from "../RegExps";
 import nodesFactory from '../../../nodesFactory';

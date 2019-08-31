@@ -1,15 +1,9 @@
-/**
- * @uuid 134a5ce2-e9e9-4368-8ee3-331b81ca69c6
- */
 import StateMachineWS from "../../StateMachineWS";
 import { ContextKind, NodeInterface, Statefactory, Statemachine } from "../../types";
 import { Nestedstatemachine, RSTLanguage, RstMemo } from "./types";
 import StringList from "../../StringList";
 import { InvalidStateError } from "../../Exceptions";
 
-/**
- * @uuid f9a7cf1a-2da7-42f7-8a78-1ac97d72386a
- */
 class NestedStateMachine extends StateMachineWS implements Nestedstatemachine {
     public memo?: RstMemo;
     private rstLanguage: RSTLanguage | undefined;

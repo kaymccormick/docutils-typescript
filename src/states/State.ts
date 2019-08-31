@@ -1,6 +1,3 @@
-/**
- * @uuid 1986b10f-d579-420a-a26c-7bc5b5b9782d
- */
 import { InvalidArgumentsError } from "../Exceptions";
 import UnknownTransitionError from "../error/UnknownTransitionError";
 import DuplicateTransitionError from "../error/DuplicateTransitionError";
@@ -57,7 +54,6 @@ import NestedStateMachine from "../parsers/rst/NestedStateMachine";
  * corresponding transition methods. The default object initialization will
  * take care of constructing the list of transitions.
  *  
- * @uuid e27beaec-93fa-4688-84c1-b87c7d2f021f
  */
 class State implements StateInterface {
     /**

@@ -1,6 +1,3 @@
-/**
- * @uuid 2df2a977-b9cf-421f-9a1e-3d6f45762602
- */
 import * as references from '../transforms/references';
 import * as frontmatter from '../transforms/frontmatter';
 import baseReaderTransforms from

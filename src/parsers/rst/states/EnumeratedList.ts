@@ -1,13 +1,9 @@
-/**
- * @uuid ecd7d5ca-4350-40e0-ab6b-81df20f45d51
- */
 import SpecializedBody from './SpecializedBody';
 import {RegexpResult, ContextArray, StateType, StateInterface,ParseMethodReturnType} from '../../../types';
 import{EOFError}from'../../../Exceptions';
 
 /**
  * Second and subsequent enumerated_list list_items. 
- * @uuid b37a8395-86a2-43d6-bf67-309ba53a8f0e
  */
 class EnumeratedList extends SpecializedBody {
     private lastordinal: number = 0;

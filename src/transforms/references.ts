@@ -1,6 +1,3 @@
-/**
- * @uuid 6859e441-6688-4930-bdb1-12cb2a473964
- */
 import Transform from '../Transform';
 import * as nodes from '../nodes';
 
@@ -26,7 +23,6 @@ export const __docformat__ = 'reStructuredText';
  *         <paragraph ids="internal2 id1 internal1" names="internal2 internal1">
  *             This is a test.
  
- * @uuid 8f0d5ebc-622a-4594-bddb-08e335939dd5
 */
 export class PropagateTargets extends Transform {
 
@@ -65,7 +61,6 @@ PropagateTargets.defaultPriority = 260;
  *         <target anonymous="1" ids="id1">
  *         <target anonymous="1" ids="id2" refuri="http://external">
  *  
- * @uuid 8310f144-8765-4948-834d-8b39f9e167f0
  */
 
 class AnonymousHyperlinks extends Transform {

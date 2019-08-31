@@ -1,7 +1,3 @@
-/**
- *  eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars 
- * @uuid d693bb62-97f1-4b1d-b0a1-1ff8436c2a2f
- */
 import { DirectivesInterface } from "../types";
 
 const __docformat__ = 'reStructuredText';

@@ -1,10 +1,7 @@
-/**
- * @uuid 2018f61d-bcc2-43f0-8b9a-3a99d12ab61a
- */
 import TransformSpec from '../TransformSpec';
 import { LoggerType } from '../types';
 
-nabstract class Output<T> extends TransformSpec {
+abstract class Output<T> extends TransformSpec {
     public componentType: string = 'output';
     public supported: string[] = [];
     protected defaultDestinationPath?: string;

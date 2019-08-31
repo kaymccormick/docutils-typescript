@@ -1,8 +1,3 @@
-/**
- *  equivalent of docutils.parsers.rst.directives 
- * @uuid 7b625967-277d-4a31-b5b3-61fa242e91c0
- */
-
 import * as _fallbackLanguageModule from "./languages/en";
 //import * as images from "./directives/images";
 //import * as parts from "./directives/parts";

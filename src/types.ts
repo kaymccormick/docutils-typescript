@@ -3,7 +3,6 @@
  * 
  * TransformSpec subclass objects used by `docutils.transforms.Transformer`.
  *  
- * @uuid 1004cef8-53f5-4d3c-b806-1b3aafe4395a
  */
 // eslint-disable-next-line @typescript-eslint/camelcase
 import { citation, decoration, Element, footnote, reference, substitution_definition } from "./nodes";

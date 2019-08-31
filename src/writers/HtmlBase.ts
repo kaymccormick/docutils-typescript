@@ -130,8 +130,6 @@ class SimpleListChecker extends nodes.GenericNodeVisitor {
 
 /**
  * HTMLTranslator class
- *  
- * @uuid 01f5d00d-c3c8-453c-a06a-e17dfa4524ca
  */
 class HTMLTranslator extends nodes.NodeVisitor {
     private xmlDeclaration: TemplateFunction = compile('<?xml version="1.0" encoding="<%=encoding%>" ?>\n');
@@ -2096,7 +2094,6 @@ class HTMLTranslator extends nodes.NodeVisitor {
 /**
  * Class for writing HTML
  *  
- * @uuid 9e3f415b-52ee-4cfd-8515-fee776dc0bf4
  */
 class HTMLBaseWriter extends BaseWriter {
     private visitorAttributes: string[] = ['headPrefix', 'head', 'stylesheet', 'bodyPrefix', 'bodyPreDocinfo', 'docinfo', 'body',

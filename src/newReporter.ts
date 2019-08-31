@@ -1,6 +1,3 @@
-/**
- * @uuid 11996e91-9b9e-48ea-955d-f5ad362cbaa1
- */
 import Reporter from './Reporter';
 import { ApplicationError } from './Exceptions';
 import {Settings} from '../gen/Settings';
